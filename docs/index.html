@@ -1,0 +1,874 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>買取価格チェッカー</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+  <style>
+    /* ── リセット & 変数 ─────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #0f1117;
+      --surface: #1a1d27;
+      --surface2: #22263a;
+      --border: #2e3248;
+      --accent: #5c73f2;
+      --accent2: #f25c73;
+      --text: #e4e6f0;
+      --text-muted: #7a7f99;
+      --green: #4caf87;
+      --yellow: #f2c94c;
+      --radius: 10px;
+      --font: 'Segoe UI', 'Noto Sans JP', sans-serif;
+    }
+    html { font-size: 14px; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font);
+      min-height: 100vh;
+    }
+
+    /* ── ヘッダー ─────────────────────────────────────── */
+    header {
+      background: linear-gradient(135deg, #1a1d27 0%, #22263a 100%);
+      border-bottom: 1px solid var(--border);
+      padding: 1rem 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    header h1 {
+      font-size: 1.25rem;
+      font-weight: 700;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    #last-updated {
+      margin-left: auto;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+    #status-badge {
+      font-size: 0.72rem;
+      padding: 0.2rem 0.6rem;
+      border-radius: 999px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+    }
+    #status-badge.ok { color: var(--green); border-color: var(--green); }
+    #status-badge.error { color: var(--accent2); border-color: var(--accent2); }
+
+    /* ── レイアウト ─────────────────────────────────── */
+    .app {
+      display: grid;
+      grid-template-columns: 300px 1fr;
+      height: calc(100vh - 57px);
+    }
+
+    /* ── サイドバー ─────────────────────────────────── */
+    #sidebar {
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* カテゴリタブ */
+    #category-tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      padding: 0.75rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .cat-tab {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 0.75rem;
+      padding: 0.3rem 0.6rem;
+      transition: all 0.15s;
+      white-space: nowrap;
+    }
+    .cat-tab:hover { border-color: var(--accent); color: var(--text); }
+    .cat-tab.active {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
+    }
+
+    /* 検索 */
+    #search-wrap {
+      padding: 0.6rem 0.75rem;
+      border-bottom: 1px solid var(--border);
+    }
+    #search {
+      width: 100%;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--text);
+      font-size: 0.85rem;
+      outline: none;
+      padding: 0.45rem 0.75rem;
+    }
+    #search:focus { border-color: var(--accent); }
+    #search::placeholder { color: var(--text-muted); }
+
+    /* 商品リスト */
+    #product-list {
+      flex: 1;
+      overflow-y: auto;
+      scrollbar-width: thin;
+      scrollbar-color: var(--border) transparent;
+    }
+    .product-item {
+      align-items: center;
+      border-bottom: 1px solid var(--border);
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      padding: 0.65rem 0.9rem;
+      transition: background 0.1s;
+    }
+    .product-item:hover { background: var(--surface2); }
+    .product-item.selected { background: rgba(92, 115, 242, 0.15); border-left: 3px solid var(--accent); }
+    .product-item .prod-name {
+      font-size: 0.82rem;
+      line-height: 1.3;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      max-width: 180px;
+    }
+    .product-item .prod-prices {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 2px;
+      flex-shrink: 0;
+    }
+    .price-pill {
+      background: var(--surface2);
+      border-radius: 4px;
+      font-size: 0.7rem;
+      padding: 1px 5px;
+      white-space: nowrap;
+    }
+    .price-pill.store-a { border-left: 2px solid var(--accent); }
+    .price-pill.store-b { border-left: 2px solid var(--accent2); }
+    .no-data { color: var(--text-muted); font-size: 0.75rem; font-style: italic; }
+
+    /* ── メインエリア ─────────────────────────────────── */
+    #main {
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      padding: 1.25rem 1.5rem;
+      gap: 1rem;
+    }
+
+    /* サマリーカード */
+    #summary-cards {
+      display: flex;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+    }
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      flex: 1;
+      min-width: 140px;
+      padding: 0.9rem 1rem;
+    }
+    .card .card-label {
+      color: var(--text-muted);
+      font-size: 0.75rem;
+      margin-bottom: 0.3rem;
+    }
+    .card .card-value {
+      font-size: 1.3rem;
+      font-weight: 700;
+    }
+    .card .card-sub {
+      color: var(--text-muted);
+      font-size: 0.72rem;
+      margin-top: 0.2rem;
+    }
+    .card.green .card-value { color: var(--green); }
+    .card.blue .card-value { color: var(--accent); }
+    .card.red .card-value { color: var(--accent2); }
+    .card.yellow .card-value { color: var(--yellow); }
+
+    /* 商品タイトル */
+    #product-title {
+      font-size: 1rem;
+      font-weight: 600;
+    }
+    #product-title span {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 5px;
+      font-size: 0.7rem;
+      margin-left: 0.5rem;
+      padding: 0.15rem 0.5rem;
+      color: var(--text-muted);
+      vertical-align: middle;
+    }
+
+    /* チャート */
+    #chart-wrap {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      flex: 1;
+      min-height: 0;
+      padding: 1rem;
+      position: relative;
+    }
+    #myChart { width: 100% !important; height: 100% !important; }
+
+    /* プレースホルダー */
+    #placeholder {
+      align-items: center;
+      color: var(--text-muted);
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      height: 100%;
+      justify-content: center;
+    }
+    #placeholder .icon { font-size: 3rem; opacity: 0.3; }
+
+    /* テーブル */
+    #data-table-wrap {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      max-height: 180px;
+      overflow-y: auto;
+    }
+    table {
+      border-collapse: collapse;
+      font-size: 0.8rem;
+      width: 100%;
+    }
+    thead th {
+      background: var(--surface2);
+      border-bottom: 1px solid var(--border);
+      color: var(--text-muted);
+      padding: 0.5rem 0.75rem;
+      text-align: left;
+      position: sticky;
+      top: 0;
+    }
+    tbody td {
+      border-bottom: 1px solid var(--border);
+      padding: 0.4rem 0.75rem;
+    }
+    tbody tr:last-child td { border-bottom: none; }
+    tbody tr:hover td { background: var(--surface2); }
+
+    /* ── ローディング ─────────────────────────────────── */
+    #loading {
+      align-items: center;
+      background: var(--bg);
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      height: 100%;
+      justify-content: center;
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      z-index: 999;
+    }
+    .spinner {
+      width: 40px; height: 40px;
+      border: 3px solid var(--border);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── レスポンシブ ─────────────────────────────────── */
+    @media (max-width: 720px) {
+      .app { grid-template-columns: 1fr; grid-template-rows: auto 1fr; height: auto; }
+      #sidebar { height: 50vh; }
+      #main { height: 80vh; }
+    }
+  </style>
+</head>
+<body>
+
+<div id="loading">
+  <div class="spinner"></div>
+  <div>データを読み込んでいます…</div>
+</div>
+
+<header>
+  <h1>📊 買取価格チェッカー</h1>
+  <span id="status-badge">読込中</span>
+  <span id="last-updated"></span>
+</header>
+
+<div class="app">
+  <!-- ── サイドバー ──────────────────────────────── -->
+  <aside id="sidebar">
+    <div id="category-tabs">
+      <button class="cat-tab active" data-cat="all">すべて</button>
+      <button class="cat-tab" data-cat="ゲーム">🎮 ゲーム</button>
+      <button class="cat-tab" data-cat="カメラ">📷 カメラ</button>
+      <button class="cat-tab" data-cat="ポケカ">🃏 ポケカ</button>
+      <button class="cat-tab" data-cat="ワンピ">🃏 ワンピ</button>
+      <button class="cat-tab" data-cat="その他">📦 その他</button>
+    </div>
+    <div id="search-wrap">
+      <input id="search" type="search" placeholder="商品名で検索…">
+    </div>
+    <div id="product-list"></div>
+  </aside>
+
+  <!-- ── メイン ─────────────────────────────────── -->
+  <main id="main">
+    <div id="summary-cards">
+      <div class="card blue">
+        <div class="card-label">収集商品数</div>
+        <div class="card-value" id="total-count">—</div>
+        <div class="card-sub">ユニーク商品</div>
+      </div>
+      <div class="card green">
+        <div class="card-label">最高買取 (本日)</div>
+        <div class="card-value" id="max-price">—</div>
+        <div class="card-sub" id="max-price-name">—</div>
+      </div>
+      <div class="card yellow">
+        <div class="card-label">データ期間</div>
+        <div class="card-value" id="date-range">—</div>
+        <div class="card-sub" id="store-count">—</div>
+      </div>
+      <div class="card red">
+        <div class="card-label">最終更新</div>
+        <div class="card-value" id="latest-date">—</div>
+        <div class="card-sub">JST</div>
+      </div>
+    </div>
+
+    <div id="product-title" style="display:none">
+      <span id="pt-name">—</span>
+      <span id="pt-cat">—</span>
+    </div>
+
+    <div id="chart-wrap">
+      <div id="placeholder">
+        <div class="icon">📈</div>
+        <div>左のリストから商品を選んでください</div>
+      </div>
+      <canvas id="myChart" style="display:none"></canvas>
+    </div>
+
+    <div id="data-table-wrap" style="display:none">
+      <table>
+        <thead><tr>
+          <th>日付</th>
+          <th>店舗</th>
+          <th>買取価格</th>
+          <th>前日比</th>
+        </tr></thead>
+        <tbody id="data-tbody"></tbody>
+      </table>
+    </div>
+  </main>
+</div>
+
+<script>
+// ─────────────────────────────────────────────────────────────────────
+// 商品マスタ（products.py と同期）
+// ─────────────────────────────────────────────────────────────────────
+const PRODUCT_CATEGORIES = {
+  'Switch2 国内版': 'ゲーム',
+  'Switch2 国内版マリカーセット': 'ゲーム',
+  'Switch2 ポケモンZ-Aセット': 'ゲーム',
+  'Switch2 多言語版': 'ゲーム',
+  'Switch2 Proコン': 'ゲーム',
+  'Switch 有機白': 'ゲーム',
+  'Switch 有機ネオン': 'ゲーム',
+  'Switch 新型ネオン': 'ゲーム',
+  'Switch 新型グレー': 'ゲーム',
+  'Switch Liteグレー': 'ゲーム',
+  'Switch Liteブルー': 'ゲーム',
+  'Switch Liteコーラル': 'ゲーム',
+  'Switch Liteターコイズ': 'ゲーム',
+  'Switch Liteイエロー': 'ゲーム',
+  'PS5': 'ゲーム',
+  'PS5デジタル': 'ゲーム',
+  'PlayStation5 Pro': 'ゲーム',
+  'PlayStation VR2': 'ゲーム',
+  'PlayStation VR2 Horizon同梱版': 'ゲーム',
+  'リモートプレーヤー': 'ゲーム',
+  'Xbox X': 'ゲーム',
+  'Xbox S': 'ゲーム',
+  'Xbox X 1TB ホワイト': 'ゲーム',
+  'Xbox S 1TB ホワイト': 'ゲーム',
+  'Meta Quest 3 512': 'ゲーム',
+  'Meta Quest 3 128': 'ゲーム',
+  'Meta Quest 3S 128GB': 'ゲーム',
+  'Meta Quest 3S 256GB': 'ゲーム',
+  'Pokemon GO Plus+': 'ゲーム',
+  'Steam Deck 有機EL 512GB': 'ゲーム',
+  'Steam Deck 有機EL 1TB': 'ゲーム',
+  // カメラ
+  'チェキフィルム 2P': 'カメラ',
+  'チェキフィルム 1P': 'カメラ',
+  '写ルンです（新パッケージ）': 'カメラ',
+  'instax mini 12 ピンク': 'カメラ',
+  'instax mini 13 ピンク': 'カメラ',
+  'instax mini 13 ブルー': 'カメラ',
+  'instax mini 13 グリーン': 'カメラ',
+  'instax mini 13 ホワイト': 'カメラ',
+  'instax mini 13 パープル': 'カメラ',
+  'instax mini 40': 'カメラ',
+  'instax mini 90 黒': 'カメラ',
+  'instax mini 90 茶': 'カメラ',
+  'instax mini 99': 'カメラ',
+  'instax WIDE 400': 'カメラ',
+  'instax WIDE 400 ブラック': 'カメラ',
+  'instax mini Evo 黒': 'カメラ',
+  'instax mini Evo 茶': 'カメラ',
+  'instax WIDE Evo': 'カメラ',
+  'instax mini Evo PINK': 'カメラ',
+  'instax mini Evo GENTLE ROSE': 'カメラ',
+  'instax mini Evo Cinema': 'カメラ',
+  'instax SQUARE SQ40 ブラック': 'カメラ',
+  'instax SQUARE SQ1 ブルー': 'カメラ',
+  'instax SQUARE SQ1 オレンジ': 'カメラ',
+  'instax SQUARE SQ1 ホワイト': 'カメラ',
+  'IXY 650 シルバー': 'カメラ',
+  'IXY 650 ブラック': 'カメラ',
+  'IXY 650 m シルバー': 'カメラ',
+  'IXY 650 m ブラック': 'カメラ',
+  'SX740 シルバー': 'カメラ',
+  'SX740 ブラック': 'カメラ',
+  'SX70': 'カメラ',
+  'PowerShot V1': 'カメラ',
+  'G7 X Mark III ブラック': 'カメラ',
+  'G7 X Mark III シルバー': 'カメラ',
+  'G7X Mark III 30th Anniversary': 'カメラ',
+  'X100VI シルバー（旧）': 'カメラ',
+  'X100VI ブラック（旧）': 'カメラ',
+  'X100VI シルバー（新）': 'カメラ',
+  'X100VI ブラック（新）': 'カメラ',
+  'X-T30 レンズキット': 'カメラ',
+  'LUMIX DC-TZ99 ブラック': 'カメラ',
+  'LUMIX DC-TZ99 ホワイト': 'カメラ',
+  'RICOH GR III': 'カメラ',
+  'RICOH GR IIIx': 'カメラ',
+  'RICOH GR III Diary Edition': 'カメラ',
+  'RICOH GR IIIx Urban Edition': 'カメラ',
+  'RICOH GR IV': 'カメラ',
+  'RICOH GR IV Monochrome': 'カメラ',
+  // ポケカ
+  'ニンジャスピナー': 'ポケカ',
+  'ムニキスゼロ': 'ポケカ',
+  'MEGAドリームex': 'ポケカ',
+  'インフェルノX': 'ポケカ',
+  'メガブレイブ': 'ポケカ',
+  'メガシンフォニア': 'ポケカ',
+  'ブラックボルト': 'ポケカ',
+  'ホワイトフレア': 'ポケカ',
+  'ブラックボルトDX': 'ポケカ',
+  'ホワイトフレアDX': 'ポケカ',
+  'ロケット団の栄光': 'ポケカ',
+  '熱風のアリーナ': 'ポケカ',
+  'バトルパートナーズ': 'ポケカ',
+  'テラスタルフェスex': 'ポケカ',
+  '超電ブレイカー': 'ポケカ',
+  '楽園ドラゴーナ': 'ポケカ',
+  'ステラミラクル': 'ポケカ',
+  'ナイトワンダラー': 'ポケカ',
+  '変幻の仮面': 'ポケカ',
+  'クリムゾンヘイズ': 'ポケカ',
+  'ワイルドフォース': 'ポケカ',
+  'サイバージャッジ': 'ポケカ',
+  'シャイニートレジャーex': 'ポケカ',
+  '古代の咆哮': 'ポケカ',
+  '未来の一閃': 'ポケカ',
+  'レイジングサーフ': 'ポケカ',
+  '黒炎の支配者': 'ポケカ',
+  'ポケモンカード151': 'ポケカ',
+  'VSTARユニバース': 'ポケカ',
+  'クレイバースト': 'ポケカ',
+  'スノーハザード': 'ポケカ',
+  'トリプレットビート': 'ポケカ',
+  'スカーレットex': 'ポケカ',
+  'バイオレットex': 'ポケカ',
+  // ワンピ
+  'OP-10 王族の血統': 'ワンピ',
+  'OP-11 神速の拳': 'ワンピ',
+  'OP-12 師弟の絆': 'ワンピ',
+  'OP-13 受け継がれる意志': 'ワンピ',
+  'OP-14 蒼海の七傑': 'ワンピ',
+  'OP-15 神の島の冒険': 'ワンピ',
+  'EB-03 Heroines Edition': 'ワンピ',
+  'EB-04 EGGHEAD CRISIS': 'ワンピ',
+  'PRB-01 THE BEST': 'ワンピ',
+  'PRB-02 THE BEST vol.2': 'ワンピ',
+  // その他
+  'Tamagotchi Paradise Purple Sky': 'その他',
+  'Tamagotchi Paradise Blue Water': 'その他',
+  'Tamagotchi Paradise Pink Land': 'その他',
+};
+
+// ─────────────────────────────────────────────────────────────────────
+// グローバル状態
+// ─────────────────────────────────────────────────────────────────────
+const STORE_COLORS = {
+  'モバイル一番': { border: '#5c73f2', bg: 'rgba(92,115,242,0.15)' },
+  '買取一丁目':   { border: '#f25c73', bg: 'rgba(242,92,115,0.15)' },
+};
+const STORE_NAMES = Object.keys(STORE_COLORS);
+
+let allRows = [];        // 全CSV行
+let myChart = null;
+let currentProduct = null;
+let currentCat = 'all';
+
+// ─────────────────────────────────────────────────────────────────────
+// CSV パーサー
+// ─────────────────────────────────────────────────────────────────────
+function parseCSV(text) {
+  const lines = text.trim().split('\n');
+  if (lines.length < 2) return [];
+  const headers = lines[0].split(',').map(h => h.trim());
+  return lines.slice(1).map(line => {
+    const vals = line.split(',');
+    const obj = {};
+    headers.forEach((h, i) => { obj[h] = (vals[i] || '').trim(); });
+    obj.price = parseInt(obj.price, 10) || 0;
+    return obj;
+  }).filter(r => r.date && r.product_name && r.store && r.price > 0);
+}
+
+// ─────────────────────────────────────────────────────────────────────
+// データ集計ユーティリティ
+// ─────────────────────────────────────────────────────────────────────
+function getProductLatestPrices(productName) {
+  // 商品名の全行 → 店舗ごとに最新日付の価格を返す
+  const rows = allRows.filter(r => r.product_name === productName);
+  const result = {};
+  STORE_NAMES.forEach(s => {
+    const storeRows = rows.filter(r => r.store === s).sort((a, b) => b.date.localeCompare(a.date));
+    if (storeRows.length) result[s] = storeRows[0];
+  });
+  return result;
+}
+
+function getUniqueDates(productName) {
+  return [...new Set(allRows.filter(r => r.product_name === productName).map(r => r.date))].sort();
+}
+
+function getProductsInCategory(cat) {
+  // CSV に登録された商品の中からカテゴリでフィルタ
+  const names = [...new Set(allRows.map(r => r.product_name))];
+  if (cat === 'all') return names.sort();
+  return names.filter(n => (PRODUCT_CATEGORIES[n] || 'その他') === cat).sort();
+}
+
+// ─────────────────────────────────────────────────────────────────────
+// サマリーカード
+// ─────────────────────────────────────────────────────────────────────
+function updateSummaryCards() {
+  const allNames = [...new Set(allRows.map(r => r.product_name))];
+  document.getElementById('total-count').textContent = allNames.length;
+
+  const allDates = [...new Set(allRows.map(r => r.date))].sort();
+  const latestDate = allDates[allDates.length - 1] || '—';
+  const oldestDate = allDates[0] || '—';
+  document.getElementById('latest-date').textContent = latestDate;
+  document.getElementById('date-range').textContent =
+    allDates.length <= 1 ? latestDate : `${allDates.length}日分`;
+  document.getElementById('store-count').textContent =
+    `${[...new Set(allRows.map(r => r.store))].length} 店舗`;
+
+  // 最新日の最高価格
+  const latestRows = allRows.filter(r => r.date === latestDate);
+  if (latestRows.length) {
+    const maxRow = latestRows.reduce((a, b) => a.price > b.price ? a : b);
+    document.getElementById('max-price').textContent = `¥${maxRow.price.toLocaleString()}`;
+    document.getElementById('max-price-name').textContent =
+      maxRow.product_name.length > 14 ? maxRow.product_name.slice(0, 14) + '…' : maxRow.product_name;
+  }
+
+  const badge = document.getElementById('status-badge');
+  badge.textContent = allRows.length ? `✓ ${allRows.length}件` : '⚠ データなし';
+  badge.className = 'ok';
+  document.getElementById('last-updated').textContent = `最終更新: ${latestDate}`;
+}
+
+// ─────────────────────────────────────────────────────────────────────
+// 商品リスト描画
+// ─────────────────────────────────────────────────────────────────────
+function renderProductList() {
+  const query = document.getElementById('search').value.toLowerCase();
+  let products = getProductsInCategory(currentCat);
+  if (query) products = products.filter(n => n.toLowerCase().includes(query));
+
+  // データがない商品マスタ項目も表示（価格なし）
+  const allMasterNames = Object.keys(PRODUCT_CATEGORIES);
+  const additionalMaster = allMasterNames.filter(n => {
+    if (!products.includes(n)) {
+      if (currentCat !== 'all' && (PRODUCT_CATEGORIES[n] || 'その他') !== currentCat) return false;
+      if (query && !n.toLowerCase().includes(query)) return false;
+      return true;
+    }
+    return false;
+  });
+  const allProducts = [...products, ...additionalMaster];
+
+  const list = document.getElementById('product-list');
+  list.innerHTML = '';
+
+  if (!allProducts.length) {
+    list.innerHTML = '<div style="padding:1rem;color:var(--text-muted);text-align:center">該当なし</div>';
+    return;
+  }
+
+  allProducts.forEach(name => {
+    const latest = getProductLatestPrices(name);
+    const item = document.createElement('div');
+    item.className = 'product-item' + (name === currentProduct ? ' selected' : '');
+    item.dataset.name = name;
+
+    const nameEl = document.createElement('div');
+    nameEl.className = 'prod-name';
+    nameEl.title = name;
+    nameEl.textContent = name;
+
+    const pricesEl = document.createElement('div');
+    pricesEl.className = 'prod-prices';
+
+    const storeKeys = Object.keys(latest);
+    if (storeKeys.length === 0) {
+      const nd = document.createElement('span');
+      nd.className = 'no-data';
+      nd.textContent = 'データなし';
+      pricesEl.appendChild(nd);
+    } else {
+      storeKeys.forEach((s, i) => {
+        const pill = document.createElement('span');
+        pill.className = `price-pill store-${['a','b','c'][i] || 'a'}`;
+        pill.textContent = `¥${latest[s].price.toLocaleString()}`;
+        pill.title = s;
+        pricesEl.appendChild(pill);
+      });
+    }
+
+    item.appendChild(nameEl);
+    item.appendChild(pricesEl);
+    item.addEventListener('click', () => selectProduct(name));
+    list.appendChild(item);
+  });
+}
+
+// ─────────────────────────────────────────────────────────────────────
+// 商品選択 → チャート描画
+// ─────────────────────────────────────────────────────────────────────
+function selectProduct(name) {
+  currentProduct = name;
+  renderProductList();
+  renderChart(name);
+}
+
+function renderChart(productName) {
+  const placeholder = document.getElementById('placeholder');
+  const canvas = document.getElementById('myChart');
+  const titleEl = document.getElementById('product-title');
+  const tableWrap = document.getElementById('data-table-wrap');
+
+  const dates = getUniqueDates(productName);
+  const rows = allRows.filter(r => r.product_name === productName);
+
+  document.getElementById('pt-name').textContent = productName;
+  document.getElementById('pt-cat').textContent =
+    PRODUCT_CATEGORIES[productName] || 'その他';
+  titleEl.style.display = 'block';
+
+  if (!rows.length) {
+    placeholder.style.display = 'flex';
+    placeholder.innerHTML = '<div class="icon">📭</div><div>このデータはまだ収集されていません</div>';
+    canvas.style.display = 'none';
+    tableWrap.style.display = 'none';
+    return;
+  }
+
+  placeholder.style.display = 'none';
+  canvas.style.display = 'block';
+  tableWrap.style.display = 'block';
+
+  // Chart.js データセット構築
+  const stores = [...new Set(rows.map(r => r.store))];
+  const datasets = stores.map(store => {
+    const color = STORE_COLORS[store] || { border: '#aaa', bg: 'rgba(170,170,170,0.1)' };
+    const data = dates.map(date => {
+      const row = rows.find(r => r.store === store && r.date === date);
+      return row ? row.price : null;
+    });
+    return {
+      label: store,
+      data,
+      borderColor: color.border,
+      backgroundColor: color.bg,
+      borderWidth: 2,
+      pointRadius: 4,
+      pointHoverRadius: 6,
+      fill: true,
+      tension: 0.3,
+      spanGaps: true,
+    };
+  });
+
+  if (myChart) myChart.destroy();
+
+  myChart = new Chart(canvas, {
+    type: 'line',
+    data: { labels: dates, datasets },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      interaction: { mode: 'index', intersect: false },
+      plugins: {
+        legend: {
+          labels: {
+            color: '#e4e6f0',
+            font: { size: 12 },
+            padding: 16,
+            usePointStyle: true,
+          },
+        },
+        tooltip: {
+          backgroundColor: '#1a1d27',
+          borderColor: '#2e3248',
+          borderWidth: 1,
+          titleColor: '#e4e6f0',
+          bodyColor: '#b0b3c8',
+          callbacks: {
+            label: ctx => ` ${ctx.dataset.label}: ¥${(ctx.parsed.y || 0).toLocaleString()}`,
+          },
+        },
+      },
+      scales: {
+        x: {
+          grid: { color: '#2e3248' },
+          ticks: { color: '#7a7f99', maxTicksLimit: 10 },
+        },
+        y: {
+          grid: { color: '#2e3248' },
+          ticks: {
+            color: '#7a7f99',
+            callback: v => '¥' + v.toLocaleString(),
+          },
+          beginAtZero: false,
+        },
+      },
+    },
+  });
+
+  // テーブル描画（最新20件）
+  const sorted = [...rows].sort((a, b) => b.date.localeCompare(a.date) || a.store.localeCompare(b.store));
+  const tbody = document.getElementById('data-tbody');
+  tbody.innerHTML = '';
+
+  // 前日比を計算
+  const priceByDateStore = {};
+  rows.forEach(r => { priceByDateStore[`${r.date}__${r.store}`] = r.price; });
+
+  sorted.slice(0, 40).forEach(r => {
+    const prevDate = dates[dates.indexOf(r.date) - 1];
+    const prevPrice = prevDate ? (priceByDateStore[`${prevDate}__${r.store}`] || null) : null;
+    let diffCell = '—';
+    if (prevPrice !== null) {
+      const diff = r.price - prevPrice;
+      const sign = diff >= 0 ? '+' : '';
+      const color = diff > 0 ? 'var(--green)' : diff < 0 ? 'var(--accent2)' : 'var(--text-muted)';
+      diffCell = `<span style="color:${color}">${sign}¥${diff.toLocaleString()}</span>`;
+    }
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${r.date}</td>
+      <td>${r.store}</td>
+      <td>¥${r.price.toLocaleString()}</td>
+      <td>${diffCell}</td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+// ─────────────────────────────────────────────────────────────────────
+// CSV 読み込み → 初期化
+// ─────────────────────────────────────────────────────────────────────
+async function loadData() {
+  const badge = document.getElementById('status-badge');
+  try {
+    // GitHub Pages では ../data/prices.csv か prices.csv など
+    const candidates = ['../data/prices.csv', 'data/prices.csv', './prices.csv'];
+    let text = null;
+    for (const path of candidates) {
+      try {
+        const resp = await fetch(path);
+        if (resp.ok) { text = await resp.text(); break; }
+      } catch (_) {}
+    }
+    if (!text) throw new Error('prices.csv が見つかりません');
+
+    allRows = parseCSV(text);
+    if (allRows.length === 0) {
+      badge.textContent = '⚠ データ空';
+      badge.className = 'error';
+    }
+
+    updateSummaryCards();
+    renderProductList();
+  } catch (e) {
+    badge.textContent = '⚠ 読込失敗';
+    badge.className = 'error';
+    console.error(e);
+    document.getElementById('placeholder').innerHTML =
+      `<div class="icon">⚠️</div><div>${e.message}</div>`;
+  } finally {
+    document.getElementById('loading').style.display = 'none';
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────
+// イベントバインド
+// ─────────────────────────────────────────────────────────────────────
+document.querySelectorAll('.cat-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.cat-tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    currentCat = tab.dataset.cat;
+    renderProductList();
+  });
+});
+
+document.getElementById('search').addEventListener('input', renderProductList);
+
+// ─────────────────────────────────────────────────────────────────────
+// 起動
+// ─────────────────────────────────────────────────────────────────────
+loadData();
+</script>
+</body>
+</html>

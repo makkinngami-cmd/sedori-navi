@@ -1,0 +1,58 @@
+name: Daily Price Scraper
+
+on:
+  schedule:
+    - cron: '0 3 * * *'   # UTC 03:00 = JST 12:00
+  workflow_dispatch:        # 手動実行ボタンも有効化
+
+permissions:
+  contents: write           # CSVをコミット・プッシュするため
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      # ── 1. チェックアウト ────────────────────────────────────────
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # ── 2. Python セットアップ ───────────────────────────────────
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: 'pip'
+          cache-dependency-path: scraper/requirements.txt
+
+      # ── 3. 依存関係インストール ──────────────────────────────────
+      - name: Install Python dependencies
+        run: |
+          pip install --upgrade pip
+          pip install -r scraper/requirements.txt
+
+      # ── 4. Playwright ブラウザインストール ───────────────────────
+      - name: Install Playwright Chromium
+        run: playwright install --with-deps chromium
+
+      # ── 5. スクレイパー実行 ──────────────────────────────────────
+      - name: Run scraper
+        run: |
+          cd scraper
+          python scrape.py
+        env:
+          PYTHONUNBUFFERED: "1"
+
+      # ── 6. 変更があればコミット & プッシュ ───────────────────────
+      - name: Commit and push updated prices.csv
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/prices.csv
+          # 変更がなければ何もしない
+          git diff --cached --quiet && echo "No changes" || \
+            git commit -m "chore: update prices $(date +'%Y-%m-%d') [skip ci]" && \
+            git push

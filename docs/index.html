@@ -822,7 +822,7 @@ async function loadData() {
   const badge = document.getElementById('status-badge');
   try {
     // GitHub Pages では ../data/prices.csv か prices.csv など
-    const candidates = ['../data/prices.csv', 'data/prices.csv', './prices.csv'];
+    const candidates = ['./prices.csv', '../data/prices.csv', 'prices.csv'];
     let text = null;
     for (const path of candidates) {
       try {

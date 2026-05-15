@@ -46,12 +46,16 @@ jobs:
         env:
           PYTHONUNBUFFERED: "1"
 
-      # ── 6. 変更があればコミット & プッシュ ───────────────────────
+      # ── 6. prices.csv を docs/ にもコピー（GitHub Pages 用）─────
+      - name: Copy prices.csv to docs/
+        run: cp data/prices.csv docs/prices.csv
+
+      # ── 7. 変更があればコミット & プッシュ ───────────────────────
       - name: Commit and push updated prices.csv
         run: |
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add data/prices.csv
+          git add data/prices.csv docs/prices.csv
           # 変更がなければ何もしない
           git diff --cached --quiet && echo "No changes" || \
             git commit -m "chore: update prices $(date +'%Y-%m-%d') [skip ci]" && \

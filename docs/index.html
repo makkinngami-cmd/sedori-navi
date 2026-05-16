@@ -260,17 +260,37 @@
     #product-title {
       font-size: 1rem;
       font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      flex-wrap: wrap;
     }
     #product-title span {
       background: var(--surface);
       border: 1px solid var(--border);
       border-radius: 5px;
       font-size: 0.7rem;
-      margin-left: 0.5rem;
       padding: 0.15rem 0.5rem;
       color: var(--text-muted);
       vertical-align: middle;
     }
+    #pt-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 5px;
+      color: var(--accent);
+      font-size: 0.72rem;
+      font-weight: 500;
+      padding: 0.2rem 0.6rem;
+      text-decoration: none;
+      transition: border-color 0.15s, background 0.15s;
+      margin-left: auto;
+    }
+    #pt-link:hover { background: rgba(92,115,242,0.15); border-color: var(--accent); }
+    #pt-link.hidden { display: none; }
 
     /* チャート */
     #chart-wrap {
@@ -414,6 +434,7 @@
     <div id="product-title" style="display:none">
       <span id="pt-name">—</span>
       <span id="pt-cat">—</span>
+      <a id="pt-link" href="#" target="_blank" rel="noopener" class="hidden">🔗 買取一丁目</a>
     </div>
 
     <div id="chart-wrap">
@@ -732,6 +753,7 @@ const STORE_NAMES = Object.keys(STORE_COLORS);
 
 let allRows = [];        // 全CSV行
 let janMap = {};         // product_name → JAN code
+let urlMap = {};         // product_name → 買取一丁目 URL
 let myChart = null;
 let currentProduct = null;
 let currentCat = 'all';
@@ -749,8 +771,9 @@ function parseCSV(text) {
     const obj = {};
     headers.forEach((h, i) => { obj[h] = (vals[i] || '').trim(); });
     obj.price = parseInt(obj.price, 10) || 0;
-    // JAN マップを更新
+    // JAN・URL マップを更新（最新行で上書き）
     if (obj.jan && obj.product_name) janMap[obj.product_name] = obj.jan;
+    if (obj.url && obj.product_name) urlMap[obj.product_name] = obj.url;
     return obj;
   }).filter(r => r.date && r.product_name && r.store && r.price > 0);
 }
@@ -937,7 +960,15 @@ function renderChart(productName) {
   document.getElementById('pt-name').textContent = productName;
   document.getElementById('pt-cat').textContent =
     PRODUCT_CATEGORIES[productName] || 'その他';
-  titleEl.style.display = 'block';
+  const ptLink = document.getElementById('pt-link');
+  const url = urlMap[productName];
+  if (url) {
+    ptLink.href = url;
+    ptLink.classList.remove('hidden');
+  } else {
+    ptLink.classList.add('hidden');
+  }
+  titleEl.style.display = 'flex';
 
   if (!rows.length) {
     placeholder.style.display = 'flex';

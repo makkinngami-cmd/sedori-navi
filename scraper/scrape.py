@@ -42,8 +42,12 @@ COMMON_HEADERS = {
 
 
 def _normalize(s: str) -> str:
-    """全角スペース→半角スペース、大文字→小文字"""
-    return s.replace('　', ' ').lower()
+    """全角スペース・全角括弧を半角化し小文字化する"""
+    s = s.replace('　', ' ')           # 全角スペース
+    s = s.replace('（', ' ').replace('）', ' ')  # 全角丸括弧
+    s = s.replace('【', ' ').replace('】', ' ')  # 全角角括弧
+    s = re.sub(r' +', ' ', s)         # 連続スペースを圧縮
+    return s.lower().strip()
 
 def match_product(text: str) -> dict | None:
     """テキストが products.py のどの商品に対応するか"""

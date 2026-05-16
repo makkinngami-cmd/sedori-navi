@@ -5,7 +5,7 @@
 PRODUCTS = {
     'ゲーム': [
         {'name': 'Switch2 国内版マリカーセット',          'keywords': ['マリオカート ワールドセット', 'Nintendo Switch 2 マリオカート', 'Mario Kart World Set']},
-        {'name': 'Switch2 国内版',                      'keywords': ['国内専用', 'Switch 2 日本語', 'スイッチ2 国内']},
+        {'name': 'Switch2 国内版',                      'keywords': ['国内専用', 'Switch 2 日本語', 'スイッチ2 国内', 'Switch 2 国内版']},
         {'name': 'Switch2 ポケモンZ-Aセット',            'keywords': ['Pokemon LEGENDS Z-A', 'Z-A Edition', 'ポケモン Z-A', 'Z-Aセット']},
         {'name': 'Switch2 多言語版',                    'keywords': ['Nintendo Switch 2 多言語', 'Switch 2 多言語']},
         {'name': 'Switch2 Proコン',                    'keywords': ['Nintendo Switch 2 Pro', 'Proコントローラー', 'Switch2 Proコン']},
@@ -28,10 +28,10 @@ PRODUCTS = {
         {'name': 'Xbox S',                             'keywords': ['Xbox Series S']},
         {'name': 'Xbox X 1TB ホワイト',                'keywords': ['Xbox Series X 1TB ホワイト', 'Xbox Series X White']},
         {'name': 'Xbox S 1TB ホワイト',                'keywords': ['Xbox Series S 1TB ホワイト', 'Xbox Series S White']},
-        {'name': 'Meta Quest 3 512',                   'keywords': ['Meta Quest 3 512GB', 'Meta Quest 3 512']},
-        {'name': 'Meta Quest 3 128',                   'keywords': ['Meta Quest 3 128GB', 'Meta Quest 3 128']},
-        {'name': 'Meta Quest 3S 128GB',                'keywords': ['Meta Quest 3S 128GB', 'Meta Quest 3S 128']},
-        {'name': 'Meta Quest 3S 256GB',                'keywords': ['Meta Quest 3S 256GB', 'Meta Quest 3S 256']},
+        {'name': 'Meta Quest 3 512',                   'keywords': ['Meta Quest 3 512GB', 'Meta Quest 3 512', 'MetaQuest 3 512', 'Quest 3 512GB']},
+        {'name': 'Meta Quest 3 128',                   'keywords': ['Meta Quest 3 128GB', 'Meta Quest 3 128', 'MetaQuest 3 128', 'Quest 3 128GB']},
+        {'name': 'Meta Quest 3S 128GB',                'keywords': ['Meta Quest 3S 128GB', 'Meta Quest 3S 128', 'MetaQuest 3S 128']},
+        {'name': 'Meta Quest 3S 256GB',                'keywords': ['Meta Quest 3S 256GB', 'Meta Quest 3S 256', 'MetaQuest 3S 256']},
         {'name': 'Pokemon GO Plus+',                   'keywords': ['Pokemon GO Plus', 'ポケモンGOプラス']},
         {'name': 'Steam Deck 有機EL 1TB',              'keywords': ['Steam Deck 有機EL 1TB', 'Steam Deck OLED 1TB']},
         {'name': 'Steam Deck 有機EL 512GB',            'keywords': ['Steam Deck 有機EL 512', 'Steam Deck OLED 512GB']},

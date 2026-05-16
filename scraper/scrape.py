@@ -1,12 +1,11 @@
 """
 買取価格スクレイパー
-- モバイル一番 (SSR / requests + BeautifulSoup)
-- 買取一丁目   (動的 / Playwright)
+- モバイル一番 (requests POST + BeautifulSoup)
+- 買取一丁目   (requests + JSON REST API)
 """
 
 import csv
 import logging
-import os
 import re
 import time
 from datetime import datetime, timezone, timedelta
@@ -38,15 +37,15 @@ COMMON_HEADERS = {
         'AppleWebKit/537.36 (KHTML, like Gecko) '
         'Chrome/124.0.0.0 Safari/537.36'
     ),
-    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
     'Accept-Language': 'ja,en-US;q=0.7,en;q=0.3',
 }
 
-# 価格文字列からint抽出： "55,000円" → 55000
 _PRICE_RE = re.compile(r'([\d,]+)\s*円')
 
+
 def parse_price(text: str) -> int | None:
-    m = _PRICE_RE.search(text.replace(' ', '').replace(' ', ''))
+    """価格文字列 "55,000円" → 55000"""
+    m = _PRICE_RE.search(text.replace('　', ' '))
     if m:
         try:
             return int(m.group(1).replace(',', ''))
@@ -54,9 +53,9 @@ def parse_price(text: str) -> int | None:
             return None
     return None
 
-# ── fuzzy 商品マッチング ───────────────────────────────────────────────
+
 def match_product(text: str) -> dict | None:
-    """テキストがどの商品に対応するかを返す（最初にヒットしたもの）"""
+    """テキストが products.py のどの商品に対応するか"""
     text_lower = text.lower()
     for product in ALL_PRODUCTS:
         for kw in product['keywords']:
@@ -66,109 +65,115 @@ def match_product(text: str) -> dict | None:
 
 
 # ════════════════════════════════════════════════════════════════════════
-# モバイル一番スクレイパー
+# モバイル一番スクレイパー（POST ベース）
 # ════════════════════════════════════════════════════════════════════════
 MOBILE_ICHIBAN_BASE = 'https://www.mobile-ichiban.com'
 
-# 試みる URL 一覧（カテゴリページ → 商品ページ等）
-# ※ 実際の URL は Playwright で事前に調査した結果に基づいています。
-#   404 が続く場合は VERIFY_URLS で確認してから追加してください。
-MOBILE_ICHIBAN_URLS = [
-    '/',                   # ホームページ（注目商品が SSR 掲載）
-    '/kaitori/game',
-    '/kaitori/camera',
-    '/kaitori/card',
-    '/kaitori/pokemon',
-    '/kaitori/onepiece',
-    '/Game',
-    '/Camera',
-    '/Pokemon',
-    '/Onepiece',
+# カテゴリコード → タグ名（tagNameLevel1）
+MOBILE_ICHIBAN_CATEGORIES = [
+    ('2', '家電買取'),    # ゲーム機・カメラ
+    ('3', 'おもちゃ買取'), # トレカ・ぬいぐるみ等
 ]
 
-def _fetch(url: str, session: requests.Session) -> str | None:
+
+def _mobile_post(session: requests.Session, cat_code: str, tag_name: str) -> str | None:
+    """カテゴリ POST → HTML を返す"""
+    post_data = {
+        'g01Search': '',
+        'g01tagLevel': '1',
+        'g01tagCodeLevel1': cat_code,
+        'g01tagCodeLevel2': '',
+        'g01tagCodeLevel3': '',
+        'g01tagNameLevel1': tag_name,
+        'g01tagNameLevel2': '',
+        'g01tagNameLevel3': '',
+        'LeftTagJson': '',
+        'TagJson': '',
+        'g01ListOrImg': '2',
+        'idCustom': '',
+        'X-Requested-With': 'XMLHttpRequest',
+    }
+    headers = {
+        **COMMON_HEADERS,
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'X-Requested-With': 'XMLHttpRequest',
+        'Referer': MOBILE_ICHIBAN_BASE + '/',
+    }
     try:
-        resp = session.get(url, headers=COMMON_HEADERS, timeout=20)
+        resp = session.post(
+            MOBILE_ICHIBAN_BASE + '/',
+            data=post_data,
+            headers=headers,
+            timeout=30,
+        )
         if resp.status_code == 200:
-            logger.info(f'OK  {url} ({len(resp.text):,} bytes)')
+            logger.info(f'モバイル一番 cat={cat_code}: {len(resp.text):,} bytes')
             return resp.text
-        logger.warning(f'HTTP {resp.status_code}  {url}')
+        logger.warning(f'モバイル一番 cat={cat_code}: HTTP {resp.status_code}')
     except Exception as e:
-        logger.error(f'Error fetching {url}: {e}')
+        logger.error(f'モバイル一番 POST エラー: {e}')
     return None
 
 
-def _extract_from_table(table: BeautifulSoup) -> list[tuple[str, int]]:
-    """<table> から (商品名テキスト, 価格) ペアを抽出"""
-    pairs = []
-    rows = table.find_all('tr')
-    for row in rows:
-        cells = row.find_all(['td', 'th'])
-        if len(cells) < 2:
-            continue
-        texts = [c.get_text(strip=True) for c in cells]
-        # 価格っぽいセルを探す
-        for i, t in enumerate(texts):
-            price = parse_price(t)
-            if price and price > 1000:
-                # 前のセルが商品名候補
-                for j in range(i):
-                    if texts[j]:
-                        pairs.append((texts[j], price))
-                        break
-    return pairs
-
-
-def _extract_from_page(html: str) -> list[tuple[str, int]]:
-    """HTML ページ全体から (商品名テキスト, 価格) を抽出"""
+def _parse_card_bodies(html: str) -> list[tuple[str, int]]:
+    """
+    div.card-body から (商品名, 価格) を抽出する。
+    典型的な内容: "Nintendo Switch 2 国内版|JAN:4902370553024|新品|51,000円"
+    """
     soup = BeautifulSoup(html, 'lxml')
     pairs = []
 
-    # ① テーブル形式
-    for table in soup.find_all('table'):
-        pairs.extend(_extract_from_table(table))
+    for card in soup.find_all('div', class_='card-body'):
+        text = card.get_text(separator='|', strip=True)
+        parts = [p.strip() for p in text.split('|') if p.strip()]
 
-    # ② よくある class 名パターン（price, kaitori, buy-price 等）
-    price_classes = re.compile(
-        r'price|kaitori|buy[_\-]?price|amount|値段|買取',
-        re.IGNORECASE
-    )
-    for el in soup.find_all(class_=price_classes):
-        price = parse_price(el.get_text())
-        if price and price > 1000:
-            # 隣接する親・兄弟要素から商品名を探す
-            name_el = (
-                el.find_previous(class_=re.compile(r'name|item|product|商品', re.I))
-                or el.find_parent()
-            )
-            if name_el:
-                pairs.append((name_el.get_text(strip=True)[:80], price))
+        price = None
+        name = None
 
-    # ③ 「商品名 ... X,XXX円」が同一ブロック内にある汎用パターン
-    for block in soup.find_all(['li', 'div', 'article', 'section', 'tr']):
-        text = block.get_text(separator=' ', strip=True)
-        price = parse_price(text)
-        if price and price > 1000 and len(text) < 200:
-            pairs.append((text, price))
+        for part in parts:
+            p = parse_price(part)
+            if p and p > 500:
+                if price is None:
+                    price = p
+            elif (
+                name is None
+                and not part.startswith('JAN:')
+                and not re.match(r'^\d{4,}$', part)
+                and len(part) > 2
+            ):
+                name = part
 
+        if name and price:
+            pairs.append((name, price))
+
+    logger.info(f'  card-body パース結果: {len(pairs)} ペア')
     return pairs
 
 
 def scrape_mobile_ichiban() -> list[dict]:
     results = []
     store = 'モバイル一番'
-    session = requests.Session()
-    found_products: dict[str, int] = {}  # name → price
+    found_products: dict[str, int] = {}
 
-    for path in MOBILE_ICHIBAN_URLS:
-        url = MOBILE_ICHIBAN_BASE + path
-        html = _fetch(url, session)
+    session = requests.Session()
+    # Cookie 取得のためトップページを先に GET
+    try:
+        session.get(
+            MOBILE_ICHIBAN_BASE + '/',
+            headers={**COMMON_HEADERS, 'Accept': 'text/html,*/*'},
+            timeout=20,
+        )
+    except Exception as e:
+        logger.warning(f'モバイル一番 トップページ取得失敗: {e}')
+
+    for cat_code, tag_name in MOBILE_ICHIBAN_CATEGORIES:
+        html = _mobile_post(session, cat_code, tag_name)
         if not html:
-            time.sleep(1)
+            time.sleep(2)
             continue
 
-        pairs = _extract_from_page(html)
-        logger.info(f'  {path}: {len(pairs)} price pairs found')
+        pairs = _parse_card_bodies(html)
 
         for text, price in pairs:
             product = match_product(text)
@@ -176,7 +181,7 @@ def scrape_mobile_ichiban() -> list[dict]:
                 found_products[product['name']] = price
                 logger.info(f'  ✓ {product["name"]} → ¥{price:,}')
 
-        time.sleep(1.5)
+        time.sleep(2)
 
     for name, price in found_products.items():
         results.append({
@@ -189,93 +194,105 @@ def scrape_mobile_ichiban() -> list[dict]:
 
 
 # ════════════════════════════════════════════════════════════════════════
-# 買取一丁目スクレイパー（Playwright）
+# 買取一丁目スクレイパー（JSON REST API）
 # ════════════════════════════════════════════════════════════════════════
 ICHOME_BASE = 'https://www.1-chome.com'
+ICHOME_API = ICHOME_BASE + '/api/goods/listPage'
 
-ICHOME_URLS = [
-    '/',
-    '/kaitori/',
-    '/kaitori/game/',
-    '/kaitori/camera/',
-    '/kaitori/card/',
-    '/kaitori/pokemon/',
-    '/kaitori/onepiece/',
-    '/buy/',
-    '/price/',
-    '/price/game/',
-    '/price/camera/',
-    '/price/card/',
+# (cateCode, 説明)
+ICHOME_CATEGORIES = [
+    ('10000005',         'ゲーム'),
+    ('10000001',         'カメラ本体・周辺'),
+    ('20279112',         'インスタントカメラ'),
+    ('20985614',         'チェキフイルム'),
+    ('IIzyMdayU5wp7T4G', 'ポケモンカード'),
+    ('SEbO7gSBevo6KsPE', 'ONE PIECE カード'),
 ]
 
+ICHOME_HEADERS = {
+    **COMMON_HEADERS,
+    'Accept': 'application/json, text/plain, */*',
+    'Referer': ICHOME_BASE + '/',
+}
 
-def _pw_extract(page, url: str) -> list[tuple[str, int]]:
-    """Playwright page オブジェクトから (テキスト, 価格) を抽出"""
+
+def _ichome_fetch(session: requests.Session, cate_code: str, page: int = 1, size: int = 100) -> dict | None:
+    params = {
+        'accCode': '',
+        'page': page,
+        'size': size,
+        'keyword': '',
+        'isImpo': 'true',
+        'isCampaign': 'false',
+        'cateCode': cate_code,
+    }
     try:
-        page.goto(url, timeout=30000, wait_until='domcontentloaded')
-        # 動的コンテンツの描画を少し待つ
-        page.wait_for_timeout(3000)
-        html = page.content()
-        return _extract_from_page(html)
+        resp = session.get(ICHOME_API, params=params, headers=ICHOME_HEADERS, timeout=30)
+        if resp.status_code == 200:
+            return resp.json()
+        logger.warning(f'買取一丁目 {cate_code} p{page}: HTTP {resp.status_code}')
     except Exception as e:
-        logger.error(f'Playwright error at {url}: {e}')
-        return []
+        logger.error(f'買取一丁目 API エラー {cate_code}: {e}')
+    return None
+
+
+def _ichome_price(item: dict) -> int | None:
+    """API アイテムから買取価格を取得"""
+    # 優先: goodsKbDetails[0].kbDetailPrice
+    for detail in item.get('goodsKbDetails', []):
+        p = detail.get('kbDetailPrice')
+        if p and int(p) > 0:
+            return int(p)
+    # fallback: price フィールド
+    p = item.get('price')
+    if p and int(p) > 0:
+        return int(p)
+    return None
 
 
 def scrape_ichome() -> list[dict]:
-    try:
-        from playwright.sync_api import sync_playwright
-    except ImportError:
-        logger.error('playwright がインストールされていません: pip install playwright')
-        return []
-
     results = []
     store = '買取一丁目'
     found_products: dict[str, int] = {}
 
-    with sync_playwright() as pw:
-        browser = pw.chromium.launch(headless=True)
-        ctx = browser.new_context(
-            user_agent=COMMON_HEADERS['User-Agent'],
-            locale='ja-JP',
-        )
-        page = ctx.new_page()
+    session = requests.Session()
 
-        # まず TOPページ を取得してリンクを列挙
-        try:
-            page.goto(ICHOME_BASE + '/', timeout=30000, wait_until='domcontentloaded')
-            page.wait_for_timeout(3000)
+    for cate_code, cate_name in ICHOME_CATEGORIES:
+        page = 1
+        total_fetched = 0
 
-            # ページ内の href をすべて収集
-            hrefs = page.eval_on_selector_all(
-                'a[href]',
-                'els => els.map(e => e.getAttribute("href"))'
-            )
-            # 買取・価格関連っぽい内部リンクを追加
-            for href in hrefs:
-                if not href:
+        while True:
+            data = _ichome_fetch(session, cate_code, page=page, size=100)
+            if not data:
+                break
+
+            page_data = data.get('data', {})
+            content = page_data.get('content', [])
+            if not content:
+                break
+
+            total_fetched += len(content)
+
+            for item in content:
+                title = item.get('title', '').strip()
+                if not title:
                     continue
-                if any(kw in href for kw in ['kaitori', 'price', 'game', 'camera', 'card', 'buy']):
-                    full = href if href.startswith('http') else ICHOME_BASE + href
-                    if full not in ICHOME_URLS and ICHOME_BASE in full:
-                        ICHOME_URLS.append(full)
-        except Exception as e:
-            logger.warning(f'買取一丁目 TOP取得失敗: {e}')
-
-        for path_or_url in ICHOME_URLS:
-            url = path_or_url if path_or_url.startswith('http') else ICHOME_BASE + path_or_url
-            pairs = _pw_extract(page, url)
-            logger.info(f'  {url}: {len(pairs)} pairs')
-
-            for text, price in pairs:
-                product = match_product(text)
+                price = _ichome_price(item)
+                if not price:
+                    continue
+                product = match_product(title)
                 if product and product['name'] not in found_products:
                     found_products[product['name']] = price
-                    logger.info(f'  ✓ {product["name"]} → ¥{price:,}')
+                    logger.info(f'  ✓ {product["name"]} → ¥{price:,}  ({title})')
 
-            time.sleep(1)
+            total_pages = page_data.get('totalPages', 1)
+            if page >= total_pages:
+                break
+            page += 1
+            time.sleep(0.5)
 
-        browser.close()
+        logger.info(f'  {cate_name} ({cate_code}): {total_fetched} アイテム')
+        time.sleep(1)
 
     for name, price in found_products.items():
         results.append({
@@ -295,7 +312,6 @@ def save_to_csv(records: list[dict]) -> None:
     DATA_FILE.parent.mkdir(parents=True, exist_ok=True)
     write_header = not DATA_FILE.exists() or DATA_FILE.stat().st_size == 0
 
-    # 今日分の重複を除外（同日・同商品・同店舗は上書きしない）
     existing_keys: set[tuple] = set()
     if DATA_FILE.exists():
         with open(DATA_FILE, newline='', encoding='utf-8') as f:

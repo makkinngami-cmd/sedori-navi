@@ -34,11 +34,7 @@ jobs:
           pip install --upgrade pip
           pip install -r scraper/requirements.txt
 
-      # ── 4. Playwright ブラウザインストール ───────────────────────
-      - name: Install Playwright Chromium
-        run: playwright install --with-deps chromium
-
-      # ── 5. スクレイパー実行 ──────────────────────────────────────
+      # ── 4. スクレイパー実行 ──────────────────────────────────────
       - name: Run scraper
         run: |
           cd scraper
@@ -46,11 +42,11 @@ jobs:
         env:
           PYTHONUNBUFFERED: "1"
 
-      # ── 6. prices.csv を docs/ にもコピー（GitHub Pages 用）─────
+      # ── 5. prices.csv を docs/ にもコピー（GitHub Pages 用）─────
       - name: Copy prices.csv to docs/
         run: cp data/prices.csv docs/prices.csv
 
-      # ── 7. 変更があればコミット & プッシュ ───────────────────────
+      # ── 6. 変更があればコミット & プッシュ ───────────────────────
       - name: Commit and push updated prices.csv
         run: |
           git config user.name  "github-actions[bot]"

@@ -148,6 +148,8 @@ def scrape_ichome() -> list[dict]:
                 if product and product['name'] not in found_products:
                     found_products[product['name']] = price
                     logger.info(f'  ✓ {product["name"]} → ¥{price:,}  ({title})')
+                elif not product:
+                    logger.info(f'  - 未マッチ: {title} (¥{price:,})')
 
             total_pages = page_data.get('totalPages', 1)
             if page >= total_pages:

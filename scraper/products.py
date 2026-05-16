@@ -4,8 +4,8 @@
 
 PRODUCTS = {
     'ゲーム': [
-        {'name': 'Switch2 国内版',                      'keywords': ['国内専用', 'Switch 2 日本語', 'スイッチ2 国内']},
         {'name': 'Switch2 国内版マリカーセット',          'keywords': ['マリオカート ワールドセット', 'Nintendo Switch 2 マリオカート', 'Mario Kart World Set']},
+        {'name': 'Switch2 国内版',                      'keywords': ['国内専用', 'Switch 2 日本語', 'スイッチ2 国内']},
         {'name': 'Switch2 ポケモンZ-Aセット',            'keywords': ['Pokemon LEGENDS Z-A', 'Z-A Edition', 'ポケモン Z-A', 'Z-Aセット']},
         {'name': 'Switch2 多言語版',                    'keywords': ['Nintendo Switch 2 多言語', 'Switch 2 多言語']},
         {'name': 'Switch2 Proコン',                    'keywords': ['Nintendo Switch 2 Pro', 'Proコントローラー', 'Switch2 Proコン']},

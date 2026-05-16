@@ -27,7 +27,9 @@ TODAY = datetime.now(JST).strftime('%Y-%m-%d')
 
 BASE_DIR = Path(__file__).parent.parent
 DATA_FILE = BASE_DIR / 'data' / 'prices.csv'
-CSV_HEADERS = ['date', 'product_name', 'store', 'price']
+CSV_HEADERS = ['date', 'product_name', 'store', 'price', 'jan']
+
+_JAN_RE = re.compile(r'\b(\d{13})\b')
 
 COMMON_HEADERS = {
     'User-Agent': (
@@ -150,7 +152,9 @@ def scrape_ichome() -> list[dict]:
                     continue
                 product = match_product(title)
                 if product and product['name'] not in found_products:
-                    found_products[product['name']] = price
+                    jan_m = _JAN_RE.search(title)
+                    jan = jan_m.group(1) if jan_m else ''
+                    found_products[product['name']] = {'price': price, 'jan': jan}
                     logger.info(f'  ✓ {product["name"]} → ¥{price:,}  ({title})')
                 elif not product:
                     logger.info(f'  - 未マッチ: {title} (¥{price:,})')
@@ -164,10 +168,10 @@ def scrape_ichome() -> list[dict]:
         logger.info(f'  {cate_name} ({cate_code}): {total_fetched} アイテム取得')
         time.sleep(1)
 
-    for name, price in found_products.items():
+    for name, info in found_products.items():
         results.append({
             'date': TODAY, 'product_name': name,
-            'store': store, 'price': price,
+            'store': store, 'price': info['price'], 'jan': info['jan'],
         })
 
     logger.info(f'買取一丁目: {len(results)} 件')
@@ -194,6 +198,9 @@ def save_to_csv(records: list[dict]) -> None:
         r for r in records
         if (r['date'], r['product_name'], r['store']) not in existing_keys
     ]
+    # jan フィールドが欠けている場合の補完
+    for r in new_records:
+        r.setdefault('jan', '')
 
     if not new_records:
         logger.info('新規レコードなし（既にスクレイプ済み？）')

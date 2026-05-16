@@ -108,6 +108,34 @@
       color: #fff;
     }
 
+    /* サブカテゴリタブ */
+    #subcat-tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 3px;
+      padding: 0.5rem 0.75rem;
+      border-bottom: 1px solid var(--border);
+      background: rgba(0,0,0,0.15);
+    }
+    #subcat-tabs:empty { display: none; }
+    .subcat-tab {
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 0.7rem;
+      padding: 0.2rem 0.5rem;
+      transition: all 0.12s;
+      white-space: nowrap;
+    }
+    .subcat-tab:hover { border-color: var(--accent); color: var(--text); }
+    .subcat-tab.active {
+      background: rgba(92,115,242,0.2);
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
     /* 検索 */
     #search-wrap {
       padding: 0.6rem 0.75rem;
@@ -144,13 +172,28 @@
     }
     .product-item:hover { background: var(--surface2); }
     .product-item.selected { background: rgba(92, 115, 242, 0.15); border-left: 3px solid var(--accent); }
+    .product-item .prod-name-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+      overflow: hidden;
+      max-width: 180px;
+    }
     .product-item .prod-name {
       font-size: 0.82rem;
       line-height: 1.3;
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
-      max-width: 180px;
+    }
+    .product-item .prod-jan {
+      font-size: 0.62rem;
+      color: var(--text-muted);
+      letter-spacing: 0.02em;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      opacity: 0.7;
     }
     .product-item .prod-prices {
       display: flex;
@@ -335,6 +378,7 @@
       <button class="cat-tab" data-cat="ワンピ">🃏 ワンピ</button>
       <button class="cat-tab" data-cat="その他">📦 その他</button>
     </div>
+    <div id="subcat-tabs"></div>
     <div id="search-wrap">
       <input id="search" type="search" placeholder="商品名で検索…">
     </div>
@@ -532,6 +576,52 @@ const PRODUCT_CATEGORIES = {
 };
 
 // ─────────────────────────────────────────────────────────────────────
+// サブカテゴリ定義
+// ─────────────────────────────────────────────────────────────────────
+// prefixes: null = すべて / 配列 = いずれかで startsWith
+const SUBCATEGORIES = {
+  'ゲーム': [
+    { id: 'all',    label: 'すべて',           prefixes: null },
+    { id: 'switch', label: 'Nintendo Switch',  prefixes: ['Switch'] },
+    { id: 'ps',     label: 'PlayStation',      prefixes: ['PS5', 'PlayStation', 'リモートプレーヤー'] },
+    { id: 'xbox',   label: 'Xbox',             prefixes: ['Xbox'] },
+    { id: 'meta',   label: 'Meta Quest',       prefixes: ['Meta Quest'] },
+    { id: 'steam',  label: 'Steam Deck',       prefixes: ['Steam Deck'] },
+    { id: 'asus',   label: 'ASUS',             prefixes: ['ASUS'] },
+    { id: 'other',  label: 'その他',           prefixes: ['Pokemon GO'] },
+  ],
+  'カメラ': [
+    { id: 'all',       label: 'すべて',           prefixes: null },
+    { id: 'mirrorless',label: 'デジタル一眼カメラ', prefixes: ['X100VI', 'X-T30'] },
+    { id: 'compact',   label: '一体型デジタルカメラ', prefixes: ['IXY', 'SX740', 'SX70', 'PowerShot', 'G7 X', 'LUMIX', 'RICOH GR'] },
+    { id: 'lens',      label: '交換レンズ',        prefixes: [] },
+    { id: 'action',    label: 'アクションカメラ',   prefixes: [] },
+    { id: 'video',     label: 'ビデオカメラ',      prefixes: [] },
+    { id: 'peripheral',label: 'カメラ周辺機器',    prefixes: [] },
+    { id: 'instax',    label: 'インスタントカメラ', prefixes: ['instax'] },
+    { id: 'film',      label: 'チェキフイルム',    prefixes: ['チェキフィルム', '写ルンです'] },
+    { id: 'sd',        label: 'SDカード',         prefixes: [] },
+  ],
+  'ポケカ': [
+    { id: 'all',  label: 'すべて',  prefixes: null },
+    { id: 'mega', label: 'MEGA系',  prefixes: ['ニンジャスピナー','ムニキスゼロ','MEGAドリーム','インフェルノ','メガブレイブ','メガシンフォニア'] },
+    { id: 'sv',   label: 'S&V系',   prefixes: ['ブラックボルト','ホワイトフレア','ロケット団','熱風','バトルパートナーズ','テラスタルフェス','超電ブレイカー','楽園ドラゴーナ','ステラミラクル','ナイトワンダラー','変幻の仮面','クリムゾンヘイズ','ワイルドフォース','サイバージャッジ','シャイニートレジャー','古代の咆哮','未来の一閃','レイジングサーフ','黒炎の支配者','ポケモンカード151','VSTARユニバース','クレイバースト','スノーハザード','トリプレットビート','スカーレットex','バイオレットex'] },
+  ],
+  'ワンピ': [
+    { id: 'all',  label: 'すべて',  prefixes: null },
+    { id: 'op',   label: 'OPシリーズ', prefixes: ['OP-'] },
+    { id: 'eb',   label: 'EBシリーズ', prefixes: ['EB-'] },
+    { id: 'prb',  label: 'PRBシリーズ',prefixes: ['PRB-'] },
+  ],
+};
+
+function matchSubcat(productName, subcat) {
+  if (!subcat || subcat.id === 'all' || subcat.prefixes === null) return true;
+  if (!subcat.prefixes.length) return false;
+  return subcat.prefixes.some(p => productName.startsWith(p));
+}
+
+// ─────────────────────────────────────────────────────────────────────
 // グローバル状態
 // ─────────────────────────────────────────────────────────────────────
 const STORE_COLORS = {
@@ -541,9 +631,11 @@ const STORE_COLORS = {
 const STORE_NAMES = Object.keys(STORE_COLORS);
 
 let allRows = [];        // 全CSV行
+let janMap = {};         // product_name → JAN code
 let myChart = null;
 let currentProduct = null;
 let currentCat = 'all';
+let currentSubcat = 'all';
 
 // ─────────────────────────────────────────────────────────────────────
 // CSV パーサー
@@ -557,6 +649,8 @@ function parseCSV(text) {
     const obj = {};
     headers.forEach((h, i) => { obj[h] = (vals[i] || '').trim(); });
     obj.price = parseInt(obj.price, 10) || 0;
+    // JAN マップを更新
+    if (obj.jan && obj.product_name) janMap[obj.product_name] = obj.jan;
     return obj;
   }).filter(r => r.date && r.product_name && r.store && r.price > 0);
 }
@@ -618,6 +712,27 @@ function updateSummaryCards() {
 }
 
 // ─────────────────────────────────────────────────────────────────────
+// サブカテゴリタブ描画
+// ─────────────────────────────────────────────────────────────────────
+function renderSubcatTabs() {
+  const container = document.getElementById('subcat-tabs');
+  const subcats = SUBCATEGORIES[currentCat];
+  container.innerHTML = '';
+  if (!subcats) return;
+  subcats.forEach(sc => {
+    const btn = document.createElement('button');
+    btn.className = 'subcat-tab' + (currentSubcat === sc.id ? ' active' : '');
+    btn.textContent = sc.label;
+    btn.addEventListener('click', () => {
+      currentSubcat = sc.id;
+      renderSubcatTabs();
+      renderProductList();
+    });
+    container.appendChild(btn);
+  });
+}
+
+// ─────────────────────────────────────────────────────────────────────
 // 商品リスト描画
 // ─────────────────────────────────────────────────────────────────────
 function renderProductList() {
@@ -625,12 +740,18 @@ function renderProductList() {
   let products = getProductsInCategory(currentCat);
   if (query) products = products.filter(n => n.toLowerCase().includes(query));
 
+  // サブカテゴリフィルタ
+  const subcats = SUBCATEGORIES[currentCat];
+  const activeSc = subcats ? subcats.find(sc => sc.id === currentSubcat) : null;
+  if (activeSc) products = products.filter(n => matchSubcat(n, activeSc));
+
   // データがない商品マスタ項目も表示（価格なし）
   const allMasterNames = Object.keys(PRODUCT_CATEGORIES);
   const additionalMaster = allMasterNames.filter(n => {
     if (!products.includes(n)) {
       if (currentCat !== 'all' && (PRODUCT_CATEGORIES[n] || 'その他') !== currentCat) return false;
       if (query && !n.toLowerCase().includes(query)) return false;
+      if (activeSc && !matchSubcat(n, activeSc)) return false;
       return true;
     }
     return false;
@@ -651,10 +772,23 @@ function renderProductList() {
     item.className = 'product-item' + (name === currentProduct ? ' selected' : '');
     item.dataset.name = name;
 
+    // 商品名 + JAN コード
+    const nameWrap = document.createElement('div');
+    nameWrap.className = 'prod-name-wrap';
+
     const nameEl = document.createElement('div');
     nameEl.className = 'prod-name';
     nameEl.title = name;
     nameEl.textContent = name;
+    nameWrap.appendChild(nameEl);
+
+    const jan = janMap[name];
+    if (jan) {
+      const janEl = document.createElement('div');
+      janEl.className = 'prod-jan';
+      janEl.textContent = jan;
+      nameWrap.appendChild(janEl);
+    }
 
     const pricesEl = document.createElement('div');
     pricesEl.className = 'prod-prices';
@@ -675,7 +809,7 @@ function renderProductList() {
       });
     }
 
-    item.appendChild(nameEl);
+    item.appendChild(nameWrap);
     item.appendChild(pricesEl);
     item.addEventListener('click', () => selectProduct(name));
     list.appendChild(item);
@@ -839,6 +973,7 @@ async function loadData() {
     }
 
     updateSummaryCards();
+    renderSubcatTabs();
     renderProductList();
   } catch (e) {
     badge.textContent = '⚠ 読込失敗';
@@ -859,6 +994,8 @@ document.querySelectorAll('.cat-tab').forEach(tab => {
     document.querySelectorAll('.cat-tab').forEach(t => t.classList.remove('active'));
     tab.classList.add('active');
     currentCat = tab.dataset.cat;
+    currentSubcat = 'all';
+    renderSubcatTabs();
     renderProductList();
   });
 });

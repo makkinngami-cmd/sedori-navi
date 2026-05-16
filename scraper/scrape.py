@@ -1,7 +1,6 @@
 """
 買取価格スクレイパー
-- モバイル一番 (requests POST + BeautifulSoup)
-- 買取一丁目   (requests + JSON REST API)
+- 買取一丁目 (requests + JSON REST API)
 """
 
 import csv
@@ -12,7 +11,6 @@ from datetime import datetime, timezone, timedelta
 from pathlib import Path
 
 import requests
-from bs4 import BeautifulSoup
 
 from products import ALL_PRODUCTS
 
@@ -40,19 +38,6 @@ COMMON_HEADERS = {
     'Accept-Language': 'ja,en-US;q=0.7,en;q=0.3',
 }
 
-_PRICE_RE = re.compile(r'([\d,]+)\s*円')
-
-
-def parse_price(text: str) -> int | None:
-    """価格文字列 "55,000円" → 55000"""
-    m = _PRICE_RE.search(text.replace('　', ' '))
-    if m:
-        try:
-            return int(m.group(1).replace(',', ''))
-        except ValueError:
-            return None
-    return None
-
 
 def match_product(text: str) -> dict | None:
     """テキストが products.py のどの商品に対応するか"""
@@ -65,152 +50,21 @@ def match_product(text: str) -> dict | None:
 
 
 # ════════════════════════════════════════════════════════════════════════
-# モバイル一番スクレイパー（POST ベース）
-# ════════════════════════════════════════════════════════════════════════
-MOBILE_ICHIBAN_BASE = 'https://www.mobile-ichiban.com'
-
-# カテゴリコード → タグ名（tagNameLevel1）
-MOBILE_ICHIBAN_CATEGORIES = [
-    ('2', '家電買取'),    # ゲーム機・カメラ
-    ('3', 'おもちゃ買取'), # トレカ・ぬいぐるみ等
-]
-
-
-def _mobile_post(session: requests.Session, cat_code: str, tag_name: str) -> str | None:
-    """カテゴリ POST → HTML を返す"""
-    post_data = {
-        'g01Search': '',
-        'g01tagLevel': '1',
-        'g01tagCodeLevel1': cat_code,
-        'g01tagCodeLevel2': '',
-        'g01tagCodeLevel3': '',
-        'g01tagNameLevel1': tag_name,
-        'g01tagNameLevel2': '',
-        'g01tagNameLevel3': '',
-        'LeftTagJson': '',
-        'TagJson': '',
-        'g01ListOrImg': '2',
-        'idCustom': '',
-        'X-Requested-With': 'XMLHttpRequest',
-    }
-    headers = {
-        **COMMON_HEADERS,
-        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-        'Content-Type': 'application/x-www-form-urlencoded',
-        'X-Requested-With': 'XMLHttpRequest',
-        'Referer': MOBILE_ICHIBAN_BASE + '/',
-    }
-    for attempt in range(2):
-        try:
-            resp = session.post(
-                MOBILE_ICHIBAN_BASE + '/',
-                data=post_data,
-                headers=headers,
-                timeout=15,
-            )
-            if resp.status_code == 200:
-                logger.info(f'モバイル一番 cat={cat_code}: {len(resp.text):,} bytes')
-                return resp.text
-            logger.warning(f'モバイル一番 cat={cat_code}: HTTP {resp.status_code}')
-            return None
-        except Exception as e:
-            logger.warning(f'モバイル一番 POST attempt {attempt+1} failed: {e}')
-            if attempt == 0:
-                time.sleep(3)
-    return None
-
-
-def _parse_card_bodies(html: str) -> list[tuple[str, int]]:
-    """
-    div.card-body から (商品名, 価格) を抽出する。
-    典型的な内容: "Nintendo Switch 2 国内版|JAN:4902370553024|新品|51,000円"
-    """
-    soup = BeautifulSoup(html, 'lxml')
-    pairs = []
-
-    for card in soup.find_all('div', class_='card-body'):
-        text = card.get_text(separator='|', strip=True)
-        parts = [p.strip() for p in text.split('|') if p.strip()]
-
-        price = None
-        name = None
-
-        for part in parts:
-            p = parse_price(part)
-            if p and p > 500:
-                if price is None:
-                    price = p
-            elif (
-                name is None
-                and not part.startswith('JAN:')
-                and not re.match(r'^\d{4,}$', part)
-                and len(part) > 2
-            ):
-                name = part
-
-        if name and price:
-            pairs.append((name, price))
-
-    logger.info(f'  card-body パース結果: {len(pairs)} ペア')
-    return pairs
-
-
-def scrape_mobile_ichiban() -> list[dict]:
-    results = []
-    store = 'モバイル一番'
-    found_products: dict[str, int] = {}
-
-    session = requests.Session()
-    # Cookie 取得のためトップページを先に GET
-    try:
-        session.get(
-            MOBILE_ICHIBAN_BASE + '/',
-            headers={**COMMON_HEADERS, 'Accept': 'text/html,*/*'},
-            timeout=10,
-        )
-    except Exception as e:
-        logger.warning(f'モバイル一番 トップページ取得失敗（スキップ）: {e}')
-
-    for cat_code, tag_name in MOBILE_ICHIBAN_CATEGORIES:
-        html = _mobile_post(session, cat_code, tag_name)
-        if not html:
-            time.sleep(2)
-            continue
-
-        pairs = _parse_card_bodies(html)
-
-        for text, price in pairs:
-            product = match_product(text)
-            if product and product['name'] not in found_products:
-                found_products[product['name']] = price
-                logger.info(f'  ✓ {product["name"]} → ¥{price:,}')
-
-        time.sleep(2)
-
-    for name, price in found_products.items():
-        results.append({
-            'date': TODAY, 'product_name': name,
-            'store': store, 'price': price,
-        })
-
-    logger.info(f'モバイル一番: {len(results)} 件')
-    return results
-
-
-# ════════════════════════════════════════════════════════════════════════
 # 買取一丁目スクレイパー（JSON REST API）
 # ════════════════════════════════════════════════════════════════════════
 ICHOME_BASE = 'https://www.1-chome.com'
 ICHOME_API = ICHOME_BASE + '/api/goods/listPage'
 
-# (cateCode, 説明)
+# (cateCode, 説明, isImpo)
+# トレカ系は isImpo=false でないと 0 件になる
 ICHOME_CATEGORIES = [
-    ('10000005',         'ゲーム'),
-    ('10000001',         'カメラ本体・周辺'),
-    ('20279112',         'インスタントカメラ'),
-    ('20985614',         'チェキフイルム'),
-    ('IIzyMdayU5wp7T4G', 'ポケモンカード'),
-    ('SEbO7gSBevo6KsPE', 'ONE PIECE カード'),
+    ('10000005',         'ゲーム',                True),
+    ('20304465',         'Steam Deck',            True),
+    ('10000001',         'カメラ本体・周辺',        True),
+    ('20279112',         'インスタントカメラ',      True),
+    ('20985614',         'チェキフイルム',          True),
+    ('IIzyMdayU5wp7T4G', 'ポケモンカード',          False),
+    ('SEbO7gSBevo6KsPE', 'ONE PIECE カード',        False),
 ]
 
 ICHOME_HEADERS = {
@@ -220,13 +74,19 @@ ICHOME_HEADERS = {
 }
 
 
-def _ichome_fetch(session: requests.Session, cate_code: str, page: int = 1, size: int = 100) -> dict | None:
+def _ichome_fetch(
+    session: requests.Session,
+    cate_code: str,
+    is_impo: bool,
+    page: int = 1,
+    size: int = 100,
+) -> dict | None:
     params = {
         'accCode': '',
         'page': page,
         'size': size,
         'keyword': '',
-        'isImpo': 'true',
+        'isImpo': 'true' if is_impo else 'false',
         'isCampaign': 'false',
         'cateCode': cate_code,
     }
@@ -261,12 +121,12 @@ def scrape_ichome() -> list[dict]:
 
     session = requests.Session()
 
-    for cate_code, cate_name in ICHOME_CATEGORIES:
+    for cate_code, cate_name, is_impo in ICHOME_CATEGORIES:
         page = 1
         total_fetched = 0
 
         while True:
-            data = _ichome_fetch(session, cate_code, page=page, size=100)
+            data = _ichome_fetch(session, cate_code, is_impo, page=page, size=100)
             if not data:
                 break
 
@@ -295,7 +155,7 @@ def scrape_ichome() -> list[dict]:
             page += 1
             time.sleep(0.5)
 
-        logger.info(f'  {cate_name} ({cate_code}): {total_fetched} アイテム')
+        logger.info(f'  {cate_name} ({cate_code}): {total_fetched} アイテム取得')
         time.sleep(1)
 
     for name, price in found_products.items():
@@ -349,13 +209,8 @@ def save_to_csv(records: list[dict]) -> None:
 def main() -> None:
     logger.info(f'=== 価格収集開始 {TODAY} ===')
 
-    all_records: list[dict] = []
-
-    logger.info('--- モバイル一番 ---')
-    all_records.extend(scrape_mobile_ichiban())
-
     logger.info('--- 買取一丁目 ---')
-    all_records.extend(scrape_ichome())
+    all_records = scrape_ichome()
 
     logger.info(f'合計 {len(all_records)} 件取得')
     save_to_csv(all_records)

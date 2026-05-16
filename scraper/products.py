@@ -6,7 +6,6 @@ PRODUCTS = {
     'ゲーム': [
         {'name': 'Switch2 国内版マリカーセット',          'keywords': ['マリオカート ワールドセット', 'Nintendo Switch 2 マリオカート', 'Mario Kart World Set']},
         {'name': 'Switch2 国内版',                      'keywords': ['国内専用', 'Switch 2 日本語', 'スイッチ2 国内', 'Switch 2 国内版']},
-        {'name': 'Switch2 ポケモンZ-Aセット',            'keywords': ['Z-A Edition', 'Z-Aセット', 'Switch 2 Pokemon LEGENDS Z-A', 'Switch 2 ポケモン LEGENDS Z-A']},
         {'name': 'Switch2 多言語版',                    'keywords': ['Nintendo Switch 2 多言語', 'Switch 2 多言語']},
         {'name': 'Switch2 Proコン',                    'keywords': ['Nintendo Switch 2 Pro', 'Proコントローラー', 'Switch2 Proコン']},
         {'name': 'Switch 有機白',                      'keywords': ['ELモデル) ホワイト', '有機EL ホワイト', 'OLED White']},
@@ -87,20 +86,32 @@ PRODUCTS = {
         {'name': 'Joy-Con グレー/グレー',             'keywords': ['Joy-Con (L)/(R)  グレー', 'Joy-Con グレー/グレー']},
         {'name': 'Joy-Con ネオンイエロー',            'keywords': ['Joy-Con (L)/(R)  ネオンイエロー', 'Joy-Con (L)/(R) ネオンイエロー']},
         {'name': 'Joy-Con レッド',                    'keywords': ['Joy-Con (L)/(R) レッド']},
-        # ゲームソフト
-        {'name': 'PS5 Ghost of Yotei',               'keywords': ['Ghost of Yotei', 'ゴースト オブ ヨウテイ', 'Ghost of Yōtei']},
-        {'name': 'PS5 Split Fiction',                 'keywords': ['Split Fiction', 'スプリット フィクション']},
-        {'name': 'PS5 It Takes Two',                  'keywords': ['It Takes Two', 'イット テイクス トゥー']},
-        {'name': 'PS5 プラグマタ',                    'keywords': ['プラグマタ', 'Pragmata']},
-        {'name': 'Pokemon LEGENDS Z-A',               'keywords': ['ポケモン LEGENDS Z-A', 'Pokemon LEGENDS Z-A', 'LEGENDS Z-A']},
-        {'name': 'ゼルダ ティアーズ オブ ザ キングダム', 'keywords': ['ティアーズ オブ ザ キングダム', 'Tears of the Kingdom', 'ティアキン']},
-        {'name': 'ゼルダ 知恵のかりもの',              'keywords': ['知恵のかりもの', 'Echoes of Wisdom']},
-        {'name': 'リングフィット アドベンチャー',       'keywords': ['リングフィット アドベンチャー', 'リングフィット', 'Ring Fit Adventure']},
-        {'name': 'マリオパーティ ジャンボリー',         'keywords': ['マリオパーティ ジャンボリー', 'Mario Party Jamboree', 'スーパー マリオパーティ ジャンボリー']},
-        {'name': 'ゼノブレイドクロス',                 'keywords': ['ゼノブレイドクロス', 'Xenoblade Chronicles X', 'ゼノブレイド クロス']},
-        {'name': 'トモダチコレクション',               'keywords': ['トモダチコレクション わくわく', 'Tomodachi Collection', 'トモダチコレクション']},
-        {'name': 'モンスターハンターストーリーズ3',     'keywords': ['モンスターハンターストーリーズ3', 'Monster Hunter Stories 3', 'MHストーリーズ3']},
-        {'name': 'マリオカート ワールド ソフト',        'keywords': ['マリオカート ワールド', 'Mario Kart World']},
+        # ゲームソフト（Switch 2版を先に置き、キーワード優先マッチさせる）
+        # PS5専用
+        {'name': 'PS5 Ghost of Yotei',                    'keywords': ['Ghost of Yotei', 'ゴースト オブ ヨウテイ', 'Ghost of Yōtei']},
+        {'name': 'PS5 Split Fiction',                      'keywords': ['Split Fiction', 'スプリット フィクション']},
+        {'name': 'PS5 It Takes Two',                       'keywords': ['It Takes Two', 'イット テイクス トゥー']},
+        {'name': 'PS5 プラグマタ',                         'keywords': ['プラグマタ', 'Pragmata']},
+        # Pokemon LEGENDS Z-A（Switch / Switch 2 両対応）
+        {'name': 'Pokemon LEGENDS Z-A Switch 2',           'keywords': ['Switch 2 Pokemon LEGENDS Z-A', 'Switch2 Pokemon LEGENDS Z-A', 'Pokemon LEGENDS Z-A Nintendo Switch 2', 'Switch 2 ポケモン LEGENDS Z-A']},
+        {'name': 'Pokemon LEGENDS Z-A Switch',             'keywords': ['ポケモン LEGENDS Z-A', 'Pokemon LEGENDS Z-A', 'LEGENDS Z-A']},
+        # ゼルダ（Switch）
+        {'name': 'ゼルダ ティアーズ オブ ザ キングダム',   'keywords': ['ティアーズ オブ ザ キングダム', 'Tears of the Kingdom', 'ティアキン']},
+        {'name': 'ゼルダ 知恵のかりもの',                  'keywords': ['知恵のかりもの', 'Echoes of Wisdom']},
+        # リングフィット（Switch）
+        {'name': 'リングフィット アドベンチャー',           'keywords': ['リングフィット アドベンチャー', 'リングフィット', 'Ring Fit Adventure']},
+        # マリオパーティ（Switch）
+        {'name': 'マリオパーティ ジャンボリー',             'keywords': ['マリオパーティ ジャンボリー', 'Mario Party Jamboree', 'スーパー マリオパーティ ジャンボリー']},
+        # ゼノブレイドクロス（Switch 2専用）
+        {'name': 'ゼノブレイドクロス Switch 2',            'keywords': ['ゼノブレイドクロス', 'Xenoblade Chronicles X', 'ゼノブレイド クロス']},
+        # トモダチコレクション（Switch / Switch 2 両対応）
+        {'name': 'トモダチコレクション Switch 2',           'keywords': ['Switch 2 トモダチコレクション', 'Switch2 トモダチコレクション', 'トモダチコレクション Nintendo Switch 2']},
+        {'name': 'トモダチコレクション Switch',             'keywords': ['トモダチコレクション わくわく', 'Tomodachi Collection', 'トモダチコレクション']},
+        # モンスターハンターストーリーズ3（Switch / Switch 2 両対応）
+        {'name': 'モンスターハンターストーリーズ3 Switch 2', 'keywords': ['Switch 2 モンスターハンターストーリーズ3', 'Switch2 モンスターハンターストーリーズ3', 'モンスターハンターストーリーズ3 Nintendo Switch 2']},
+        {'name': 'モンスターハンターストーリーズ3 Switch',   'keywords': ['モンスターハンターストーリーズ3', 'Monster Hunter Stories 3', 'MHストーリーズ3']},
+        # マリオカート ワールド（Switch 2専用）
+        {'name': 'マリオカート ワールド ソフト',            'keywords': ['マリオカート ワールド', 'Mario Kart World']},
     ],
     'カメラ': [
         {'name': 'チェキフィルム 2P',                   'keywords': ['instax フィルム 20枚入', 'JP2', 'mini film 2P', 'チェキ フィルム 2パック']},

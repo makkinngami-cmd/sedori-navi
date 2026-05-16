@@ -211,6 +211,7 @@
     }
     .price-pill.store-a { border-left: 2px solid var(--accent); }
     .price-pill.store-b { border-left: 2px solid var(--accent2); }
+    .price-pill.store-c { border-left: 2px solid var(--green); }
     .no-data { color: var(--text-muted); font-size: 0.75rem; font-style: italic; }
 
     /* ── メインエリア ─────────────────────────────────── */
@@ -444,7 +445,6 @@
 const PRODUCT_CATEGORIES = {
   'Switch2 国内版': 'ゲーム',
   'Switch2 国内版マリカーセット': 'ゲーム',
-  'Switch2 ポケモンZ-Aセット': 'ゲーム',
   'Switch2 多言語版': 'ゲーム',
   'Switch2 Proコン': 'ゲーム',
   'Switch 有機白': 'ゲーム',
@@ -479,14 +479,17 @@ const PRODUCT_CATEGORIES = {
   'PS5 Split Fiction': 'ゲーム',
   'PS5 It Takes Two': 'ゲーム',
   'PS5 プラグマタ': 'ゲーム',
-  'Pokemon LEGENDS Z-A': 'ゲーム',
+  'Pokemon LEGENDS Z-A Switch 2': 'ゲーム',
+  'Pokemon LEGENDS Z-A Switch': 'ゲーム',
   'ゼルダ ティアーズ オブ ザ キングダム': 'ゲーム',
   'ゼルダ 知恵のかりもの': 'ゲーム',
   'リングフィット アドベンチャー': 'ゲーム',
   'マリオパーティ ジャンボリー': 'ゲーム',
-  'ゼノブレイドクロス': 'ゲーム',
-  'トモダチコレクション': 'ゲーム',
-  'モンスターハンターストーリーズ3': 'ゲーム',
+  'ゼノブレイドクロス Switch 2': 'ゲーム',
+  'トモダチコレクション Switch 2': 'ゲーム',
+  'トモダチコレクション Switch': 'ゲーム',
+  'モンスターハンターストーリーズ3 Switch 2': 'ゲーム',
+  'モンスターハンターストーリーズ3 Switch': 'ゲーム',
   'マリオカート ワールド ソフト': 'ゲーム',
   'PS5 ディスクドライブ': 'ゲーム',
   'DualSense Spider-Man 2': 'ゲーム',
@@ -679,7 +682,7 @@ const SUBCATEGORIES = {
     { id: 'meta',   label: 'Meta Quest',       prefixes: ['Meta Quest'] },
     { id: 'steam',  label: 'Steam Deck',       prefixes: ['Steam Deck'] },
     { id: 'asus',   label: 'ASUS',             prefixes: ['ASUS'] },
-    { id: 'software',label: 'ゲームソフト',      prefixes: ['PS5 Ghost of Yotei', 'PS5 Split Fiction', 'PS5 It Takes Two', 'PS5 プラグマタ', 'Pokemon LEGENDS Z-A', 'ゼルダ', 'リングフィット', 'マリオパーティ ジャンボリー', 'ゼノブレイドクロス', 'トモダチコレクション', 'モンスターハンターストーリーズ3', 'マリオカート ワールド ソフト'] },
+    { id: 'software',label: 'ゲームソフト',      prefixes: ['PS5 Ghost of Yotei', 'PS5 Split Fiction', 'PS5 It Takes Two', 'PS5 プラグマタ', 'Pokemon LEGENDS Z-A Switch', 'ゼルダ', 'リングフィット', 'マリオパーティ ジャンボリー', 'ゼノブレイドクロス Switch 2', 'トモダチコレクション Switch', 'モンスターハンターストーリーズ3 Switch', 'マリオカート ワールド ソフト'] },
     { id: 'other',  label: 'その他',           prefixes: ['Pokemon GO', 'Alarmo'] },
   ],
   'カメラ': [
@@ -717,9 +720,14 @@ function matchSubcat(productName, subcat) {
 // グローバル状態
 // ─────────────────────────────────────────────────────────────────────
 const STORE_COLORS = {
-  'モバイル一番': { border: '#5c73f2', bg: 'rgba(92,115,242,0.15)' },
-  '買取一丁目':   { border: '#f25c73', bg: 'rgba(242,92,115,0.15)' },
+  'モバイル一番':  { border: '#5c73f2', bg: 'rgba(92,115,242,0.15)',  dash: [] },
+  '買取一丁目':    { border: '#f25c73', bg: 'rgba(242,92,115,0.15)',  dash: [] },
+  'ヤフオク 最安': { border: '#4caf87', bg: 'rgba(76,175,135,0.12)',  dash: [6, 3] },
+  'ヤフオク 平均': { border: '#f2c94c', bg: 'rgba(242,201,76,0.08)',  dash: [4, 2] },
+  'ヤフオク 最高': { border: '#f2a83b', bg: 'rgba(242,168,59,0.06)',  dash: [2, 2] },
 };
+// サイドバーに表示するストア（最安のみ）
+const SIDEBAR_STORES = new Set(['モバイル一番', '買取一丁目', 'ヤフオク 最安']);
 const STORE_NAMES = Object.keys(STORE_COLORS);
 
 let allRows = [];        // 全CSV行
@@ -885,14 +893,14 @@ function renderProductList() {
     const pricesEl = document.createElement('div');
     pricesEl.className = 'prod-prices';
 
-    const storeKeys = Object.keys(latest);
-    if (storeKeys.length === 0) {
+    const sidebarKeys = Object.keys(latest).filter(s => SIDEBAR_STORES.has(s));
+    if (sidebarKeys.length === 0) {
       const nd = document.createElement('span');
       nd.className = 'no-data';
       nd.textContent = 'データなし';
       pricesEl.appendChild(nd);
     } else {
-      storeKeys.forEach((s, i) => {
+      sidebarKeys.forEach((s, i) => {
         const pill = document.createElement('span');
         pill.className = `price-pill store-${['a','b','c'][i] || 'a'}`;
         pill.textContent = `¥${latest[s].price.toLocaleString()}`;
@@ -946,7 +954,7 @@ function renderChart(productName) {
   // Chart.js データセット構築
   const stores = [...new Set(rows.map(r => r.store))];
   const datasets = stores.map(store => {
-    const color = STORE_COLORS[store] || { border: '#aaa', bg: 'rgba(170,170,170,0.1)' };
+    const color = STORE_COLORS[store] || { border: '#aaa', bg: 'rgba(170,170,170,0.1)', dash: [] };
     const data = dates.map(date => {
       const row = rows.find(r => r.store === store && r.date === date);
       return row ? row.price : null;
@@ -957,6 +965,7 @@ function renderChart(productName) {
       borderColor: color.border,
       backgroundColor: color.bg,
       borderWidth: 2,
+      borderDash: color.dash || [],
       pointRadius: 4,
       pointHoverRadius: 6,
       fill: true,

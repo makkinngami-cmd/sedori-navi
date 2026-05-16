@@ -39,12 +39,16 @@ COMMON_HEADERS = {
 }
 
 
+def _normalize(s: str) -> str:
+    """全角スペース→半角スペース、大文字→小文字"""
+    return s.replace('　', ' ').lower()
+
 def match_product(text: str) -> dict | None:
     """テキストが products.py のどの商品に対応するか"""
-    text_lower = text.lower()
+    text_n = _normalize(text)
     for product in ALL_PRODUCTS:
         for kw in product['keywords']:
-            if kw.lower() in text_lower:
+            if _normalize(kw) in text_n:
                 return product
     return None
 

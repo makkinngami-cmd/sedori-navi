@@ -1,11 +1,11 @@
-# my-kaitori-check
+# sedori-navi
 
 買取店（モバイル一番・買取一丁目）の商品価格を毎日自動収集し、GitHub Pages で価格推移チャートを表示するシステム。
 
 ## 構成
 
 ```
-my-kaitori-check/
+sedori-navi/
 ├── .github/workflows/scrape.yml   # 毎日 JST 12:00 に自動実行
 ├── scraper/
 │   ├── scrape.py                  # スクレイピング本体
@@ -22,14 +22,14 @@ my-kaitori-check/
 
 ### 1. リポジトリ作成
 
-GitHub で `my-kaitori-check` という名前のパブリックリポジトリを作成し、このコードを push する。
+GitHub で `sedori-navi` という名前のパブリックリポジトリを作成し、このコードを push する。
 
 ```bash
-cd my-kaitori-check
+cd sedori-navi
 git init
 git add .
 git commit -m "initial commit"
-git remote add origin https://github.com/<your-username>/my-kaitori-check.git
+git remote add origin https://github.com/<your-username>/sedori-navi.git
 git push -u origin main
 ```
 
@@ -38,7 +38,7 @@ git push -u origin main
 `Settings` → `Pages` → `Source` を **Deploy from a branch** に設定し、
 Branch: `main` / Folder: `/docs` を選択して Save。
 
-数分後に `https://<your-username>.github.io/my-kaitori-check/` で表示される。
+数分後に `https://<your-username>.github.io/sedori-navi/` で表示される。
 
 ### 3. GitHub Actions の確認
 

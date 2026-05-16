@@ -100,19 +100,23 @@ def _mobile_post(session: requests.Session, cat_code: str, tag_name: str) -> str
         'X-Requested-With': 'XMLHttpRequest',
         'Referer': MOBILE_ICHIBAN_BASE + '/',
     }
-    try:
-        resp = session.post(
-            MOBILE_ICHIBAN_BASE + '/',
-            data=post_data,
-            headers=headers,
-            timeout=30,
-        )
-        if resp.status_code == 200:
-            logger.info(f'モバイル一番 cat={cat_code}: {len(resp.text):,} bytes')
-            return resp.text
-        logger.warning(f'モバイル一番 cat={cat_code}: HTTP {resp.status_code}')
-    except Exception as e:
-        logger.error(f'モバイル一番 POST エラー: {e}')
+    for attempt in range(2):
+        try:
+            resp = session.post(
+                MOBILE_ICHIBAN_BASE + '/',
+                data=post_data,
+                headers=headers,
+                timeout=15,
+            )
+            if resp.status_code == 200:
+                logger.info(f'モバイル一番 cat={cat_code}: {len(resp.text):,} bytes')
+                return resp.text
+            logger.warning(f'モバイル一番 cat={cat_code}: HTTP {resp.status_code}')
+            return None
+        except Exception as e:
+            logger.warning(f'モバイル一番 POST attempt {attempt+1} failed: {e}')
+            if attempt == 0:
+                time.sleep(3)
     return None
 
 
@@ -162,10 +166,10 @@ def scrape_mobile_ichiban() -> list[dict]:
         session.get(
             MOBILE_ICHIBAN_BASE + '/',
             headers={**COMMON_HEADERS, 'Accept': 'text/html,*/*'},
-            timeout=20,
+            timeout=10,
         )
     except Exception as e:
-        logger.warning(f'モバイル一番 トップページ取得失敗: {e}')
+        logger.warning(f'モバイル一番 トップページ取得失敗（スキップ）: {e}')
 
     for cat_code, tag_name in MOBILE_ICHIBAN_CATEGORIES:
         html = _mobile_post(session, cat_code, tag_name)

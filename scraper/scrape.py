@@ -66,9 +66,11 @@ ICHOME_BASE = 'https://www.1-chome.com'
 ICHOME_API = ICHOME_BASE + '/api/goods/listPage'
 
 # (cateCode, 説明, isImpo)
+# isImpo=true: 主要商品のみ（ハードのみ47件）
+# isImpo=false: 全商品（ハード＋ソフト298件）
 # トレカ系は isImpo=false でないと 0 件になる
 ICHOME_CATEGORIES = [
-    ('10000005',         'ゲーム',                True),
+    ('10000005',         'ゲーム',                False),   # falseで全商品（ソフト含む）
     ('20304465',         'Steam Deck',            True),
     ('10000001',         'カメラ本体・周辺',        True),
     ('20279112',         'インスタントカメラ',      True),

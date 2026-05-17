@@ -842,7 +842,7 @@ function updateSummaryCards() {
 // 商品別スタッツカード更新
 // ─────────────────────────────────────────────────────────────────────
 function updateProductCards(productName) {
-  // リセット
+  // 3つの商品カードをリセット
   const noSel = !productName;
   const resetSub = noSel ? '商品を選択' : '—';
   document.getElementById('card-alltime-high').textContent     = '—';
@@ -855,12 +855,35 @@ function updateProductCards(productName) {
   document.getElementById('card-avg30-wrap').className         = 'card blue';
   document.getElementById('card-vs-avg-wrap').className        = 'card blue';
 
-  if (!productName) return;
+  // データ期間カード: 商品未選択はグローバル値に戻す
+  if (!productName) {
+    updateSummaryCards();
+    return;
+  }
+
   const rows = allRows.filter(r => r.product_name === productName);
-  if (!rows.length) return;
+
+  // ── データ期間（商品別）──────────────────────────────
+  const rangeEl = document.getElementById('date-range');
+  const subEl   = document.getElementById('date-range-sub');
+  if (!rows.length) {
+    rangeEl.textContent = '—';
+    subEl.textContent   = 'データなし';
+    return;
+  }
 
   const dates = [...new Set(rows.map(r => r.date))].sort();
-  const latestDate = dates[dates.length - 1];
+  const latestDate  = dates[dates.length - 1];
+  const oldestDate  = dates[0];
+  const storeCount  = [...new Set(rows.map(r => r.store))].length;
+
+  if (dates.length === 1) {
+    rangeEl.textContent = latestDate;
+    subEl.textContent   = `${storeCount} 店舗`;
+  } else {
+    rangeEl.textContent = `${oldestDate} 〜`;
+    subEl.textContent   = `${latestDate}  /  ${storeCount} 店舗`;
+  }
 
   // ── 過去最高買取 ──────────────────────────────────────
   const maxRow = rows.reduce((a, b) => a.price > b.price ? a : b);
@@ -870,7 +893,7 @@ function updateProductCards(productName) {
   // ── 直近30日の日次最高価格の平均 ──────────────────────
   const d30ago = new Date(latestDate);
   d30ago.setDate(d30ago.getDate() - 29);
-  const d30agoStr  = d30ago.toISOString().split('T')[0];
+  const d30agoStr   = d30ago.toISOString().split('T')[0];
   const recentDates = dates.filter(d => d >= d30agoStr);
   const dailyMaxes  = recentDates.map(d =>
     Math.max(...rows.filter(r => r.date === d).map(r => r.price))
@@ -879,16 +902,16 @@ function updateProductCards(productName) {
     ? Math.round(dailyMaxes.reduce((s, p) => s + p, 0) / dailyMaxes.length)
     : null;
 
-  document.getElementById('card-avg30').textContent    = avg30 ? `¥${avg30.toLocaleString()}` : '—';
+  document.getElementById('card-avg30').textContent     = avg30 ? `¥${avg30.toLocaleString()}` : '—';
   document.getElementById('card-avg30-sub').textContent =
     avg30 ? `直近 ${dailyMaxes.length} 日の平均` : '—';
 
   // ── 現在（最新日の最高）vs 30日平均 ──────────────────
   const currentPrice = Math.max(...rows.filter(r => r.date === latestDate).map(r => r.price));
   if (avg30 && isFinite(currentPrice)) {
-    const diff = currentPrice - avg30;
-    const pct  = ((diff / avg30) * 100).toFixed(1);
-    const sign = diff >= 0 ? '+' : '';
+    const diff   = currentPrice - avg30;
+    const pct    = ((diff / avg30) * 100).toFixed(1);
+    const sign   = diff >= 0 ? '+' : '';
     const absStr = `¥${Math.abs(diff).toLocaleString()}`;
     document.getElementById('card-vs-avg').textContent =
       diff >= 0 ? `+${absStr}` : `-${absStr}`;

@@ -77,6 +77,7 @@ ICHOME_CATEGORIES = [
     ('20985614',         'チェキフイルム',          False),  # falseで全商品
     ('IIzyMdayU5wp7T4G', 'ポケモンカード',          False),
     ('SEbO7gSBevo6KsPE', 'ONE PIECE カード',        False),
+    ('20482781',         'たまごっち',              False),  # electricAppliance配下
 ]
 
 ICHOME_HEADERS = {

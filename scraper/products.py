@@ -239,9 +239,10 @@ PRODUCTS = {
         {'name': 'PRB-02 THE BEST vol.2',  'keywords': ['PRB-02', 'THE BEST vol.2']},
     ],
     'その他': [
-        {'name': 'Tamagotchi Paradise Purple Sky', 'keywords': ['Tamagotchi Paradise Purple', 'たまごっち パープル']},
-        {'name': 'Tamagotchi Paradise Blue Water',  'keywords': ['Tamagotchi Paradise Blue', 'たまごっち ブルー']},
-        {'name': 'Tamagotchi Paradise Pink Land',   'keywords': ['Tamagotchi Paradise Pink', 'たまごっち ピンク']},
+        {'name': 'Tamagotchi Paradise Purple Sky', 'keywords': ['Paradise - Purple Sky', 'Tamagotchi Paradise Purple']},
+        {'name': 'Tamagotchi Paradise Blue Water',  'keywords': ['Paradise - Blue Water', 'Tamagotchi Paradise Blue']},
+        {'name': 'Tamagotchi Paradise Pink Land',   'keywords': ['Paradise - Pink Land', 'Tamagotchi Paradise Pink']},
+        {'name': 'Tamagotchi Paradise Jade Forest', 'keywords': ['Paradise - Jade Forest', 'Tamagotchi Paradise Jade']},
     ],
 }
 

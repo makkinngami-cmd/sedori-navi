@@ -72,9 +72,9 @@ ICHOME_API = ICHOME_BASE + '/api/goods/listPage'
 ICHOME_CATEGORIES = [
     ('10000005',         'ゲーム',                False),   # falseで全商品（ソフト含む）
     ('20304465',         'Steam Deck',            True),
-    ('10000001',         'カメラ本体・周辺',        True),
-    ('20279112',         'インスタントカメラ',      True),
-    ('20985614',         'チェキフイルム',          True),
+    ('10000001',         'カメラ本体・周辺',        False),  # falseで全商品（99→973件）
+    ('20279112',         'インスタントカメラ',      False),  # falseで全商品
+    ('20985614',         'チェキフイルム',          False),  # falseで全商品
     ('IIzyMdayU5wp7T4G', 'ポケモンカード',          False),
     ('SEbO7gSBevo6KsPE', 'ONE PIECE カード',        False),
 ]

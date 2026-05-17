@@ -108,8 +108,8 @@ PRODUCTS = {
         {'name': 'トモダチコレクション Switch 2',           'keywords': ['Switch 2 トモダチコレクション', 'Switch2 トモダチコレクション', 'トモダチコレクション Nintendo Switch 2']},
         {'name': 'トモダチコレクション Switch',             'keywords': ['トモダチコレクション わくわく', 'Tomodachi Collection', 'トモダチコレクション']},
         # モンスターハンターストーリーズ3（Switch / Switch 2 両対応）
-        {'name': 'モンスターハンターストーリーズ3 Switch 2', 'keywords': ['Switch 2 モンスターハンターストーリーズ3', 'Switch2 モンスターハンターストーリーズ3', 'モンスターハンターストーリーズ3 Nintendo Switch 2']},
-        {'name': 'モンスターハンターストーリーズ3 Switch',   'keywords': ['モンスターハンターストーリーズ3', 'Monster Hunter Stories 3', 'MHストーリーズ3']},
+        {'name': 'モンスターハンターストーリーズ3 Switch 2', 'keywords': ['NS2 モンスターハンターストーリーズ3', 'Switch 2 モンスターハンターストーリーズ3']},
+        {'name': 'モンスターハンターストーリーズ3 Switch',   'keywords': ['モンスターハンターストーリーズ3', 'Monster Hunter Stories 3']},
         # マリオカート ワールド（Switch 2専用）
         {'name': 'マリオカート ワールド ソフト',            'keywords': ['マリオカート ワールド', 'Mario Kart World']},
     ],
@@ -200,8 +200,7 @@ PRODUCTS = {
         {'name': 'メガシンフォニア',      'keywords': ['メガシンフォニア', 'Mega Sinfonia']},
         {'name': 'ブラックボルト',        'keywords': ['ブラックボルト', 'Black Bolt']},
         {'name': 'ホワイトフレア',        'keywords': ['ホワイトフレア', 'White Flare']},
-        {'name': 'ブラックボルトDX',      'keywords': ['ブラックボルトDX', 'Black Bolt DX']},
-        {'name': 'ホワイトフレアDX',      'keywords': ['ホワイトフレアDX', 'White Flare DX']},
+
         {'name': 'ロケット団の栄光',      'keywords': ['ロケット団の栄光', 'Team Rocket Glory']},
         {'name': '熱風のアリーナ',        'keywords': ['熱風のアリーナ']},
         {'name': 'バトルパートナーズ',    'keywords': ['バトルパートナーズ', 'Battle Partners']},

@@ -53,9 +53,12 @@
     header h1 small {
       font-size: 0.6rem;
       font-weight: 400;
-      opacity: 0.7;
       margin-left: 0.4rem;
       vertical-align: middle;
+      /* h1 の gradient text-fill を上書きして可視化 */
+      -webkit-text-fill-color: var(--text-muted);
+      background: none;
+      opacity: 0.85;
     }
     #last-updated {
       margin-left: auto;
@@ -147,9 +150,12 @@
     #search-wrap {
       padding: 0.6rem 0.75rem;
       border-bottom: 1px solid var(--border);
+      display: flex;
+      gap: 0.35rem;
+      align-items: center;
     }
     #search {
-      width: 100%;
+      flex: 1;
       background: var(--surface2);
       border: 1px solid var(--border);
       border-radius: 6px;
@@ -160,6 +166,27 @@
     }
     #search:focus { border-color: var(--accent); }
     #search::placeholder { color: var(--text-muted); }
+    #sidebar-barcode-btn {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--text-muted);
+      cursor: not-allowed;
+      font-size: 0.95rem;
+      line-height: 1;
+      opacity: 0.45;
+      padding: 0.38rem 0.45rem;
+      flex-shrink: 0;
+    }
+    /* 検索結果パネル（サイドバー内インライン） */
+    #search-results {
+      flex: 1;
+      min-height: 0;
+      overflow-y: auto;
+      scrollbar-width: thin;
+      scrollbar-color: var(--border) transparent;
+    }
+    #search-results.hidden { display: none; }
 
     /* 商品リスト */
     #product-list {
@@ -353,57 +380,6 @@
     tbody tr:hover td { background: var(--surface2); }
 
     /* ── ヘッダー検索 ───────────────────────────────────── */
-    #header-search-wrap {
-      position: relative;
-      flex: 1;
-      max-width: 380px;
-      margin-left: 0.75rem;
-    }
-    #header-search-inner {
-      display: flex;
-      align-items: center;
-      gap: 0.35rem;
-    }
-    #header-search {
-      width: 100%;
-      background: var(--surface2);
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      color: var(--text);
-      font-size: 0.85rem;
-      outline: none;
-      padding: 0.38rem 0.75rem;
-    }
-    #header-search:focus { border-color: var(--accent); }
-    #header-search::placeholder { color: var(--text-muted); }
-    #header-barcode-btn {
-      background: var(--surface2);
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      color: var(--text-muted);
-      cursor: not-allowed;
-      font-size: 1rem;
-      line-height: 1;
-      opacity: 0.45;
-      padding: 0.35rem 0.5rem;
-      flex-shrink: 0;
-    }
-    #header-search-dropdown {
-      position: absolute;
-      top: calc(100% + 5px);
-      left: 0;
-      right: 0;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-      max-height: 340px;
-      overflow-y: auto;
-      scrollbar-width: thin;
-      scrollbar-color: var(--border) transparent;
-      z-index: 200;
-    }
-    #header-search-dropdown.hidden { display: none; }
     .sri {
       align-items: center;
       border-bottom: 1px solid var(--border);
@@ -462,13 +438,6 @@
 
 <header>
   <h1>📊 せどりナビ<small> ポイントせどり支援ツール</small></h1>
-  <div id="header-search-wrap">
-    <div id="header-search-inner">
-      <input id="header-search" type="search" placeholder="商品名・JANコードで検索…" autocomplete="off" spellcheck="false">
-      <button id="header-barcode-btn" title="バーコード読み取り（準備中）" disabled>📷</button>
-    </div>
-    <div id="header-search-dropdown" class="hidden"></div>
-  </div>
   <span id="status-badge">読込中</span>
   <span id="last-updated"></span>
 </header>
@@ -486,8 +455,10 @@
     </div>
     <div id="subcat-tabs"></div>
     <div id="search-wrap">
-      <input id="search" type="search" placeholder="商品名で検索…">
+      <input id="search" type="search" placeholder="商品名・JANコードで検索…" autocomplete="off" spellcheck="false">
+      <button id="sidebar-barcode-btn" title="バーコード読み取り（準備中）" disabled>📷</button>
     </div>
+    <div id="search-results" class="hidden"></div>
     <div id="product-list"></div>
   </aside>
 
@@ -1300,105 +1271,101 @@ document.querySelectorAll('.cat-tab').forEach(tab => {
   });
 });
 
-document.getElementById('search').addEventListener('input', renderProductList);
-
 // ─────────────────────────────────────────────────────────────────────
-// ヘッダー検索
+// サイドバー検索（名前・JAN部分一致 → インライン結果パネル）
 // ─────────────────────────────────────────────────────────────────────
 function searchAllProducts(query) {
   if (!query.trim()) return [];
   const q = query.toLowerCase();
   const allNames = Object.keys(PRODUCT_CATEGORIES);
-
   const matched = allNames.filter(name => {
     if (name.toLowerCase().includes(q)) return true;
     const jan = janMap[name] || '';
     return jan && jan.includes(q);
   });
-
   // 前方一致を優先
   matched.sort((a, b) => {
     const as = a.toLowerCase().startsWith(q) ? 0 : 1;
     const bs = b.toLowerCase().startsWith(q) ? 0 : 1;
     return as - bs || a.localeCompare(b);
   });
-
-  return matched.slice(0, 25);
+  return matched.slice(0, 40);
 }
 
-function renderHeaderDropdown(query) {
-  const dropdown = document.getElementById('header-search-dropdown');
-  if (!query.trim()) { dropdown.classList.add('hidden'); return; }
+function renderSidebarSearch(query) {
+  const resultsEl = document.getElementById('search-results');
+  const listEl    = document.getElementById('product-list');
+
+  if (!query.trim()) {
+    // 検索クリア → 通常リストに戻す
+    resultsEl.classList.add('hidden');
+    resultsEl.innerHTML = '';
+    listEl.style.display = '';
+    return;
+  }
 
   const results = searchAllProducts(query);
-  dropdown.innerHTML = '';
+  listEl.style.display = 'none';
+  resultsEl.classList.remove('hidden');
+  resultsEl.innerHTML = '';
 
   if (!results.length) {
-    dropdown.innerHTML = '<div class="sri-empty">該当する商品が見つかりません</div>';
-  } else {
-    results.forEach(name => {
-      const el = document.createElement('div');
-      el.className = 'sri';
-
-      const prices = Object.values(getProductLatestPrices(name));
-      const bestPrice = prices.length
-        ? Math.max(...prices.map(r => r.price)) : null;
-      const jan = janMap[name] || '';
-
-      el.innerHTML = `
-        <div class="sri-left">
-          <div class="sri-name" title="${name}">${name}</div>
-          ${jan ? `<div class="sri-jan">${jan}</div>` : ''}
-        </div>
-        <div class="sri-price${bestPrice ? '' : ' no-data'}">
-          ${bestPrice ? '¥' + bestPrice.toLocaleString() : '—'}
-        </div>`;
-
-      el.addEventListener('mousedown', e => {
-        // mousedown で blur より先に処理
-        e.preventDefault();
-        const cat = PRODUCT_CATEGORIES[name] || 'その他';
-        // カテゴリタブ切替
-        document.querySelectorAll('.cat-tab').forEach(t =>
-          t.classList.toggle('active', t.dataset.cat === cat)
-        );
-        currentCat    = cat;
-        currentSubcat = 'all';
-        renderSubcatTabs();
-        renderProductList();
-        selectProduct(name);
-        // サイドバーの選択アイテムへスクロール
-        setTimeout(() => {
-          const sel = document.querySelector('.product-item.selected');
-          if (sel) sel.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }, 60);
-        document.getElementById('header-search').value = '';
-        dropdown.classList.add('hidden');
-      });
-
-      dropdown.appendChild(el);
-    });
+    resultsEl.innerHTML = '<div class="sri-empty">該当する商品が見つかりません</div>';
+    return;
   }
-  dropdown.classList.remove('hidden');
+
+  results.forEach(name => {
+    const el = document.createElement('div');
+    el.className = 'sri';
+
+    const prices    = Object.values(getProductLatestPrices(name));
+    const bestPrice = prices.length ? Math.max(...prices.map(r => r.price)) : null;
+    const jan       = janMap[name] || '';
+    const cat       = PRODUCT_CATEGORIES[name] || 'その他';
+
+    el.innerHTML = `
+      <div class="sri-left">
+        <div class="sri-name" title="${name}">${name}</div>
+        ${jan ? `<div class="sri-jan">${jan}</div>` : ''}
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:2px;flex-shrink:0">
+        <div class="sri-price${bestPrice ? '' : ' no-data'}">${bestPrice ? '¥' + bestPrice.toLocaleString() : '—'}</div>
+        <div style="font-size:0.65rem;color:var(--text-muted)">${cat}</div>
+      </div>`;
+
+    el.addEventListener('click', () => {
+      // カテゴリタブ切替
+      document.querySelectorAll('.cat-tab').forEach(t =>
+        t.classList.toggle('active', t.dataset.cat === cat)
+      );
+      currentCat    = cat;
+      currentSubcat = 'all';
+      renderSubcatTabs();
+      // 検索クリア → 通常リストに戻す
+      document.getElementById('search').value = '';
+      resultsEl.classList.add('hidden');
+      resultsEl.innerHTML = '';
+      listEl.style.display = '';
+      renderProductList();
+      selectProduct(name);
+      // 選択アイテムへスクロール
+      setTimeout(() => {
+        const sel = document.querySelector('.product-item.selected');
+        if (sel) sel.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }, 60);
+    });
+
+    resultsEl.appendChild(el);
+  });
 }
 
-const headerSearchEl = document.getElementById('header-search');
-headerSearchEl.addEventListener('input', e => renderHeaderDropdown(e.target.value));
-headerSearchEl.addEventListener('keydown', e => {
+const sidebarSearchEl = document.getElementById('search');
+sidebarSearchEl.addEventListener('input', e => renderSidebarSearch(e.target.value));
+sidebarSearchEl.addEventListener('keydown', e => {
   if (e.key === 'Escape') {
-    document.getElementById('header-search-dropdown').classList.add('hidden');
-    headerSearchEl.blur();
-  }
-});
-headerSearchEl.addEventListener('blur', () => {
-  // blur時はドロップダウンを閉じる（mousedown が先に発火するので選択は成立する）
-  setTimeout(() => {
-    document.getElementById('header-search-dropdown').classList.add('hidden');
-  }, 150);
-});
-document.addEventListener('click', e => {
-  if (!e.target.closest('#header-search-wrap')) {
-    document.getElementById('header-search-dropdown').classList.add('hidden');
+    sidebarSearchEl.value = '';
+    renderSidebarSearch('');
+    sidebarSearchEl.blur();
   }
 });
 

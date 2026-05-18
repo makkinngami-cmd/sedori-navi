@@ -92,7 +92,9 @@ def get_price_floor(name: str) -> int:
         return 25000
     if 'switch lite' in n:
         return 15000
-    if name in ('PS5', 'PS5デジタル', 'PlayStation5 Pro', 'PS5 ディスクドライブ') or 'playstation5' in n:
+    if name == 'PS5 ディスクドライブ':   # アドオン（CFI-ZDD1J）
+        return 8000
+    if name in ('PS5', 'PS5デジタル', 'PlayStation5 Pro') or 'playstation5' in n:
         return 40000
     if 'xbox series x' in n and ('1tb' in n or name == 'Xbox X'):
         return 50000
@@ -110,6 +112,8 @@ def get_price_floor(name: str) -> int:
         return 25000
     if 'dualsense' in n:
         return 6000
+    if 'joy-con 2' in n and ('充電' in name or 'grip' in n):
+        return 2000
     if 'joy-con 2' in n:
         return 4000
     if 'joy-con' in n:
@@ -126,6 +130,8 @@ def get_price_floor(name: str) -> int:
         return 50000
     if 'sx740' in n:
         return 30000
+    if 'ixy 650' in n:
+        return 10000
     if 'ixy' in n:
         return 20000
     if 'mini evo' in n:
@@ -136,7 +142,7 @@ def get_price_floor(name: str) -> int:
         return 8000
     if 'mini 13' in n:
         return 5000
-    if 'チェキフィルム' in n:
+    if 'チェキフィルム' in n or ('instax' in n and 'フィルム' in n):
         return 500
     if 'tamagotchi paradise' in n:
         return 4000
@@ -390,12 +396,16 @@ async def scrape_product(page: Page, name: str, query: str) -> dict:
 # CSV 読み書き
 # ════════════════════════════════════════════════════════════════════════
 
+MSRP_FIELDS = ['product_name', 'msrp', 'effective_date', 'source_url', 'matched_title']
+
+
 def save_csv(rows: list[dict]) -> None:
     MSRP_FILE.parent.mkdir(parents=True, exist_ok=True)
+    # effective_date が未設定の行には 2000-01-01 を補完
+    for r in rows:
+        r.setdefault('effective_date', '2000-01-01')
     with open(MSRP_FILE, 'w', newline='', encoding='utf-8') as f:
-        w = csv.DictWriter(
-            f, fieldnames=['product_name', 'msrp', 'source_url', 'matched_title']
-        )
+        w = csv.DictWriter(f, fieldnames=MSRP_FIELDS, extrasaction='ignore')
         w.writeheader()
         w.writerows(rows)
 

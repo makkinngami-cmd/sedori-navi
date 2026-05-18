@@ -26,45 +26,55 @@ jobs:
       - name: Apply Nintendo Switch price increases
         run: |
           python - <<'EOF'
-          import csv, io
+          import csv
 
           MSRP_FILE = 'data/msrp.csv'
+          EFFECTIVE_DATE = '2026-05-25'
+          SOURCE_URL = 'https://www.nintendo.co.jp/corporate/release/en/2026/260508.html'
 
-          # 2026-05-25 任天堂値上げ後の新定価（税込）
+          # 追加する新定価行（既存行は変更しない）
           NEW_PRICES = {
-              'Switch2 国内版':    59980,
-              'Switch 有機白':     47980,
-              'Switch 有機ネオン': 47980,
-              'Switch 新型ネオン': 43980,
-              'Switch 新型グレー': 43980,
-              'Switch Liteグレー':    29980,
-              'Switch Liteブルー':    29980,
-              'Switch Liteコーラル':  29980,
+              'Switch2 国内版':        59980,
+              'Switch 有機白':         47980,
+              'Switch 有機ネオン':     47980,
+              'Switch 新型ネオン':     43980,
+              'Switch 新型グレー':     43980,
+              'Switch Liteグレー':     29980,
+              'Switch Liteブルー':     29980,
+              'Switch Liteコーラル':   29980,
               'Switch Liteターコイズ': 29980,
-              'Switch Liteイエロー':  29980,
+              'Switch Liteイエロー':   29980,
           }
+
+          FIELDS = ['product_name', 'msrp', 'effective_date', 'source_url', 'matched_title']
 
           with open(MSRP_FILE, newline='', encoding='utf-8') as f:
               rows = list(csv.DictReader(f))
-              fieldnames = csv.DictReader(io.StringIO(open(MSRP_FILE, encoding='utf-8').read())).fieldnames
 
-          updated = []
-          for row in rows:
-              name = row['product_name']
-              if name in NEW_PRICES:
-                  old = row['msrp']
-                  row['msrp'] = NEW_PRICES[name]
-                  row['matched_title'] = f'2026-05-25 値上げ後定価（旧: ¥{old}）'
-                  row['source_url'] = 'https://www.nintendo.co.jp/corporate/release/en/2026/260508.html'
-                  print(f'  {name}: ¥{old} → ¥{NEW_PRICES[name]}')
-              updated.append(row)
+          # 既に同じ effective_date の行が存在する場合はスキップ
+          existing_keys = {(r['product_name'], r.get('effective_date', '')) for r in rows}
+
+          added = 0
+          for name, price in NEW_PRICES.items():
+              if (name, EFFECTIVE_DATE) not in existing_keys:
+                  rows.append({
+                      'product_name':  name,
+                      'msrp':          price,
+                      'effective_date': EFFECTIVE_DATE,
+                      'source_url':    SOURCE_URL,
+                      'matched_title': f'2026-05-25 値上げ後定価',
+                  })
+                  print(f'  追加: {name} → ¥{price} (from {EFFECTIVE_DATE})')
+                  added += 1
+              else:
+                  print(f'  スキップ（既存）: {name}')
 
           with open(MSRP_FILE, 'w', newline='', encoding='utf-8') as f:
-              w = csv.DictWriter(f, fieldnames=fieldnames)
+              w = csv.DictWriter(f, fieldnames=FIELDS)
               w.writeheader()
-              w.writerows(updated)
+              w.writerows(rows)
 
-          print('完了')
+          print(f'完了: {added} 件追加')
           EOF
 
       - name: Copy to docs/

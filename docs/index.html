@@ -830,11 +830,34 @@ const STORE_NAMES = Object.keys(STORE_COLORS);
 let allRows = [];        // 全CSV行
 let janMap = {};         // product_name → JAN code
 let urlMap = {};         // product_name → 買取一丁目 URL
-let msrpMap = {};        // product_name → 定価 (MSRP)
+// msrpHistory: { product_name: [{effective_date:'YYYY-MM-DD', msrp:number}, ...] }
+// 同一商品に複数行持つことで値上げ・値下げの履歴を表現する
+let msrpHistory = {};
 let myChart = null;
 let currentProduct = null;
 let currentCat = 'all';
 let currentSubcat = 'all';
+
+// ─────────────────────────────────────────────────────────────────────
+// 定価ヘルパー（日付ベース）
+// ─────────────────────────────────────────────────────────────────────
+// 指定日付時点の有効な定価を返す（effective_date <= date の中で最新のもの）
+function getMsrpForDate(name, date) {
+  const history = msrpHistory[name];
+  if (!history || !history.length) return null;
+  let best = null;
+  for (const entry of history) {
+    if (entry.effective_date <= date) {
+      if (!best || entry.effective_date > best.effective_date) best = entry;
+    }
+  }
+  return best ? best.msrp : null;
+}
+// 今日時点の最新定価
+function getMsrpLatest(name) {
+  const today = new Date().toISOString().split('T')[0];
+  return getMsrpForDate(name, today);
+}
 
 // 買取率の色クラス
 function rateClass(pct) {
@@ -1006,7 +1029,7 @@ function updateProductCards(productName) {
   }
 
   // ── 定価 / 買取率 ─────────────────────────────────────
-  const msrp = msrpMap[productName];
+  const msrp = getMsrpLatest(productName);
   if (msrp && isFinite(currentPrice)) {
     const rate = calcRate(currentPrice, msrp);
     document.getElementById('card-msrp-rate').textContent     = rate !== null ? `${rate}%` : '—';
@@ -1107,7 +1130,7 @@ function renderProductList() {
     } else {
       // 最高買取価格で買取率を計算
       const bestPrice = Math.max(...sidebarKeys.map(s => latest[s].price));
-      const msrp = msrpMap[name];
+      const msrp = getMsrpLatest(name);
       const rate = calcRate(bestPrice, msrp);
       if (rate !== null) {
         const badge = document.createElement('span');
@@ -1156,7 +1179,7 @@ function renderChart(productName) {
 
   // 定価バッジ
   const ptMsrp = document.getElementById('pt-msrp');
-  const msrpVal = msrpMap[productName];
+  const msrpVal = getMsrpLatest(productName);
   if (msrpVal) {
     ptMsrp.textContent = `定価 ¥${msrpVal.toLocaleString()}`;
     ptMsrp.style.display = '';
@@ -1212,12 +1235,12 @@ function renderChart(productName) {
     };
   });
 
-  // 定価の水平基準線
-  const msrpLine = msrpMap[productName];
-  if (msrpLine) {
+  // 定価の基準線（値上げがあれば途中でステップアップする）
+  const msrpLineData = dates.map(date => getMsrpForDate(productName, date));
+  if (msrpLineData.some(v => v !== null)) {
     datasets.push({
       label: '定価',
-      data: dates.map(() => msrpLine),
+      data: msrpLineData,
       borderColor: 'rgba(255,255,255,0.25)',
       backgroundColor: 'transparent',
       borderWidth: 1.5,
@@ -1286,7 +1309,6 @@ function renderChart(productName) {
   const priceByDateStore = {};
   rows.forEach(r => { priceByDateStore[`${r.date}__${r.store}`] = r.price; });
 
-  const msrpForTable = msrpMap[productName] || null;
   sorted.slice(0, 40).forEach(r => {
     const prevDate = dates[dates.indexOf(r.date) - 1];
     const prevPrice = prevDate ? (priceByDateStore[`${prevDate}__${r.store}`] || null) : null;
@@ -1297,9 +1319,10 @@ function renderChart(productName) {
       const color = diff > 0 ? 'var(--green)' : diff < 0 ? 'var(--accent2)' : 'var(--text-muted)';
       diffCell = `<span style="color:${color}">${sign}¥${diff.toLocaleString()}</span>`;
     }
-    // 定価・買取率
-    const msrpCell = msrpForTable ? `¥${msrpForTable.toLocaleString()}` : '—';
-    const rate = calcRate(r.price, msrpForTable);
+    // 定価・買取率（その行の日付時点の定価を使用）
+    const msrpForRow = getMsrpForDate(productName, r.date);
+    const msrpCell = msrpForRow ? `¥${msrpForRow.toLocaleString()}` : '—';
+    const rate = calcRate(r.price, msrpForRow);
     const rc = rateClass(rate);
     const rateCell = rate !== null
       ? `<span class="rate-badge ${rc}">${rate}%</span>`
@@ -1326,12 +1349,17 @@ function parseMsrpCSV(text) {
   const headers = lines[0].split(',').map(h => h.trim());
   const nameIdx = headers.indexOf('product_name');
   const msrpIdx = headers.indexOf('msrp');
+  const dateIdx = headers.indexOf('effective_date');
   if (nameIdx < 0 || msrpIdx < 0) return;
   lines.slice(1).forEach(line => {
     const vals = line.split(',');
-    const name = (vals[nameIdx] || '').trim();
+    const name  = (vals[nameIdx] || '').trim();
     const price = parseInt(vals[msrpIdx], 10);
-    if (name && price > 0) msrpMap[name] = price;
+    const effDate = (dateIdx >= 0 ? vals[dateIdx] || '' : '').trim() || '2000-01-01';
+    if (name && price > 0) {
+      if (!msrpHistory[name]) msrpHistory[name] = [];
+      msrpHistory[name].push({ effective_date: effDate, msrp: price });
+    }
   });
 }
 
@@ -1443,7 +1471,7 @@ function renderSidebarSearch(query) {
     const bestPrice = prices.length ? Math.max(...prices.map(r => r.price)) : null;
     const jan       = janMap[name] || '';
     const cat       = PRODUCT_CATEGORIES[name] || 'その他';
-    const msrpSri   = msrpMap[name] || null;
+    const msrpSri   = getMsrpLatest(name);
     const rateSri   = calcRate(bestPrice, msrpSri);
     const rateHtml  = rateSri !== null
       ? `<span class="rate-badge ${rateClass(rateSri)}" style="font-size:0.6rem">${rateSri}%</span>`

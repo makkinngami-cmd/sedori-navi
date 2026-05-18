@@ -290,20 +290,25 @@ async def scrape_product_yahoo(
                 return True
         return False
 
-    matched = [it for it in items if matches(it['title'])]
+    # バンドル・セット売りを除外（本体単体価格のみ採用）
+    BUNDLE_WORDS = ['まとめ', 'セット売り', '同梱版', 'ソフト付', 'ゲーム付',
+                    '付属品あり', '本体セット', '本体+', '本体＋', '+コントローラー',
+                    '＋コントローラー', 'おまけ付']
+    def is_bundle(title: str) -> bool:
+        t = title.replace('　', ' ')
+        return any(w in t for w in BUNDLE_WORDS)
+
+    matched = [it for it in items if matches(it['title']) and not is_bundle(it['title'])]
     if not matched:
         logger.info(f'  -- {name}: マッチする落札なし ({len(items)} 件中)')
         return []
 
     prices = [it['price'] for it in matched]
 
-    # 外れ値除去（5件以上の場合のみ）: 中央値の15%未満は除外
-    if len(prices) >= 5:
+    # 外れ値除去（3件以上の場合）: 中央値の15%未満 or 400%超は除外
+    if len(prices) >= 3:
         med = median(prices)
-        floor = med * 0.15
-        filtered = [p for p in prices if p >= floor]
-        if filtered:
-            prices = filtered
+        prices = [p for p in prices if med * 0.15 <= p <= med * 4.0] or prices
 
     lo  = min(prices)
     hi  = max(prices)

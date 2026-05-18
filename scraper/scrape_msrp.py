@@ -188,6 +188,210 @@ async def sleep_human() -> None:
 AMAZON_SELLER_ID = 'AN1VRQENFRJN5'  # Amazon.co.jp 自身の出品者ID
 
 
+# ── メーカー/公式サイト判定 ───────────────────────────────────────────
+
+def get_manufacturer_site(name: str) -> str | None:
+    """
+    商品名からフォールバック先サイト種別を返す。
+    'nintendo' | 'sony' | 'yodobashi' | None
+    """
+    n = name.lower()
+    if any(k in n for k in ['switch', 'joy-con', 'alarmo', 'pokemon go plus']):
+        return 'nintendo'
+    if any(k in n for k in [
+        'ps5', 'playstation', 'dualsense', 'vr2', 'portal', 'リモートプレーヤー',
+    ]):
+        return 'sony'
+    # カメラ・レンズ・チェキ・たまごっち・Xbox・Meta・Steam Deck → ヨドバシ
+    return 'yodobashi'
+
+
+# ── Step C: メーカー / ヨドバシ スクレイパー ─────────────────────────
+
+async def _scrape_site_price(page: Page, url: str, selectors: list[str]) -> int | None:
+    """指定URLを開き、セレクターリストから最初に見つかった整数価格を返す"""
+    await page.goto(url, wait_until='domcontentloaded', timeout=30_000)
+    await sleep_human()
+    return await page.evaluate(r"""(selectors) => {
+        const toInt = s => parseInt(s.replace(/[^0-9]/g, ''), 10);
+        for (const sel of selectors) {
+            for (const el of document.querySelectorAll(sel)) {
+                const t = el.textContent || '';
+                const m = t.match(/([\d,]+)/);
+                if (m) {
+                    const v = toInt(m[1]);
+                    if (v > 1000) return v;
+                }
+            }
+        }
+        // 「税込」直前の ¥XX,XXX を広くスキャン
+        const text = document.body.innerText;
+        for (const label of ['（税込）', '(税込)', '税込']) {
+            let pos = 0;
+            while (true) {
+                const idx = text.indexOf(label, pos);
+                if (idx < 0) break;
+                const chunk = text.slice(Math.max(0, idx - 40), idx + 2);
+                const m = chunk.match(/[¥￥]([\d,]+)/);
+                if (m) {
+                    const v = toInt(m[1]);
+                    if (v > 1000) return v;
+                }
+                pos = idx + 1;
+            }
+        }
+        return null;
+    }""", selectors)
+
+
+async def scrape_nintendo_store(page: Page, query: str) -> tuple[int, str, str] | None:
+    """Nintendo Store JP (store.nintendo.com/jp) から定価を取得"""
+    try:
+        search_url = (
+            f'https://store.nintendo.com/jp/search'
+            f'?q={query.replace(" ", "+")}'
+        )
+        await page.goto(search_url, wait_until='domcontentloaded', timeout=30_000)
+        await sleep_human()
+
+        link = await page.query_selector(
+            'a[href*="/jp/product/"], '
+            'a[href*="store.nintendo.com/jp/product/"], '
+            '[data-testid="product-card"] a'
+        )
+        if not link:
+            return None
+
+        href = await link.get_attribute('href') or ''
+        prod_url = href if href.startswith('http') else f'https://store.nintendo.com{href}'
+        title_el = await link.query_selector('p, span, h2, h3')
+        title = ((await title_el.inner_text()) if title_el else await link.inner_text() or '').strip()[:80]
+
+        price = await _scrape_site_price(page, prod_url, [
+            '[class*="price"]',
+            '[class*="Price"]',
+            '.nt-price',
+            '.product-price',
+        ])
+
+        if price:
+            return (price, prod_url, title)
+
+    except Exception as e:
+        print(f'  Nintendo Store エラー: {e}')
+    return None
+
+
+async def scrape_playstation_direct(page: Page, query: str) -> tuple[int, str, str] | None:
+    """PlayStation Direct JP (direct.playstation.com/ja-jp) から定価を取得"""
+    try:
+        search_url = (
+            f'https://direct.playstation.com/ja-jp/search'
+            f'?searchStr={query.replace(" ", "+")}'
+        )
+        await page.goto(search_url, wait_until='domcontentloaded', timeout=30_000)
+        await sleep_human()
+
+        link = await page.query_selector(
+            'a[href*="/ja-jp/buy-"], '
+            '.product-card a, '
+            '[class*="product"] a[href*="playstation"]'
+        )
+        if not link:
+            return None
+
+        href = await link.get_attribute('href') or ''
+        prod_url = href if href.startswith('http') else f'https://direct.playstation.com{href}'
+        title_el = await link.query_selector('h3, h2, [class*="title"], [class*="name"]')
+        title = ((await title_el.inner_text()) if title_el else await link.inner_text() or '').strip()[:80]
+
+        price = await _scrape_site_price(page, prod_url, [
+            '[class*="price"]',
+            '[class*="Price"]',
+            '.product-price',
+            '[itemprop="price"]',
+        ])
+
+        if price:
+            return (price, prod_url, title)
+
+    except Exception as e:
+        print(f'  PlayStation Direct エラー: {e}')
+    return None
+
+
+async def scrape_yodobashi(page: Page, query: str) -> tuple[int, str, str] | None:
+    """ヨドバシ.com で新品価格を取得（カメラ・Xbox・Meta・Steam Deck 等）"""
+    try:
+        search_url = (
+            f'https://www.yodobashi.com/'
+            f'?word={query.replace(" ", "+")}&num=10&searchtype=keyword'
+        )
+        await page.goto(search_url, wait_until='domcontentloaded', timeout=30_000)
+        await sleep_human()
+
+        # 最初の商品リンクを取得
+        link = await page.query_selector(
+            '.js_searchItemBox a.js_productDetailLink, '
+            '.productName a, '
+            '[class*="product"] a[href*="/product/"]'
+        )
+        if not link:
+            return None
+
+        href = await link.get_attribute('href') or ''
+        prod_url = href if href.startswith('http') else f'https://www.yodobashi.com{href}'
+        title = (await link.inner_text()).strip()[:80]
+
+        price = await _scrape_site_price(page, prod_url, [
+            '.priceSaleNumFig',
+            '.priceSale .priceFig',
+            '.priceFig',
+            '[class*="saleFig"]',
+            '.selling_price',
+            '[itemprop="price"]',
+        ])
+
+        if price:
+            return (price, prod_url, title)
+
+    except Exception as e:
+        print(f'  ヨドバシ エラー: {e}')
+    return None
+
+
+async def scrape_manufacturer_fallback(
+    page: Page, name: str, query: str
+) -> tuple[int, str, str] | None:
+    """
+    Step C: Amazon で価格が取れなかった場合にメーカー/ヨドバシで再検索。
+    Returns: (price, url, matched_title) or None
+    """
+    site = get_manufacturer_site(name)
+    if site is None:
+        return None
+
+    print(f'  ~ {name}: Step C → {site} で検索中...')
+
+    if site == 'nintendo':
+        r = await scrape_nintendo_store(page, query)
+        if r:
+            return r
+        # Nintendo Store で見つからなければヨドバシへ
+        print(f'  ~ {name}: Nintendo Store NG → ヨドバシへ')
+        return await scrape_yodobashi(page, query)
+
+    elif site == 'sony':
+        r = await scrape_playstation_direct(page, query)
+        if r:
+            return r
+        print(f'  ~ {name}: PlayStation Direct NG → ヨドバシへ')
+        return await scrape_yodobashi(page, query)
+
+    else:
+        return await scrape_yodobashi(page, query)
+
+
 async def get_price_on_product_page(page: Page, require_amazon_seller: bool = False) -> int | None:
     """
     商品ページから参考価格 → 販売価格の順で取得。
@@ -343,10 +547,23 @@ async def scrape_product(page: Page, name: str, query: str) -> dict:
             result['msrp'] = price
             print(f'  OK {name}  →  ¥{price:,}  [{matched_title[:50]}]')
         else:
-            print(f'  -- {name}: 価格取得できず  [{matched_title[:50]}]')
+            print(f'  -- {name}: Amazon 価格取得できず  [{matched_title[:50]}]')
 
     except Exception as e:
         print(f'  NG {name}: {e}')
+
+    # ── Step C: Amazon で取れなければメーカー / ヨドバシへ ────────────
+    if not result['msrp']:
+        fallback = await scrape_manufacturer_fallback(page, name, query)
+        if fallback:
+            price_c, url_c, title_c = fallback
+            result['msrp'] = price_c
+            result['source_url'] = url_c
+            result['matched_title'] = title_c
+            site_c = get_manufacturer_site(name) or 'yodobashi'
+            print(f'  OK {name}  →  ¥{price_c:,}  [{title_c[:50]}]  (via {site_c})')
+        else:
+            print(f'  -- {name}: 全ソースで価格取得できず')
 
     return result
 

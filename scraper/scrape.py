@@ -25,9 +25,10 @@ logger = logging.getLogger(__name__)
 JST = timezone(timedelta(hours=9))
 TODAY = datetime.now(JST).strftime('%Y-%m-%d')
 
-BASE_DIR = Path(__file__).parent.parent
-DATA_FILE = BASE_DIR / 'data' / 'prices.csv'
-CSV_HEADERS = ['date', 'product_name', 'store', 'price', 'jan', 'url']
+BASE_DIR      = Path(__file__).parent.parent
+DATA_FILE     = BASE_DIR / 'data' / 'prices.csv'
+SCRAPE_MARKER = BASE_DIR / 'data' / 'last_scrape.txt'
+CSV_HEADERS   = ['date', 'product_name', 'store', 'price', 'jan', 'url']
 
 _JAN_RE = re.compile(r'\b(\d{13})\b')
 
@@ -195,25 +196,23 @@ def save_to_csv(records: list[dict]) -> None:
     DATA_FILE.parent.mkdir(parents=True, exist_ok=True)
     write_header = not DATA_FILE.exists() or DATA_FILE.stat().st_size == 0
 
-    existing_keys: set[tuple] = set()
+    # 価格変化があった商品のみ追記（同一価格の連続記録を防ぐ）
+    last_price: dict[tuple, str] = {}
     if DATA_FILE.exists():
         with open(DATA_FILE, newline='', encoding='utf-8') as f:
-            reader = csv.DictReader(f)
-            for row in reader:
-                if row.get('date') == TODAY:
-                    existing_keys.add((row['date'], row['product_name'], row['store']))
+            for row in csv.DictReader(f):
+                last_price[(row['product_name'], row['store'])] = row['price']
 
     new_records = [
         r for r in records
-        if (r['date'], r['product_name'], r['store']) not in existing_keys
+        if last_price.get((r['product_name'], r['store'])) != str(r['price'])
     ]
-    # 欠けているフィールドの補完
     for r in new_records:
         r.setdefault('jan', '')
         r.setdefault('url', '')
 
     if not new_records:
-        logger.info('新規レコードなし（既にスクレイプ済み？）')
+        logger.info('価格変化なし — 追記スキップ')
         return
 
     with open(DATA_FILE, 'a', newline='', encoding='utf-8') as f:
@@ -222,20 +221,19 @@ def save_to_csv(records: list[dict]) -> None:
             writer.writeheader()
         writer.writerows(new_records)
 
-    logger.info(f'CSV に {len(new_records)} 件追記: {DATA_FILE}')
+    logger.info(f'CSV に {len(new_records)} 件追記（価格変化あり）: {DATA_FILE}')
 
 
 # ════════════════════════════════════════════════════════════════════════
 # エントリポイント
 # ════════════════════════════════════════════════════════════════════════
 
-def _already_scraped_today(threshold: int = 100) -> bool:
-    """今日分のレコードが threshold 件以上あれば True（リトライ実行のスキップ用）"""
-    if not DATA_FILE.exists():
-        return False
-    with open(DATA_FILE, newline='', encoding='utf-8') as f:
-        count = sum(1 for row in csv.DictReader(f) if row.get('date') == TODAY)
-    return count >= threshold
+def _already_scraped_today() -> bool:
+    """マーカーファイルで今日実行済みか判定（価格変化なしでも正しく判定できる）"""
+    return SCRAPE_MARKER.exists() and SCRAPE_MARKER.read_text(encoding='utf-8').strip() == TODAY
+
+def _mark_scraped_today() -> None:
+    SCRAPE_MARKER.write_text(TODAY, encoding='utf-8')
 
 
 def main() -> None:
@@ -251,6 +249,7 @@ def main() -> None:
 
     logger.info(f'合計 {len(all_records)} 件取得')
     save_to_csv(all_records)
+    _mark_scraped_today()
     logger.info('=== 完了 ===')
 
 

@@ -53,34 +53,29 @@ jobs:
         env:
           PYTHONUNBUFFERED: "1"
 
-      # ── 5. 取得件数チェック（0件ならエラー終了）────────────────
+      # ── 5. 実行確認（マーカーファイルで判定）────────────────────
       - name: Verify scraped records
         run: |
           TODAY=$(python -c "from datetime import datetime, timezone, timedelta; print(datetime.now(timezone(timedelta(hours=9))).strftime('%Y-%m-%d'))")
-          COUNT=$(python -c "
-          import csv
-          with open('data/prices.csv', encoding='utf-8') as f:
-              rows = [r for r in csv.DictReader(f) if r.get('date') == '$TODAY']
-          print(len(rows))
-          ")
-          echo "Today's records: $COUNT"
-          if [ "$COUNT" -eq 0 ]; then
-            echo "ERROR: No records scraped for $TODAY"
+          if [ ! -f data/last_scrape.txt ] || [ "$(cat data/last_scrape.txt)" != "$TODAY" ]; then
+            echo "ERROR: Scrape marker not found for $TODAY"
             exit 1
           fi
+          echo "Scrape verified for $TODAY"
 
-      # ── 6. prices.csv / msrp.csv を docs/ にもコピー（GitHub Pages 用）─────
+      # ── 6. prices.csv / msrp.csv / マーカー を docs/ にもコピー ─────
       - name: Copy CSVs to docs/
         run: |
           cp data/prices.csv docs/prices.csv
           cp data/msrp.csv docs/msrp.csv
+          cp data/last_scrape.txt docs/last_scrape.txt
 
       # ── 7. 変更があればコミット & プッシュ ───────────────────────
       - name: Commit and push updated prices.csv
         run: |
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add data/prices.csv docs/prices.csv docs/msrp.csv
+          git add data/prices.csv docs/prices.csv docs/msrp.csv data/last_scrape.txt docs/last_scrape.txt
           # 変更がなければ何もしない
           if git diff --cached --quiet; then
             echo "No changes to commit"

@@ -36,9 +36,10 @@ JST      = timezone(timedelta(hours=9))
 TODAY    = datetime.now(JST).strftime('%Y-%m-%d')
 CUTOFF   = (datetime.now(JST) - timedelta(days=7)).strftime('%Y-%m-%d')
 
-BASE_DIR  = Path(__file__).parent.parent
-DATA_FILE = BASE_DIR / 'data' / 'prices.csv'
-CSV_HEADERS = ['date', 'product_name', 'store', 'price', 'jan', 'url']
+BASE_DIR      = Path(__file__).parent.parent
+DATA_FILE     = BASE_DIR / 'data' / 'prices.csv'
+SCRAPE_MARKER = BASE_DIR / 'data' / 'last_scrape_yahoo.txt'
+CSV_HEADERS   = ['date', 'product_name', 'store', 'price', 'jan', 'url']
 
 SKIP_CATEGORIES = {'ポケカ', 'ワンピ'}
 
@@ -365,21 +366,20 @@ def save_to_csv(records: list[dict]) -> None:
     DATA_FILE.parent.mkdir(parents=True, exist_ok=True)
     write_header = not DATA_FILE.exists() or DATA_FILE.stat().st_size == 0
 
-    # 今日分の重複チェック
-    existing_keys: set[tuple] = set()
+    # 価格変化があった商品のみ追記
+    last_price: dict[tuple, str] = {}
     if DATA_FILE.exists():
         with open(DATA_FILE, newline='', encoding='utf-8') as f:
             for row in csv.DictReader(f):
-                if row.get('date') == TODAY:
-                    existing_keys.add((row['date'], row['product_name'], row['store']))
+                last_price[(row['product_name'], row['store'])] = row['price']
 
     new_records = [
         r for r in records
-        if (r['date'], r['product_name'], r['store']) not in existing_keys
+        if last_price.get((r['product_name'], r['store'])) != str(r['price'])
     ]
 
     if not new_records:
-        logger.info('新規レコードなし（既にスクレイプ済み）')
+        logger.info('価格変化なし — 追記スキップ')
         return
 
     with open(DATA_FILE, 'a', newline='', encoding='utf-8') as f:
@@ -388,21 +388,17 @@ def save_to_csv(records: list[dict]) -> None:
             writer.writeheader()
         writer.writerows(new_records)
 
-    logger.info(f'CSV に {len(new_records)} 件追記')
+    logger.info(f'CSV に {len(new_records)} 件追記（価格変化あり）')
 
 
 # ── エントリポイント ──────────────────────────────────────────────────
 
-def _already_scraped_today(threshold: int = 10) -> bool:
-    """今日分のヤフオクレコードが threshold 件以上あればスキップ"""
-    if not DATA_FILE.exists():
-        return False
-    with open(DATA_FILE, newline='', encoding='utf-8') as f:
-        count = sum(
-            1 for row in csv.DictReader(f)
-            if row.get('date') == TODAY and 'ヤフオク' in row.get('store', '')
-        )
-    return count >= threshold
+def _already_scraped_today() -> bool:
+    """マーカーファイルで今週実行済みか判定"""
+    return SCRAPE_MARKER.exists() and SCRAPE_MARKER.read_text(encoding='utf-8').strip() == TODAY
+
+def _mark_scraped_today() -> None:
+    SCRAPE_MARKER.write_text(TODAY, encoding='utf-8')
 
 
 async def main() -> None:
@@ -457,6 +453,7 @@ async def main() -> None:
         await browser.close()
 
     save_to_csv(all_records)
+    _mark_scraped_today()
     logger.info('=== 完了 ===')
 
 

@@ -1438,6 +1438,19 @@ async function loadData() {
       } catch (_) {}
     }
 
+    // last_scrape.txt から実際のスクレイプ日を取得（価格変化なし日も正しく表示）
+    const scrapeMarkerCandidates = ['./last_scrape.txt', '../data/last_scrape.txt'];
+    for (const path of scrapeMarkerCandidates) {
+      try {
+        const resp = await fetch(path);
+        if (resp.ok) {
+          const d = (await resp.text()).trim();
+          if (d) document.getElementById('last-updated').textContent = `最終更新: ${d}`;
+          break;
+        }
+      } catch (_) {}
+    }
+
     if (allRows.length === 0) {
       badge.textContent = '⚠ データ空';
       badge.className = 'error';

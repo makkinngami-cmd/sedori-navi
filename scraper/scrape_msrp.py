@@ -185,12 +185,22 @@ async def sleep_human() -> None:
     await asyncio.sleep(random.uniform(3.0, 6.0))
 
 
-async def get_price_on_product_page(page: Page) -> int | None:
-    """商品ページから参考価格 → 販売価格の順で取得"""
-    return await page.evaluate(r"""() => {
+AMAZON_SELLER_ID = 'AN1VRQENFRJN5'  # Amazon.co.jp 自身の出品者ID
+
+
+async def get_price_on_product_page(page: Page, require_amazon_seller: bool = False) -> int | None:
+    """
+    商品ページから参考価格 → 販売価格の順で取得。
+
+    require_amazon_seller=True のとき:
+      - 参考価格（メーカー希望小売価格）は常に取得する（出品者不問）
+      - fallback の販売価格は Amazon.co.jp が出品者の場合のみ使用する
+        （第三者出品者の価格は市場価格でありMSRPではないため除外）
+    """
+    return await page.evaluate(r"""(requireAmazonSeller) => {
         const toInt = s => parseInt(s.replace(/[^0-9]/g, ''), 10);
 
-        // 1) 参考価格（取り消し線）を探す
+        // 1) 参考価格（取り消し線付き）を探す ── 出品者に関わらず正しいMSRP
         for (const sel of [
             '.a-price.a-text-price .a-offscreen',
             '.basisPrice .a-offscreen',
@@ -204,7 +214,7 @@ async def get_price_on_product_page(page: Page) -> int | None:
             }
         }
 
-        // 2) テキストから「参考価格」「定価」の近くの数字を探す
+        // 2) テキストから「参考価格」「定価」の近くの数字を探す ── 同上
         const bodyText = document.body.innerText;
         for (const label of ['参考価格', '定価', 'メーカー希望小売価格']) {
             const idx = bodyText.indexOf(label);
@@ -216,6 +226,17 @@ async def get_price_on_product_page(page: Page) -> int | None:
         }
 
         // 3) fallback: 通常販売価格
+        //    require_amazon_seller=true のとき Amazon.co.jp が出品者でなければスキップ
+        if (requireAmazonSeller) {
+            const isAmazonSeller =
+                bodyText.includes('Amazon.co.jp が販売') ||
+                bodyText.includes('Amazon.co.jp が出荷') ||
+                bodyText.includes('出荷元 Amazon.co.jp') ||
+                !!document.querySelector('#merchant-info a[href*="AN1VRQENFRJN5"]') ||
+                !!document.querySelector('#tabular-buybox a[href*="AN1VRQENFRJN5"]');
+            if (!isAmazonSeller) return null;
+        }
+
         for (const sel of [
             '#corePriceDisplay_desktop_feature_div .a-offscreen',
             '#corePrice_feature_div .a-offscreen',
@@ -232,7 +253,7 @@ async def get_price_on_product_page(page: Page) -> int | None:
         }
 
         return null;
-    }""")
+    }""", require_amazon_seller)
 
 
 async def scrape_product(page: Page, name: str, query: str) -> dict:
@@ -244,25 +265,51 @@ async def scrape_product(page: Page, name: str, query: str) -> dict:
     }
 
     try:
-        # Amazon 検索（low-price フィルターでアクセサリを除外）
         price_floor = get_price_floor(name)
-        search_url = (
-            f'https://www.amazon.co.jp/s?k={query.replace(" ", "+")}'
-            f'&low-price={price_floor}&language=ja_JP'
-        )
-        await page.goto(search_url, wait_until='domcontentloaded', timeout=30_000)
-        await sleep_human()
+        k = query.replace(' ', '+')
 
-        # 最初の商品リンクを取得（スポンサー広告をスキップ）
+        # ── 検索戦略 ────────────────────────────────────────────────────
+        # Step A: Amazon.co.jp が出品者 (emi=) + 価格下限フィルター
+        # Step B: emi フィルターなし（品切れ等で Step A で結果なしの場合）
+        #         ただしこのとき fallback 販売価格は使わず 参考価格のみ採用
+        search_variants = [
+            (
+                f'https://www.amazon.co.jp/s?k={k}'
+                f'&low-price={price_floor}'
+                f'&emi={AMAZON_SELLER_ID}'   # Amazon.co.jp が販売・出荷
+                f'&language=ja_JP',
+                True,   # require_amazon_seller
+            ),
+            (
+                f'https://www.amazon.co.jp/s?k={k}'
+                f'&low-price={price_floor}'
+                f'&language=ja_JP',
+                False,  # 第三者出品者も含む → fallback 価格は不採用
+            ),
+        ]
+
         link_el = None
-        for sel in [
-            '[data-component-type="s-search-result"]:not([data-component-id*="Sponsored"]) h2 a.a-link-normal',
-            '[data-component-type="s-search-result"] h2 a.a-link-normal',
-            '[data-component-type="s-search-result"] a.a-link-normal[href*="/dp/"]',
-        ]:
-            link_el = await page.query_selector(sel)
+        require_amazon_seller = True
+
+        for search_url, req_seller in search_variants:
+            await page.goto(search_url, wait_until='domcontentloaded', timeout=30_000)
+            await sleep_human()
+
+            for sel in [
+                '[data-component-type="s-search-result"]:not([data-component-id*="Sponsored"]) h2 a.a-link-normal',
+                '[data-component-type="s-search-result"] h2 a.a-link-normal',
+                '[data-component-type="s-search-result"] a.a-link-normal[href*="/dp/"]',
+            ]:
+                link_el = await page.query_selector(sel)
+                if link_el:
+                    break
+
             if link_el:
+                require_amazon_seller = req_seller
+                if not req_seller:
+                    print(f'  ~ {name}: Amazon出品なし → 参考価格のみ取得')
                 break
+        # ────────────────────────────────────────────────────────────────
 
         if not link_el:
             print(f'  -- {name}: 検索結果なし')
@@ -290,7 +337,7 @@ async def scrape_product(page: Page, name: str, query: str) -> dict:
         await page.goto(product_url, wait_until='domcontentloaded', timeout=30_000)
         await sleep_human()
 
-        price = await get_price_on_product_page(page)
+        price = await get_price_on_product_page(page, require_amazon_seller=require_amazon_seller)
 
         if price:
             result['msrp'] = price

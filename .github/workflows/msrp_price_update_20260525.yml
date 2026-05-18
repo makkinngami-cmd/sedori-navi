@@ -1,0 +1,83 @@
+name: MSRP Price Update 2026-05-25 (Nintendo Switch 値上げ)
+
+on:
+  schedule:
+    - cron: '5 15 24 5 *'   # JST 2026-05-25 00:05（UTC 5/24 15:05）
+  workflow_dispatch:          # 手動実行ボタン
+
+permissions:
+  contents: write
+
+jobs:
+  update-msrp:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Apply Nintendo Switch price increases
+        run: |
+          python - <<'EOF'
+          import csv, io
+
+          MSRP_FILE = 'data/msrp.csv'
+
+          # 2026-05-25 任天堂値上げ後の新定価（税込）
+          NEW_PRICES = {
+              'Switch2 国内版':    59980,
+              'Switch 有機白':     47980,
+              'Switch 有機ネオン': 47980,
+              'Switch 新型ネオン': 43980,
+              'Switch 新型グレー': 43980,
+              'Switch Liteグレー':    29980,
+              'Switch Liteブルー':    29980,
+              'Switch Liteコーラル':  29980,
+              'Switch Liteターコイズ': 29980,
+              'Switch Liteイエロー':  29980,
+          }
+
+          with open(MSRP_FILE, newline='', encoding='utf-8') as f:
+              rows = list(csv.DictReader(f))
+              fieldnames = csv.DictReader(io.StringIO(open(MSRP_FILE, encoding='utf-8').read())).fieldnames
+
+          updated = []
+          for row in rows:
+              name = row['product_name']
+              if name in NEW_PRICES:
+                  old = row['msrp']
+                  row['msrp'] = NEW_PRICES[name]
+                  row['matched_title'] = f'2026-05-25 値上げ後定価（旧: ¥{old}）'
+                  row['source_url'] = 'https://www.nintendo.co.jp/corporate/release/en/2026/260508.html'
+                  print(f'  {name}: ¥{old} → ¥{NEW_PRICES[name]}')
+              updated.append(row)
+
+          with open(MSRP_FILE, 'w', newline='', encoding='utf-8') as f:
+              w = csv.DictWriter(f, fieldnames=fieldnames)
+              w.writeheader()
+              w.writerows(updated)
+
+          print('完了')
+          EOF
+
+      - name: Copy to docs/
+        run: cp data/msrp.csv docs/msrp.csv
+
+      - name: Commit and push
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/msrp.csv docs/msrp.csv
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "chore: update Nintendo Switch MSRP for 2026-05-25 price increase [skip ci]"
+            git push
+          fi

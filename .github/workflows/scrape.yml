@@ -42,17 +42,36 @@ jobs:
         env:
           PYTHONUNBUFFERED: "1"
 
-      # ── 5. prices.csv を docs/ にもコピー（GitHub Pages 用）─────
+      # ── 5. 取得件数チェック（0件ならエラー終了）────────────────
+      - name: Verify scraped records
+        run: |
+          TODAY=$(python -c "from datetime import datetime, timezone, timedelta; print(datetime.now(timezone(timedelta(hours=9))).strftime('%Y-%m-%d'))")
+          COUNT=$(python -c "
+          import csv
+          with open('data/prices.csv', encoding='utf-8') as f:
+              rows = [r for r in csv.DictReader(f) if r.get('date') == '$TODAY']
+          print(len(rows))
+          ")
+          echo "Today's records: $COUNT"
+          if [ "$COUNT" -eq 0 ]; then
+            echo "ERROR: No records scraped for $TODAY"
+            exit 1
+          fi
+
+      # ── 6. prices.csv を docs/ にもコピー（GitHub Pages 用）─────
       - name: Copy prices.csv to docs/
         run: cp data/prices.csv docs/prices.csv
 
-      # ── 6. 変更があればコミット & プッシュ ───────────────────────
+      # ── 7. 変更があればコミット & プッシュ ───────────────────────
       - name: Commit and push updated prices.csv
         run: |
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add data/prices.csv docs/prices.csv
           # 変更がなければ何もしない
-          git diff --cached --quiet && echo "No changes" || \
-            git commit -m "chore: update prices $(date +'%Y-%m-%d') [skip ci]" && \
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "chore: update prices $(date +'%Y-%m-%d') [skip ci]"
             git push
+          fi

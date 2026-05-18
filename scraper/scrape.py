@@ -229,8 +229,22 @@ def save_to_csv(records: list[dict]) -> None:
 # エントリポイント
 # ════════════════════════════════════════════════════════════════════════
 
+def _already_scraped_today(threshold: int = 100) -> bool:
+    """今日分のレコードが threshold 件以上あれば True（リトライ実行のスキップ用）"""
+    if not DATA_FILE.exists():
+        return False
+    with open(DATA_FILE, newline='', encoding='utf-8') as f:
+        count = sum(1 for row in csv.DictReader(f) if row.get('date') == TODAY)
+    return count >= threshold
+
+
 def main() -> None:
     logger.info(f'=== 価格収集開始 {TODAY} ===')
+
+    if _already_scraped_today():
+        logger.info('今日分データ取得済み — スキップ')
+        logger.info('=== 完了（スキップ） ===')
+        return
 
     logger.info('--- 買取一丁目 ---')
     all_records = scrape_ichome()

@@ -2,7 +2,9 @@ name: Daily Price Scraper
 
 on:
   schedule:
-    - cron: '0 3 * * *'   # UTC 03:00 = JST 12:00
+    - cron: '0 3 * * *'   # UTC 03:00 = JST 12:00（1回目）
+    - cron: '0 5 * * *'   # UTC 05:00 = JST 14:00（2回目・リトライ）
+    - cron: '0 7 * * *'   # UTC 07:00 = JST 16:00（3回目・リトライ）
   workflow_dispatch:        # 手動実行ボタンも有効化
 
 permissions:

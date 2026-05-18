@@ -48,8 +48,6 @@ CUSTOM_QUERIES: dict[str, str] = {
     'Switch2 国内版':              'Nintendo Switch 2 本体 国内版',
     'Switch2 多言語版':            'Nintendo Switch 2 本体 多言語版',
     'Switch2 Proコン':             'Nintendo Switch 2 Proコントローラー',
-    'Switch2 ブラックボルト':      'Nintendo Switch 2 ブラックボルト',
-    'Switch2 ホワイトフレア':      'Nintendo Switch 2 ホワイトフレア',
     'Switch 有機白':               'Nintendo Switch 有機ELモデル ホワイト',
     'Switch 有機ネオン':           'Nintendo Switch 有機ELモデル ネオン',
     'Switch 新型ネオン':           'Nintendo Switch 本体 ネオンブルー ネオンレッド',
@@ -76,9 +74,8 @@ CUSTOM_QUERIES: dict[str, str] = {
     'Xbox S':                      'Xbox Series S',
     'Meta Quest 3 512':            'Meta Quest 3 512GB',
     'Meta Quest 3 128':            'Meta Quest 3 128GB',
-    'Steam Deck OLED 1TB':         'Steam Deck OLED 1TB',
-    'Steam Deck OLED 512':         'Steam Deck OLED 512GB',
-    'Steam Deck LCD 512':          'Steam Deck LCD 512GB',
+    'Steam Deck 有機EL 1TB':        'Steam Deck OLED 1TB',
+    'Steam Deck 有機EL 512GB':      'Steam Deck OLED 512GB',
 }
 
 
@@ -367,9 +364,8 @@ async def main() -> None:
         return
 
     targets = [
-        p for cat, items in ALL_PRODUCTS.items()
-        if cat not in SKIP_CATEGORIES
-        for p in items
+        p for p in ALL_PRODUCTS
+        if p.get('category') not in SKIP_CATEGORIES
     ]
     logger.info(f'対象: {len(targets)} 商品')
 

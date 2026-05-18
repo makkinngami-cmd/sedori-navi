@@ -435,9 +435,11 @@
 
     /* ── レスポンシブ ─────────────────────────────────── */
     @media (max-width: 720px) {
-      .app { grid-template-columns: 1fr; grid-template-rows: auto 1fr; height: auto; }
+      .app { grid-template-columns: 1fr; height: auto; }
       #sidebar { height: 50vh; }
-      #main { height: 80vh; }
+      #main { height: auto; overflow-y: auto; padding: 1rem; }
+      #chart-wrap { min-height: 280px; }
+      #summary-cards .card { min-width: 120px; }
     }
   </style>
 </head>

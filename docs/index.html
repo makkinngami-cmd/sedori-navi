@@ -247,6 +247,18 @@
     .price-pill.store-b { border-left: 2px solid var(--accent2); }
     .price-pill.store-c { border-left: 2px solid var(--green); }
     .no-data { color: var(--text-muted); font-size: 0.75rem; font-style: italic; }
+    .rate-badge {
+      font-size: 0.65rem;
+      font-weight: 700;
+      padding: 1px 5px;
+      border-radius: 4px;
+      flex-shrink: 0;
+      white-space: nowrap;
+    }
+    .rate-badge.high   { background: rgba(76,175,135,0.18); color: var(--green); }
+    .rate-badge.mid    { background: rgba(242,201,76,0.18); color: var(--yellow); }
+    .rate-badge.low    { background: rgba(242,92,115,0.18); color: var(--accent2); }
+    .rate-badge.nodata { background: transparent; color: var(--text-muted); }
 
     /* ── メインエリア ─────────────────────────────────── */
     #main {
@@ -485,11 +497,17 @@
         <div class="card-value" id="card-vs-avg">—</div>
         <div class="card-sub" id="card-vs-avg-sub">商品を選択</div>
       </div>
+      <div class="card blue" id="card-msrp-wrap">
+        <div class="card-label">定価 / 買取率</div>
+        <div class="card-value" id="card-msrp-rate">—</div>
+        <div class="card-sub" id="card-msrp-sub">商品を選択</div>
+      </div>
     </div>
 
     <div id="product-title" style="display:none">
       <span id="pt-name">—</span>
       <span id="pt-cat">—</span>
+      <span id="pt-msrp" style="display:none; color:var(--text-muted); font-size:0.75rem; font-weight:400">定価 —</span>
       <a id="pt-link" href="#" target="_blank" rel="noopener" class="hidden">🔗 買取一丁目</a>
     </div>
 
@@ -508,6 +526,8 @@
           <th>店舗</th>
           <th>買取価格</th>
           <th>前日比</th>
+          <th>定価</th>
+          <th>買取率</th>
         </tr></thead>
         <tbody id="data-tbody"></tbody>
       </table>
@@ -810,10 +830,23 @@ const STORE_NAMES = Object.keys(STORE_COLORS);
 let allRows = [];        // 全CSV行
 let janMap = {};         // product_name → JAN code
 let urlMap = {};         // product_name → 買取一丁目 URL
+let msrpMap = {};        // product_name → 定価 (MSRP)
 let myChart = null;
 let currentProduct = null;
 let currentCat = 'all';
 let currentSubcat = 'all';
+
+// 買取率の色クラス
+function rateClass(pct) {
+  if (pct === null) return 'nodata';
+  if (pct >= 75) return 'high';
+  if (pct >= 50) return 'mid';
+  return 'low';
+}
+function calcRate(buyback, msrp) {
+  if (!msrp || !buyback) return null;
+  return Math.round((buyback / msrp) * 1000) / 10;  // 小数1桁
+}
 
 // ─────────────────────────────────────────────────────────────────────
 // CSV パーサー
@@ -903,6 +936,9 @@ function updateProductCards(productName) {
   document.getElementById('card-alltime-wrap').className       = 'card blue';
   document.getElementById('card-avg30-wrap').className         = 'card blue';
   document.getElementById('card-vs-avg-wrap').className        = 'card blue';
+  document.getElementById('card-msrp-rate').textContent        = '—';
+  document.getElementById('card-msrp-sub').textContent         = resetSub;
+  document.getElementById('card-msrp-wrap').className          = 'card blue';
 
   // データ期間カード: 商品未選択はグローバル値に戻す
   if (!productName) {
@@ -967,6 +1003,16 @@ function updateProductCards(productName) {
     document.getElementById('card-vs-avg-sub').textContent = `${sign}${pct}% vs 30日平均`;
     document.getElementById('card-vs-avg-wrap').className  =
       'card ' + (diff > 0 ? 'green' : diff < 0 ? 'red' : 'blue');
+  }
+
+  // ── 定価 / 買取率 ─────────────────────────────────────
+  const msrp = msrpMap[productName];
+  if (msrp && isFinite(currentPrice)) {
+    const rate = calcRate(currentPrice, msrp);
+    document.getElementById('card-msrp-rate').textContent     = rate !== null ? `${rate}%` : '—';
+    document.getElementById('card-msrp-sub').textContent      = `定価 ¥${msrp.toLocaleString()}`;
+    document.getElementById('card-msrp-wrap').className       =
+      'card ' + (rate >= 75 ? 'green' : rate >= 50 ? 'yellow' : 'red');
   }
 }
 
@@ -1059,6 +1105,17 @@ function renderProductList() {
       nd.textContent = 'データなし';
       pricesEl.appendChild(nd);
     } else {
+      // 最高買取価格で買取率を計算
+      const bestPrice = Math.max(...sidebarKeys.map(s => latest[s].price));
+      const msrp = msrpMap[name];
+      const rate = calcRate(bestPrice, msrp);
+      if (rate !== null) {
+        const badge = document.createElement('span');
+        badge.className = `rate-badge ${rateClass(rate)}`;
+        badge.textContent = `${rate}%`;
+        badge.title = `定価 ¥${msrp.toLocaleString()}`;
+        pricesEl.appendChild(badge);
+      }
       sidebarKeys.forEach((s, i) => {
         const pill = document.createElement('span');
         pill.className = `price-pill store-${['a','b','c'][i] || 'a'}`;
@@ -1096,6 +1153,17 @@ function renderChart(productName) {
   document.getElementById('pt-name').textContent = productName;
   document.getElementById('pt-cat').textContent =
     PRODUCT_CATEGORIES[productName] || 'その他';
+
+  // 定価バッジ
+  const ptMsrp = document.getElementById('pt-msrp');
+  const msrpVal = msrpMap[productName];
+  if (msrpVal) {
+    ptMsrp.textContent = `定価 ¥${msrpVal.toLocaleString()}`;
+    ptMsrp.style.display = '';
+  } else {
+    ptMsrp.style.display = 'none';
+  }
+
   const ptLink = document.getElementById('pt-link');
   const url = urlMap[productName];
   if (url) {
@@ -1143,6 +1211,25 @@ function renderChart(productName) {
       spanGaps: true,
     };
   });
+
+  // 定価の水平基準線
+  const msrpLine = msrpMap[productName];
+  if (msrpLine) {
+    datasets.push({
+      label: '定価',
+      data: dates.map(() => msrpLine),
+      borderColor: 'rgba(255,255,255,0.25)',
+      backgroundColor: 'transparent',
+      borderWidth: 1.5,
+      borderDash: [8, 5],
+      pointRadius: 0,
+      pointHoverRadius: 0,
+      fill: false,
+      tension: 0,
+      spanGaps: true,
+      order: 99,
+    });
+  }
 
   if (myChart) myChart.destroy();
 
@@ -1199,6 +1286,7 @@ function renderChart(productName) {
   const priceByDateStore = {};
   rows.forEach(r => { priceByDateStore[`${r.date}__${r.store}`] = r.price; });
 
+  const msrpForTable = msrpMap[productName] || null;
   sorted.slice(0, 40).forEach(r => {
     const prevDate = dates[dates.indexOf(r.date) - 1];
     const prevPrice = prevDate ? (priceByDateStore[`${prevDate}__${r.store}`] || null) : null;
@@ -1209,12 +1297,21 @@ function renderChart(productName) {
       const color = diff > 0 ? 'var(--green)' : diff < 0 ? 'var(--accent2)' : 'var(--text-muted)';
       diffCell = `<span style="color:${color}">${sign}¥${diff.toLocaleString()}</span>`;
     }
+    // 定価・買取率
+    const msrpCell = msrpForTable ? `¥${msrpForTable.toLocaleString()}` : '—';
+    const rate = calcRate(r.price, msrpForTable);
+    const rc = rateClass(rate);
+    const rateCell = rate !== null
+      ? `<span class="rate-badge ${rc}">${rate}%</span>`
+      : '<span style="color:var(--text-muted)">—</span>';
     const tr = document.createElement('tr');
     tr.innerHTML = `
       <td>${r.date}</td>
       <td>${r.store}</td>
       <td>¥${r.price.toLocaleString()}</td>
       <td>${diffCell}</td>
+      <td style="color:var(--text-muted)">${msrpCell}</td>
+      <td>${rateCell}</td>
     `;
     tbody.appendChild(tr);
   });
@@ -1223,21 +1320,45 @@ function renderChart(productName) {
 // ─────────────────────────────────────────────────────────────────────
 // CSV 読み込み → 初期化
 // ─────────────────────────────────────────────────────────────────────
+function parseMsrpCSV(text) {
+  const lines = text.trim().split('\n');
+  if (lines.length < 2) return;
+  const headers = lines[0].split(',').map(h => h.trim());
+  const nameIdx = headers.indexOf('product_name');
+  const msrpIdx = headers.indexOf('msrp');
+  if (nameIdx < 0 || msrpIdx < 0) return;
+  lines.slice(1).forEach(line => {
+    const vals = line.split(',');
+    const name = (vals[nameIdx] || '').trim();
+    const price = parseInt(vals[msrpIdx], 10);
+    if (name && price > 0) msrpMap[name] = price;
+  });
+}
+
 async function loadData() {
   const badge = document.getElementById('status-badge');
   try {
-    // GitHub Pages では ../data/prices.csv か prices.csv など
-    const candidates = ['./prices.csv', '../data/prices.csv', 'prices.csv'];
+    // prices.csv 読み込み
+    const priceCandidates = ['./prices.csv', '../data/prices.csv', 'prices.csv'];
     let text = null;
-    for (const path of candidates) {
+    for (const path of priceCandidates) {
       try {
         const resp = await fetch(path);
         if (resp.ok) { text = await resp.text(); break; }
       } catch (_) {}
     }
     if (!text) throw new Error('prices.csv が見つかりません');
-
     allRows = parseCSV(text);
+
+    // msrp.csv 読み込み（失敗しても続行）
+    const msrpCandidates = ['./msrp.csv', '../data/msrp.csv', 'msrp.csv'];
+    for (const path of msrpCandidates) {
+      try {
+        const resp = await fetch(path);
+        if (resp.ok) { parseMsrpCSV(await resp.text()); break; }
+      } catch (_) {}
+    }
+
     if (allRows.length === 0) {
       badge.textContent = '⚠ データ空';
       badge.className = 'error';
@@ -1322,6 +1443,11 @@ function renderSidebarSearch(query) {
     const bestPrice = prices.length ? Math.max(...prices.map(r => r.price)) : null;
     const jan       = janMap[name] || '';
     const cat       = PRODUCT_CATEGORIES[name] || 'その他';
+    const msrpSri   = msrpMap[name] || null;
+    const rateSri   = calcRate(bestPrice, msrpSri);
+    const rateHtml  = rateSri !== null
+      ? `<span class="rate-badge ${rateClass(rateSri)}" style="font-size:0.6rem">${rateSri}%</span>`
+      : '';
 
     el.innerHTML = `
       <div class="sri-left">
@@ -1329,7 +1455,7 @@ function renderSidebarSearch(query) {
         ${jan ? `<div class="sri-jan">${jan}</div>` : ''}
       </div>
       <div style="display:flex;flex-direction:column;align-items:flex-end;gap:2px;flex-shrink:0">
-        <div class="sri-price${bestPrice ? '' : ' no-data'}">${bestPrice ? '¥' + bestPrice.toLocaleString() : '—'}</div>
+        <div style="display:flex;align-items:center;gap:4px">${rateHtml}<div class="sri-price${bestPrice ? '' : ' no-data'}">${bestPrice ? '¥' + bestPrice.toLocaleString() : '—'}</div></div>
         <div style="font-size:0.65rem;color:var(--text-muted)">${cat}</div>
       </div>`;
 

@@ -18,12 +18,16 @@ Amazon.co.jp から各商品の参考価格（定価）を取得する
 
 import asyncio
 import csv
+import io
 import random
 import re
 import sys
 from pathlib import Path
 
 from playwright.async_api import async_playwright, Page
+
+# Windows環境での文字コードエラーを防ぐ
+sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', errors='replace')
 
 sys.path.insert(0, str(Path(__file__).parent))
 from products import PRODUCTS
@@ -72,6 +76,76 @@ CUSTOM_QUERIES: dict[str, str] = {
     'Switch2 ブラックボルト':              'Nintendo Switch 2 ブラックボルト',
     'Switch2 ホワイトフレア':              'Nintendo Switch 2 ホワイトフレア',
 }
+
+
+def get_price_floor(name: str) -> int:
+    """商品名から検索時の最低価格フィルターを返す（アクセサリ除外用）"""
+    n = name.lower()
+    # ゲーム機本体
+    if any(k in n for k in ['switch2 国内版', 'switch2 多言語', 'switch2 ブラック', 'switch2 ホワイト']):
+        return 40000
+    if 'マリカーセット' in n:
+        return 50000
+    if '有機' in n or 'oled' in n:
+        return 30000
+    if '新型' in n and 'switch' in n:
+        return 25000
+    if 'switch lite' in n:
+        return 15000
+    # PS5本体のみ高フロア、ゲームソフト(PS5 Split Fiction等)は除外
+    if name in ('PS5', 'PS5デジタル', 'PlayStation5 Pro', 'PS5 ディスクドライブ') or 'playstation5' in n:
+        return 40000
+    if 'xbox series x' in n and ('1tb' in n or name == 'Xbox X'):
+        return 50000
+    if 'xbox series s' in n or name in ('Xbox S', 'Xbox S 1TB ホワイト'):
+        return 25000
+    if 'meta quest 3s' in n:
+        return 40000
+    if 'meta quest 3' in n:
+        return 50000
+    if 'steam deck' in n:
+        return 50000
+    if 'vr2' in n:
+        return 40000
+    if 'portal' in n or 'リモートプレーヤー' in n:
+        return 25000
+    # コントローラー・周辺機器
+    if 'dualsense' in n:
+        return 6000
+    if 'joy-con 2' in n:
+        return 4000
+    if 'joy-con' in n:
+        return 3000
+    if 'proコン' in n or 'pro controller' in n:
+        return 6000
+    if 'alarmo' in n:
+        return 5000
+    if 'pokemon go plus' in n:
+        return 5000
+    # カメラ
+    if 'x100vi' in n:
+        return 150000
+    if 'g7x' in n or 'g7 x' in n:
+        return 50000
+    if 'sx740' in n:
+        return 30000
+    if 'ixy' in n:
+        return 20000
+    if 'mini evo' in n:
+        return 15000
+    if 'wide 400' in n:
+        return 10000
+    if 'sq1' in n:
+        return 8000
+    if 'mini 13' in n:
+        return 5000
+    if 'チェキフィルム' in n:
+        return 500
+    # たまごっち
+    if 'tamagotchi paradise' in n:
+        return 4000
+    # ゲームソフト
+    return 3000
 
 
 def build_query(name: str) -> str:
@@ -170,31 +244,39 @@ async def scrape_product(page: Page, name: str, query: str) -> dict:
     }
 
     try:
-        # Amazon 検索
+        # Amazon 検索（low-price フィルターでアクセサリを除外）
+        price_floor = get_price_floor(name)
         search_url = (
-            f'https://www.amazon.co.jp/s?k={query.replace(" ", "+")}&language=ja_JP'
+            f'https://www.amazon.co.jp/s?k={query.replace(" ", "+")}'
+            f'&low-price={price_floor}&language=ja_JP'
         )
         await page.goto(search_url, wait_until='domcontentloaded', timeout=30_000)
         await sleep_human()
 
-        # 最初の商品リンクを取得
-        link_el = await page.query_selector(
-            '[data-component-type="s-search-result"] h2 a.a-link-normal'
-        )
-        if not link_el:
-            link_el = await page.query_selector(
-                '[data-component-type="s-search-result"] a.a-link-normal[href*="/dp/"]'
-            )
+        # 最初の商品リンクを取得（スポンサー広告をスキップ）
+        link_el = None
+        for sel in [
+            '[data-component-type="s-search-result"]:not([data-component-id*="Sponsored"]) h2 a.a-link-normal',
+            '[data-component-type="s-search-result"] h2 a.a-link-normal',
+            '[data-component-type="s-search-result"] a.a-link-normal[href*="/dp/"]',
+        ]:
+            link_el = await page.query_selector(sel)
+            if link_el:
+                break
 
         if not link_el:
             print(f'  -- {name}: 検索結果なし')
             return result
 
         href = await link_el.get_attribute('href') or ''
-        title_el = await link_el.query_selector('span')
-        matched_title = (
-            (await title_el.inner_text()).strip()[:80] if title_el else ''
-        )
+        # タイトル取得（複数パターンを試す）
+        matched_title = ''
+        for title_sel in ['h2 span', 'span.a-text-normal', 'span']:
+            title_el = await link_el.query_selector(title_sel)
+            if title_el:
+                matched_title = (await title_el.inner_text()).strip()[:80]
+                if matched_title:
+                    break
 
         product_url = (
             'https://www.amazon.co.jp' + href if href.startswith('/') else href
@@ -232,27 +314,60 @@ def save_csv(rows: list[dict]) -> None:
         w.writerows(rows)
 
 
+def load_existing_msrp() -> dict[str, int]:
+    """既存の msrp.csv から {product_name: msrp} を読み込む"""
+    if not MSRP_FILE.exists():
+        return {}
+    with open(MSRP_FILE, newline='', encoding='utf-8') as f:
+        return {
+            row['product_name']: int(row['msrp'])
+            for row in csv.DictReader(f)
+            if row.get('msrp')
+        }
+
+
 async def main() -> None:
-    targets = [
+    all_targets = [
         p
         for cat, items in PRODUCTS.items()
         if cat not in SKIP_CATEGORIES
         for p in items
     ]
 
-    skipped = sum(
+    # 既存CSVで「価格フロアを下回る＝誤マッチ」の商品のみ再スクレイプ
+    existing = load_existing_msrp()
+    targets = []
+    skipped_ok = []
+    for p in all_targets:
+        name = p['name']
+        floor = get_price_floor(name)
+        existing_price = existing.get(name, 0)
+        if existing_price >= floor:
+            skipped_ok.append(name)
+        else:
+            targets.append(p)
+
+    skip_cat = sum(
         len(items) for cat, items in PRODUCTS.items() if cat in SKIP_CATEGORIES
     )
 
-    print(f'対象: {len(targets)} 商品  /  スキップ: {skipped} 商品（ポケカ・ワンピ）')
+    print(f'対象: {len(targets)} 商品  /  取得済みスキップ: {len(skipped_ok)} 商品  /  カテゴリスキップ: {skip_cat} 商品')
     print(f'推定所要時間: 約 {len(targets) * 9 // 60} 分')
     print(f'出力先: {MSRP_FILE}')
     print()
 
+    # 取得済みの正常データは引き継ぐ
     results: list[dict] = []
+    if MSRP_FILE.exists():
+        with open(MSRP_FILE, newline='', encoding='utf-8') as f:
+            for row in csv.DictReader(f):
+                name = row['product_name']
+                floor = get_price_floor(name)
+                if int(row.get('msrp') or 0) >= floor:
+                    results.append(row)  # 正常データは引き継ぎ
 
     async with async_playwright() as pw:
-        browser = await pw.chromium.launch(headless=False)  # 動作確認のため表示モード
+        browser = await pw.chromium.launch(headless=True)
         ctx = await browser.new_context(
             user_agent=(
                 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) '

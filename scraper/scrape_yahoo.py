@@ -18,7 +18,7 @@ import sys
 import urllib.parse
 from datetime import datetime, timezone, timedelta
 from pathlib import Path
-from statistics import mean
+from statistics import mean, median
 
 from playwright.async_api import async_playwright, Page
 
@@ -62,11 +62,13 @@ CUSTOM_QUERIES: dict[str, str] = {
     'Switch Proコン スプラ3':      'Nintendo Switch Proコントローラー スプラトゥーン3',
     'Alarmo':                      'Nintendo サウンドクロック Alarmo',
     'Pokemon GO Plus+':            'Pokemon GO Plus+',
-    'PlayStation5 Pro':            'PlayStation5 Pro CFI-7000',
-    'PS5':                         'PlayStation5 Slim Disc CFI-2000A01',
-    'PS5デジタル':                 'PlayStation5 Slim Digital CFI-2000B01',
+    'PlayStation5 Pro':            'PlayStation5 Pro CFI-7000B01 本体',
+    'PS5':                         'PlayStation5 Slim Disc CFI-2000A01 本体',
+    'PS5デジタル':                 'PlayStation5 Slim Digital CFI-2000B01 本体',
     'PS5デジタル 日本語版':        'PlayStation 5 デジタルエディション CFI-2200B01',
-    'PS5デジタル ダブルパック':    'PlayStation 5 デジタルED ダブルパック 日本語専用',
+    'PS5デジタル ダブルパック':    'PlayStation 5 デジタルED ダブルパック 日本語専用 CFIJ-10032',
+    'PS5 Ghost of Yotei':          'PlayStation5 Ghost of Yotei CFIJ-10029 本体',
+    'PS5 ディスクドライブ':        'PS5 ディスクドライブ CFI-ZDD1J',
     'リモートプレーヤー':          'PlayStation Portal リモートプレーヤー',
     'PlayStation VR2':             'PlayStation VR2',
     'PlayStation VR2 Horizon同梱版': 'PlayStation VR2 Horizon Call of the Mountain',
@@ -294,6 +296,15 @@ async def scrape_product_yahoo(
         return []
 
     prices = [it['price'] for it in matched]
+
+    # 外れ値除去（5件以上の場合のみ）: 中央値の15%未満は除外
+    if len(prices) >= 5:
+        med = median(prices)
+        floor = med * 0.15
+        filtered = [p for p in prices if p >= floor]
+        if filtered:
+            prices = filtered
+
     lo  = min(prices)
     hi  = max(prices)
     avg = round(mean(prices))

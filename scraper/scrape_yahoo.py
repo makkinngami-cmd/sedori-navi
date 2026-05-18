@@ -82,6 +82,13 @@ CUSTOM_QUERIES: dict[str, str] = {
     'Steam Deck 有機EL 512GB':      'Steam Deck OLED 512GB',
 }
 
+# 商品ごとの価格上限（定価の2〜3倍程度。これを超えたら本体込みバンドルと判断）
+PRICE_CAPS: dict[str, int] = {
+    'PlayStation5 ディスクドライブ': 25000,  # MSRP ¥11,980
+    'リモートプレーヤー':            50000,  # MSRP ¥29,980
+    'PlayStation VR2':              100000,  # MSRP ¥74,980
+}
+
 
 # ── ユーティリティ ────────────────────────────────────────────────────
 
@@ -272,9 +279,11 @@ async def scrape_product_yahoo(
     query: str,
     keywords: list[str],
     min_price: int = 0,
+    max_price: int = 0,
 ) -> list[dict]:
     """
     1商品分のヤフオク落札データを取得し、最安・平均・最高をまとめて返す。
+    max_price: 0 なら無制限。アクセサリー類の本体込みバンドル除外に使う。
     """
     items = await fetch_closed_auctions(page, query, min_price)
 
@@ -293,12 +302,22 @@ async def scrape_product_yahoo(
     # バンドル・セット売りを除外（本体単体価格のみ採用）
     BUNDLE_WORDS = ['まとめ', 'セット売り', '同梱版', 'ソフト付', 'ゲーム付',
                     '付属品あり', '本体セット', '本体+', '本体＋', '+コントローラー',
-                    '＋コントローラー', 'おまけ付']
+                    '＋コントローラー', 'おまけ付', '本付き', '本付]', '本付 ']
     def is_bundle(title: str) -> bool:
         t = title.replace('　', ' ')
-        return any(w in t for w in BUNDLE_WORDS)
+        if any(w in t for w in BUNDLE_WORDS):
+            return True
+        # "ソフト2本付" / "ゲームソフト3本" のような数量付きパターン
+        if re.search(r'(ソフト|ゲーム)\d+本', t):
+            return True
+        return False
 
-    matched = [it for it in items if matches(it['title']) and not is_bundle(it['title'])]
+    matched = [
+        it for it in items
+        if matches(it['title'])
+        and not is_bundle(it['title'])
+        and (max_price == 0 or it['price'] <= max_price)
+    ]
     if not matched:
         logger.info(f'  -- {name}: マッチする落札なし ({len(items)} 件中)')
         return []
@@ -407,7 +426,10 @@ async def main() -> None:
             query    = build_query(name)
             logger.info(f'[{i:3}/{len(targets)}] {name}  (検索: {query})')
 
-            records = await scrape_product_yahoo(page, name, query, keywords)
+            records = await scrape_product_yahoo(
+                page, name, query, keywords,
+                max_price=PRICE_CAPS.get(name, 0),
+            )
             all_records.extend(records)
 
             # 20件ごとに中間保存

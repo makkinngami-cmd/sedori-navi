@@ -300,22 +300,36 @@ async def scrape_product_yahoo(
         return False
 
     # バンドル・セット売りを除外（本体単体価格のみ採用）
-    BUNDLE_WORDS = ['まとめ', 'セット売り', '同梱版', 'ソフト付', 'ゲーム付',
-                    '付属品あり', '本体セット', '本体+', '本体＋', '+コントローラー',
-                    '＋コントローラー', 'おまけ付', '本付き', '本付]', '本付 ']
+    BUNDLE_WORDS = [
+        'まとめ', 'セット売り', '同梱版', 'ソフト付', 'ゲーム付',
+        '付属品あり', '本体セット', '本体+', '本体＋', '+コントローラー',
+        '＋コントローラー', 'おまけ付', '本付き', '本付]', '本付 ',
+        'コントローラー付', 'ゲームセット', 'ソフトセット', 'セット品',
+        'レンズ付', 'レンズセット',
+        '充電器付', 'ケース付', 'カバー付',
+        'おまけ',
+    ]
     def is_bundle(title: str) -> bool:
         t = title.replace('　', ' ')
         if any(w in t for w in BUNDLE_WORDS):
             return True
-        # "ソフト2本付" / "ゲームソフト3本" のような数量付きパターン
         if re.search(r'(ソフト|ゲーム)\d+本', t):
             return True
         return False
+
+    # 状態不良品を除外（安値方向の外れ値対策）
+    BAD_CONDITION_WORDS = [
+        'ジャンク', '動作未確認', '難あり', '難有り', '訳あり', '訳有り',
+        '破損', '欠品', '部品取り', '動作不良', '水没', '要修理', 'ノークレーム',
+    ]
+    def is_bad_condition(title: str) -> bool:
+        return any(w in title for w in BAD_CONDITION_WORDS)
 
     matched = [
         it for it in items
         if matches(it['title'])
         and not is_bundle(it['title'])
+        and not is_bad_condition(it['title'])
         and (max_price == 0 or it['price'] <= max_price)
     ]
     if not matched:

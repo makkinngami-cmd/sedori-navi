@@ -109,6 +109,9 @@ def parse_yahoo_date(date_str: str) -> str | None:
     """ヤフオクの各種日付フォーマットを YYYY-MM-DD に変換"""
     now = datetime.now(JST)
     s = date_str.strip()
+    # "終了" / 時刻部分を除去: "5/18 22:58終了" → "5/18"
+    s = s.replace('終了', '').strip()
+    s = re.sub(r'\s+\d{1,2}:\d{2}.*$', '', s).strip()
 
     # "N分前" / "N時間前" → 今日
     if re.search(r'\d+(分|時間)前', s):
@@ -137,6 +140,15 @@ def parse_yahoo_date(date_str: str) -> str | None:
     m = re.match(r'(\d{4})[-/](\d{2})[-/](\d{2})', s)
     if m:
         return f'{m.group(1)}-{m.group(2)}-{m.group(3)}'
+
+    # "M/D" or "M/DD"（年なし → 今年、ただし未来なら昨年）
+    m = re.match(r'^(\d{1,2})/(\d{1,2})$', s)
+    if m:
+        mo, da = int(m.group(1)), int(m.group(2))
+        yr = now.year
+        if (mo, da) > (now.month, now.day):
+            yr -= 1
+        return f'{yr}-{mo:02d}-{da:02d}'
 
     # datetime 属性 (ISO8601 "2026-05-18T...")
     m = re.match(r'(\d{4}-\d{2}-\d{2})', s)
@@ -180,67 +192,53 @@ async def fetch_closed_auctions(
 
     raw = await page.evaluate(r"""() => {
         const results = [];
-        // 複数のセレクターパターンを試す（ヤフオクのHTML構造変化に対応）
-        const cards = [
-            ...document.querySelectorAll('.Product'),
-            ...document.querySelectorAll('[class*="SearchResult"] li'),
-            ...document.querySelectorAll('[data-auction-id]'),
-        ].filter((el, i, arr) => arr.indexOf(el) === i); // 重複排除
+        // a[href*="/auction/"] を持つ li が商品カード
+        const cards = Array.from(document.querySelectorAll('li'))
+            .filter(li => li.querySelector('a[href*="/auction/"]'));
 
         for (const card of cards) {
-            // タイトル
+            // タイトル: クラスなし p（最初に見つかったもの）→ h3 → h2 の順
             let title = '';
-            for (const sel of [
-                '.Product__title',
-                'h3[class*="title"]',
-                '[class*="itemTitle"]',
-                'a.Product__imageLink',
-                'h3', 'h2',
-            ]) {
+            for (const sel of ['p', 'h3', 'h2']) {
                 const el = card.querySelector(sel);
-                if (el && el.textContent.trim()) {
+                if (el && el.textContent.trim().length > 5) {
                     title = el.textContent.trim().replace(/\s+/g, ' ');
                     break;
                 }
             }
 
-            // 価格
+            // 価格: "落札" ラベルの次の span → フォールバックで数字+"円" span
             let price = 0;
-            for (const sel of [
-                '.Product__price',
-                '[class*="itemPrice"]',
-                '[class*="price"]',
-                '[class*="Price"]',
-            ]) {
-                const el = card.querySelector(sel);
-                if (el) {
-                    const m = el.textContent.match(/[\d,]+/);
+            const spans = Array.from(card.querySelectorAll('span'));
+            for (let i = 0; i < spans.length; i++) {
+                if (spans[i].textContent.trim() === '落札' && spans[i + 1]) {
+                    const m = spans[i + 1].textContent.match(/[\d,]+/);
                     if (m) { price = parseInt(m[0].replace(/,/g, ''), 10); break; }
                 }
             }
-
-            // 日付（datetime 属性 > テキスト）
-            let dateStr = '';
-            for (const sel of [
-                'time[datetime]',
-                '.Product__time',
-                '[class*="endTime"]',
-                '[class*="time"]',
-                'time',
-            ]) {
-                const el = card.querySelector(sel);
-                if (el) {
-                    dateStr = el.getAttribute('datetime') || el.textContent.trim();
-                    if (dateStr) break;
+            if (!price) {
+                for (const sp of spans) {
+                    const m = sp.textContent.match(/^([\d,]+)円$/);
+                    if (m) { price = parseInt(m[1].replace(/,/g, ''), 10); break; }
                 }
             }
 
+            // 日付: "終了" を含む span（例: "5/18 22:58終了"）
+            let dateStr = '';
+            for (const sp of spans) {
+                const t = sp.textContent.trim();
+                if (t.includes('終了') && /\d/.test(t)) {
+                    dateStr = t;
+                    break;
+                }
+            }
+            // time[datetime] があればそちらを優先
+            const timeEl = card.querySelector('time[datetime]');
+            if (timeEl) dateStr = timeEl.getAttribute('datetime');
+
             // URL
-            let href = '';
-            const linkEl = card.querySelector('a[href*="yahoo.co.jp/auction/"]')
-                        || card.querySelector('a[href*="/auction/"]')
-                        || card.querySelector('a');
-            if (linkEl) href = linkEl.href || '';
+            const linkEl = card.querySelector('a[href*="/auction/"]');
+            const href = linkEl ? linkEl.href : '';
 
             if (title && price > 0) {
                 results.push({ title, price, dateStr, url: href });

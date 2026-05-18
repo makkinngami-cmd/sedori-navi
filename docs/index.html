@@ -553,9 +553,11 @@ const PRODUCT_CATEGORIES = {
   'Switch Liteコーラル': 'ゲーム',
   'Switch Liteターコイズ': 'ゲーム',
   'Switch Liteイエロー': 'ゲーム',
+  'PlayStation5 Pro': 'ゲーム',
   'PS5': 'ゲーム',
   'PS5デジタル': 'ゲーム',
-  'PlayStation5 Pro': 'ゲーム',
+  'PS5デジタル 日本語版': 'ゲーム',
+  'PS5デジタル ダブルパック': 'ゲーム',
   'PlayStation VR2': 'ゲーム',
   'PlayStation VR2 Horizon同梱版': 'ゲーム',
   'リモートプレーヤー': 'ゲーム',
@@ -1213,16 +1215,16 @@ function renderChart(productName) {
   tableWrap.style.display = 'block';
 
   // Chart.js データセット構築
-  const stores = [...new Set(rows.map(r => r.store))];
-  const datasets = stores.map(store => {
+  const YAHOO_STORES = new Set(['ヤフオク 最安', 'ヤフオク 平均', 'ヤフオク 最高']);
+  const storeData = s => dates.map(d => { const r = rows.find(x => x.store === s && x.date === d); return r ? r.price : null; });
+
+  // 通常ストア（ヤフオク以外）
+  const normalStores = [...new Set(rows.map(r => r.store))].filter(s => !YAHOO_STORES.has(s));
+  const datasets = normalStores.map(store => {
     const color = STORE_COLORS[store] || { border: '#aaa', bg: 'rgba(170,170,170,0.1)', dash: [] };
-    const data = dates.map(date => {
-      const row = rows.find(r => r.store === store && r.date === date);
-      return row ? row.price : null;
-    });
     return {
       label: store,
-      data,
+      data: storeData(store),
       borderColor: color.border,
       backgroundColor: color.bg,
       borderWidth: 2,
@@ -1234,6 +1236,52 @@ function renderChart(productName) {
       spanGaps: true,
     };
   });
+
+  // ヤフオク: 最高(上限)→最安(下限=レンジ塗り)→平均(ライン)
+  if (rows.some(r => YAHOO_STORES.has(r.store))) {
+    // 上限（凡例非表示・境界線のみ）
+    datasets.push({
+      label: 'ヤフオク 最高',
+      data: storeData('ヤフオク 最高'),
+      borderColor: 'rgba(76,175,135,0.35)',
+      backgroundColor: 'transparent',
+      borderWidth: 1,
+      borderDash: [4, 3],
+      pointRadius: 3,
+      pointHoverRadius: 5,
+      fill: false,
+      tension: 0.3,
+      spanGaps: true,
+    });
+    // 下限（上限との間をレンジ塗り）
+    datasets.push({
+      label: 'ヤフオク 最安',
+      data: storeData('ヤフオク 最安'),
+      borderColor: 'rgba(76,175,135,0.35)',
+      backgroundColor: 'rgba(76,175,135,0.1)',
+      borderWidth: 1,
+      borderDash: [4, 3],
+      pointRadius: 3,
+      pointHoverRadius: 5,
+      fill: '-1',
+      tension: 0.3,
+      spanGaps: true,
+    });
+    // 平均（メインライン）
+    datasets.push({
+      label: 'ヤフオク 平均',
+      data: storeData('ヤフオク 平均'),
+      borderColor: '#4caf87',
+      backgroundColor: 'transparent',
+      borderWidth: 2.5,
+      borderDash: [],
+      pointRadius: 4,
+      pointHoverRadius: 6,
+      fill: false,
+      tension: 0.3,
+      spanGaps: true,
+    });
+  }
 
   // 定価の基準線（値上げがあれば途中でステップアップする）
   const msrpLineData = dates.map(date => getMsrpForDate(productName, date));
@@ -1270,6 +1318,7 @@ function renderChart(productName) {
             font: { size: 12 },
             padding: 16,
             usePointStyle: true,
+            filter: item => item.text !== 'ヤフオク 最高',
           },
         },
         tooltip: {

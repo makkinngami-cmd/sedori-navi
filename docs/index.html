@@ -822,7 +822,7 @@ const STORE_COLORS = {
   'モバイル一番':  { border: '#5c73f2', bg: 'rgba(92,115,242,0.15)',  dash: [] },
   '買取一丁目':    { border: '#f25c73', bg: 'rgba(242,92,115,0.15)',  dash: [] },
   'ヤフオク 最安': { border: '#4caf87', bg: 'rgba(76,175,135,0.12)',  dash: [6, 3] },
-  'ヤフオク 平均': { border: '#f2c94c', bg: 'rgba(242,201,76,0.08)',  dash: [4, 2] },
+  'ヤフオク 中央値': { border: '#f2c94c', bg: 'rgba(242,201,76,0.08)',  dash: [4, 2] },
   'ヤフオク 最高': { border: '#f2a83b', bg: 'rgba(242,168,59,0.06)',  dash: [2, 2] },
 };
 // サイドバーに表示するストア（最安のみ）
@@ -1215,7 +1215,7 @@ function renderChart(productName) {
   tableWrap.style.display = 'block';
 
   // Chart.js データセット構築
-  const YAHOO_STORES = new Set(['ヤフオク 最安', 'ヤフオク 平均', 'ヤフオク 最高']);
+  const YAHOO_STORES = new Set(['ヤフオク 最安', 'ヤフオク 中央値', 'ヤフオク 最高']);
   const storeData = s => dates.map(d => { const r = rows.find(x => x.store === s && x.date === d); return r ? r.price : null; });
 
   // 通常ストア（ヤフオク以外）
@@ -1269,8 +1269,8 @@ function renderChart(productName) {
     });
     // 平均（メインライン）
     datasets.push({
-      label: 'ヤフオク 平均',
-      data: storeData('ヤフオク 平均'),
+      label: 'ヤフオク 中央値',
+      data: storeData('ヤフオク 中央値'),
       borderColor: '#4caf87',
       backgroundColor: 'transparent',
       borderWidth: 2.5,

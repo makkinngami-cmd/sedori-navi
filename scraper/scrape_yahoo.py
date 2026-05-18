@@ -307,16 +307,16 @@ async def scrape_product_yahoo(
 
     lo  = min(prices)
     hi  = max(prices)
-    avg = round(mean(prices))
+    med = round(median(prices))
     url = matched[0]['url']  # 代表URL（最初にマッチしたもの）
 
     logger.info(
-        f'  OK {name}: {len(matched)} 件 最安¥{lo:,} 平均¥{avg:,} 最高¥{hi:,}'
+        f'  OK {name}: {len(matched)} 件 最安¥{lo:,} 中央値¥{med:,} 最高¥{hi:,}'
     )
 
     return [
         {'date': TODAY, 'product_name': name, 'store': 'ヤフオク 最安', 'price': lo,  'jan': '', 'url': url},
-        {'date': TODAY, 'product_name': name, 'store': 'ヤフオク 平均', 'price': avg, 'jan': '', 'url': url},
+        {'date': TODAY, 'product_name': name, 'store': 'ヤフオク 中央値', 'price': med, 'jan': '', 'url': url},
         {'date': TODAY, 'product_name': name, 'store': 'ヤフオク 最高', 'price': hi,  'jan': '', 'url': url},
     ]
 

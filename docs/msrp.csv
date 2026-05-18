@@ -1,7 +1,7 @@
 product_name,msrp,effective_date,source_url,matched_title
 PlayStation5 Pro,137980,2000-01-01,manual,手動補正
-PS5デジタル,59980,2000-01-01,https://www.playstation.com/ja-jp/ps5/,PlayStation5 Slim Digital CFI-2000B01
-PS5,66980,2000-01-01,https://www.playstation.com/ja-jp/ps5/,PlayStation5 Slim Disc CFI-2000A01
+PlayStation5 デジタルエディション,59980,2000-01-01,https://www.playstation.com/ja-jp/ps5/,PlayStation5 Slim Digital CFI-2000B01
+PlayStation5,66980,2000-01-01,https://www.playstation.com/ja-jp/ps5/,PlayStation5 Slim Disc CFI-2000A01
 PlayStation VR2 Horizon同梱版,94980,2000-01-01,manual,手動補正
 PlayStation VR2,89980,2000-01-01,manual,手動補正
 リモートプレーヤー,39980,2000-01-01,https://www.amazon.co.jp/%E3%80%90%E7%B4%94%E6%AD%A3%E5%93%81%E3%80%91PlayStation-Portal-%E3%83%AA%E3%83%A2%E3%83%BC%E3%83%88%E3%83%97%E3%83%AC%E3%83%BC%E3%83%A4%E3%83%BC-%E3%83%9F%E3%83%83%E3%83%89%E3%83%8A%E3%82%A4%E3%83%88-CFIJ-18001/dp/B0DT3QWDMZ,
@@ -135,7 +135,7 @@ Pokemon GO Plus+,9678,2000-01-01,https://www.amazon.co.jp/Nintendo-Pokemon-Go-Pl
 Steam Deck 有機EL 1TB,99800,2000-01-01,https://www.amazon.co.jp/Valve-Steam-Deck-1TB-%E5%B0%82%E7%94%A8microSD%E3%82%AB%E3%83%BC%E3%83%89%E4%BB%98%E5%B1%9E/dp/B0DQDQ9X68, [手動修正]
 Steam Deck 有機EL 512GB,79800,2000-01-01,https://www.amazon.co.jp/Valve-Steam-Deck-512GB-%E5%B0%82%E7%94%A8microSD%E3%82%AB%E3%83%BC%E3%83%89%E4%BB%98%E5%B1%9E/dp/B0DQDPJH5T, [手動修正]
 Alarmo,12980,2000-01-01,manual,手動補正
-PS5 ディスクドライブ,11980,2000-01-01,manual,手動補正
+PlayStation5 ディスクドライブ,11980,2000-01-01,manual,手動補正
 DualSense Ghost of Yotei ゴールド,11480,2000-01-01,manual,ソニー唖定価格
 DualSense Ghost of Yotei ブラック,9720,2000-01-01,https://www.amazon.co.jp/%E3%80%90%E7%B4%94%E6%AD%A3%E5%93%81%E3%80%91DualSense-%E3%83%AF%E3%82%A4%E3%83%A4%E3%83%AC%E3%82%B9%E3%82%B3%E3%83%B3%E3%83%88%E3%83%AD%E3%83%BC%E3%83%A9%E3%83%BC-%E3%83%AA%E3%83%9F%E3%83%86%E3%83%83%E3%83%89%E3%82%A8%E3%83%87%E3%82%A3%E3%82%B7%E3%83%A7%E3%83%B3-CFI-ZCT1JZ8-%E3%80%90Amazon-co-jp%E9%99%90%E5%AE%9A%E3%80%91/dp/B0FPFNBQYG,
 DualSense ミッドナイト ブラック USB,9480,2000-01-01,manual,ソニー唖定価格
@@ -145,7 +145,7 @@ Switch Proコン ゼルダ,12999,2000-01-01,https://www.amazon.co.jp/%E3%83%9B%E
 Switch Proコン スプラ3,9658,2000-01-01,https://www.amazon.co.jp/%E4%BB%BB%E5%A4%A9%E5%A0%82-HAC-A-FSSKT-%E3%80%90%E4%BB%BB%E5%A4%A9%E5%A0%82%E7%B4%94%E6%AD%A3%E5%93%81%E3%80%91Nintendo-Pro%E3%82%B3%E3%83%B3%E3%83%88%E3%83%AD%E3%83%BC%E3%83%A9%E3%83%BC-%E3%82%B9%E3%83%97%E3%83%A9%E3%83%88%E3%82%A5%E3%83%BC%E3%83%B33%E3%82%A8%E3%83%87%E3%82%A3%E3%82%B7%E3%83%A7%E3%83%B3/dp/B0B61VVJ4X, [手動修正]
 Joy-Con 2 充電グリップ,3980,2000-01-01,https://www.amazon.co.jp/BJBT-%E3%82%AB%E3%83%90%E3%83%BC%E3%80%90Switch-2%E5%AF%BE%E5%BF%9C%E5%85%85%E9%9B%BB%E3%82%B0%E3%83%AA%E3%83%83%E3%83%97-%E4%BF%9D%E8%AD%B7%E3%82%AB%E3%83%90%E3%83%BC%E3%80%91%E3%82%B9%E3%82%A4%E3%83%83%E3%83%812%E3%82%B1%E3%83%BC%E3%82%B9-%E3%83%BB%E5%85%85%E9%9B%BB%E5%BC%8F%E3%82%B3%E3%83%B3%E3%83%88%E3%83%AD%E3%83%BC%E3%83%A9%E3%83%BC%E3%83%9B%E3%83%AB%E3%83%80%E3%83%BC%C2%B7/dp/B0GTF2CTNT, [手動修正]
 Joy-Con マリパセット,8778,2000-01-01,manual,手動補正
-PS5 Ghost of Yotei,79980,2000-01-01,manual,ソニー唖定価格
+PlayStation5 Ghost of Yotei リミテッドエディション,79980,2000-01-01,manual,ソニー唖定価格
 ゼルダ 知恵のかりもの,6578,2000-01-01,manual,任天堂唖定価格
 instax WIDE フィルム 20枚,3200,2000-01-01,manual,手動補正
 instax mini フィルム PASTEL GALAXY,1600,2000-01-01,manual,手動補正
@@ -175,5 +175,5 @@ RICOH GR IIIx Urban Edition,165000,2000-01-01,manual,手動補正
 Tamagotchi Paradise Blue Water,5478,2000-01-01,https://www.amazon.co.jp/%E3%83%90%E3%83%B3%E3%83%80%E3%82%A4-BANDAI-Tamagotchi-Paradise-%E3%80%90%E6%97%A5%E6%9C%AC%E3%81%8A%E3%82%82%E3%81%A1%E3%82%83%E5%A4%A7%E8%B3%9E2025%E3%83%87%E3%82%B8%E3%82%BF%E3%83%AB%E9%83%A8%E9%96%80%E5%A4%A7%E8%B3%9E%E3%80%91/dp/B0F8HCR6H4, [手動修正]
 Tamagotchi Paradise Pink Land,5478,2000-01-01,https://www.amazon.co.jp/%E3%83%90%E3%83%B3%E3%83%80%E3%82%A4-BANDAI-Tamagotchi-Paradise-%E3%80%90%E6%97%A5%E6%9C%AC%E3%81%8A%E3%82%82%E3%81%A1%E3%82%83%E5%A4%A7%E8%B3%9E2025%E3%83%87%E3%82%B8%E3%82%BF%E3%83%AB%E9%83%A8%E9%96%80%E5%A4%A7%E8%B3%9E%E3%80%91/dp/B0F8H35HG3, [手動修正]
 Tamagotchi Paradise Jade Forest,5478,2000-01-01,https://www.amazon.co.jp/%E3%83%90%E3%83%B3%E3%83%80%E3%82%A4-BANDAI-Tamagotchi-Paradise-%E3%81%9F%E3%81%BE%E3%81%94%E3%81%A3%E3%81%A1%E3%83%91%E3%83%A9%E3%83%80%E3%82%A4%E3%82%B9/dp/B0FRLTC7GM, [手動修正]
-PS5デジタル 日本語版,55000,2000-01-01,https://www.playstation.com/ja-jp/ps5/,PlayStation 5 デジタル・エディション 日本語専用 CFI-2200B01
-PS5デジタル ダブルパック,79980,2000-01-01,manual,PlayStation 5 デジタルED ダブルパック 日本語専用 CFIJ-10032
+PlayStation5 デジタルエディション 日本語専用,55000,2000-01-01,https://www.playstation.com/ja-jp/ps5/,PlayStation 5 デジタル・エディション 日本語専用 CFI-2200B01
+PlayStation5 デジタル ダブルパック 日本語専用,79980,2000-01-01,manual,PlayStation 5 デジタルED ダブルパック 日本語専用 CFIJ-10032

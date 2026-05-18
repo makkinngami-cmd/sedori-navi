@@ -117,21 +117,21 @@ python scrape_msrp.py
 
 ## 残タスク・要確認事項
 
-### ★ ヤフオク動作確認（未テスト）
-`scrape_yahoo.py` はまだ実機テスト未済。
+### ✅ ヤフオク動作確認（2026-05-18 完了）
+ローカル実機テストで PS5 など動作確認済み。以下のバグを修正・push 済み：
 
-**確認手順：**
-1. GitHub Actions → `Weekly Yahoo Auctions Scraper` → `Run workflow`
-2. ログで `OK {商品名}: N件 最安¥X 平均¥Y 最高¥Z` が出ればOK
-3. `-- {商品名}: 落札データなし` ばかり → セレクターが合っていない
+- `ALL_PRODUCTS.items()` クラッシュ → カテゴリフィルタに修正
+- JS セレクター（`.Product` クラス廃止）→ `li > a[href*="/auction/"]` 構造に変更
+- 日付パーサー：`"5/18 22:58終了"` 形式に対応（`M/DD` パターン追加）
+- CUSTOM_QUERIES の Steam Deck キーを products.py 名称（有機EL表記）に統一
 
-**セレクターがズレていた場合の対処：**  
-`scrape_yahoo.py` の `fetch_closed_auctions()` 内の JS セレクター部分を修正。  
-`page.content()` でHTMLを取得してどのクラス名が使われているか確認する。
+**落札データなし商品について（正常）：**  
+Switch2 本体・Steam Deck など取引量が少ない商品は直近7日に落札がないことがある。  
+スクレイパー自体の問題ではなく、商品の市況による。
 
-**マッチングが0件の場合：**  
-`scrape_yahoo.py` の `CUSTOM_QUERIES` に商品名 → 検索クエリを追加、  
-または `products.py` の `keywords` リストに別名を追加する。
+**セレクターが再び壊れた場合の対処：**  
+`scrape_yahoo.py` の `fetch_closed_auctions()` 内の JS を修正。  
+`li` 要素の中に `a[href*="/auction/"]` があることが前提。価格は `span[text='落札']` の次 span。日付は `span[text*='終了']`。
 
 ---
 

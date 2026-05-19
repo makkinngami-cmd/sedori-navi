@@ -2,8 +2,8 @@ name: Daily Price Scraper
 
 on:
   schedule:
-    # UTC 02:27 = JST 11:27（買取一丁目の開店後・非:00分でスロットリング回避）
-    - cron: '27 2 * * *'
+    # UTC 22:17 = JST 07:17（バックアップ用：ローカルトリガー失敗時のみ実質稼働）
+    - cron: '17 22 * * *'
   workflow_dispatch:        # 手動実行ボタンも有効化
 
 permissions:

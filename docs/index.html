@@ -1456,13 +1456,15 @@ function parseMsrpCSV(text) {
 
 async function loadData() {
   const badge = document.getElementById('status-badge');
+  // ブラウザ・CDN キャッシュ回避用バージョン文字列（日付単位）
+  const cv = new Date().toISOString().slice(0, 10).replace(/-/g, '');
   try {
     // prices.csv 読み込み
     const priceCandidates = ['./prices.csv', '../data/prices.csv', 'prices.csv'];
     let text = null;
     for (const path of priceCandidates) {
       try {
-        const resp = await fetch(path);
+        const resp = await fetch(`${path}?v=${cv}`);
         if (resp.ok) { text = await resp.text(); break; }
       } catch (_) {}
     }
@@ -1473,7 +1475,7 @@ async function loadData() {
     const msrpCandidates = ['./msrp.csv', '../data/msrp.csv', 'msrp.csv'];
     for (const path of msrpCandidates) {
       try {
-        const resp = await fetch(path);
+        const resp = await fetch(`${path}?v=${cv}`);
         if (resp.ok) { parseMsrpCSV(await resp.text()); break; }
       } catch (_) {}
     }
@@ -1482,7 +1484,7 @@ async function loadData() {
     const scrapeMarkerCandidates = ['./last_scrape.txt', '../data/last_scrape.txt'];
     for (const path of scrapeMarkerCandidates) {
       try {
-        const resp = await fetch(path);
+        const resp = await fetch(`${path}?v=${cv}`);
         if (resp.ok) {
           const d = (await resp.text()).trim();
           if (d) document.getElementById('last-updated').textContent = `最終更新: ${d}`;

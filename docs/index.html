@@ -1919,9 +1919,10 @@ async function _startNativeScanner() {
         if (/^\d{8,14}$/.test(val)) { closeBarcodeScanner(); _applyBarcode(val); return; }
       }
     } catch {}
-    _scanAnimFrame = requestAnimationFrame(scan);
+    // 60fps は過負荷になるため 200ms 間隔でスキャン
+    _scanAnimFrame = setTimeout(scan, 200);
   };
-  _scanAnimFrame = requestAnimationFrame(scan);
+  _scanAnimFrame = setTimeout(scan, 0);
 }
 
 // ── iOS / Safari: html5-qrcode リアルタイム映像 ──────────────────────
@@ -1996,7 +1997,7 @@ function closeBarcodeScanner() {
   const btn   = document.getElementById('sidebar-barcode-btn');
   modal.classList.add('hidden');
   btn.classList.remove('scanning');
-  if (_scanAnimFrame) { cancelAnimationFrame(_scanAnimFrame); _scanAnimFrame = null; }
+  if (_scanAnimFrame) { clearTimeout(_scanAnimFrame); _scanAnimFrame = null; }
   if (_scanStream)    { _scanStream.getTracks().forEach(t => t.stop()); _scanStream = null; }
   if (_zxingScanner)  { _zxingScanner.stop().catch(() => {}); _zxingScanner.clear(); _zxingScanner = null; }
   document.getElementById('barcode-reader').innerHTML = '';

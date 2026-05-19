@@ -1866,29 +1866,15 @@ document.getElementById('sort-rate-btn').addEventListener('click', () => {
 //   Android Chrome 83+  → BarcodeDetector でリアルタイム映像スキャン
 //   iOS Safari / 他     → 写真を撮影して静止画からデコード（html5-qrcode scanFile）
 // ─────────────────────────────────────────────────────────────────────
+// バーコードスキャナ
+//   Android Chrome 83+  → BarcodeDetector でリアルタイム映像スキャン
+//   iOS Safari / 他     → html5-qrcode でリアルタイム映像スキャン
+//                         ※ formatsToSupport はコンストラクタに渡す（スキャン設定ではない）
+// ─────────────────────────────────────────────────────────────────────
 const _hasBarcodeDetector = typeof BarcodeDetector !== 'undefined';
 let _scanStream    = null;
 let _scanAnimFrame = null;
-
-// iOS の高解像度写真を指定サイズに縮小して JPEG File として返す
-function _resizeImageForScan(file, maxPx) {
-  return new Promise((resolve, reject) => {
-    const url = URL.createObjectURL(file);
-    const img = new Image();
-    img.onload = () => {
-      URL.revokeObjectURL(url);
-      const scale = Math.min(1, maxPx / Math.max(img.naturalWidth, img.naturalHeight));
-      const w = Math.round(img.naturalWidth  * scale);
-      const h = Math.round(img.naturalHeight * scale);
-      const canvas = document.createElement('canvas');
-      canvas.width = w; canvas.height = h;
-      canvas.getContext('2d').drawImage(img, 0, 0, w, h);
-      canvas.toBlob(blob => resolve(new File([blob], 'scan.jpg', { type: 'image/jpeg' })), 'image/jpeg', 0.92);
-    };
-    img.onerror = () => { URL.revokeObjectURL(url); reject(new Error('image load failed')); };
-    img.src = url;
-  });
-}
+let _zxingScanner  = null;
 
 function _applyBarcode(val) {
   const el = document.getElementById('search');
@@ -1897,8 +1883,8 @@ function _applyBarcode(val) {
   el.focus();
 }
 
-// ── Android Chrome: リアルタイム動画スキャン ─────────────────────────
-async function _startVideoScanner() {
+// ── Android Chrome: BarcodeDetector リアルタイム ─────────────────────
+async function _startNativeScanner() {
   const status = document.getElementById('barcode-status');
   const reader = document.getElementById('barcode-reader');
   status.textContent = 'カメラを起動中…';
@@ -1938,72 +1924,40 @@ async function _startVideoScanner() {
   _scanAnimFrame = requestAnimationFrame(scan);
 }
 
-// ── iOS / その他: 写真撮影 → 静止画デコード ─────────────────────────
-function _startPhotoScanner() {
+// ── iOS / Safari: html5-qrcode リアルタイム映像 ──────────────────────
+// formatsToSupport の数値:  EAN_13=9, EAN_8=10, CODE_128=5, UPC_A=14, UPC_E=15
+// ※ コンストラクタに渡す（start() の設定オブジェクトではない）
+async function _startZXingScanner() {
   const status = document.getElementById('barcode-status');
   const reader = document.getElementById('barcode-reader');
-  reader.innerHTML = '';
-  status.textContent = 'バーコードをカメラで撮影してください';
+  status.textContent = 'カメラを起動中…';
+  reader.innerHTML   = '';
 
-  // 撮影ボタン
-  const captureBtn = document.createElement('button');
-  captureBtn.textContent = '📷  バーコードを撮影する';
-  captureBtn.style.cssText = [
-    'display:block','width:calc(100% - 2rem)','margin:1.2rem 1rem',
-    'background:var(--accent)','border:none','border-radius:8px',
-    'color:#fff','font-size:0.95rem','font-weight:600',
-    'padding:0.85rem','cursor:pointer',
-  ].join(';');
-  reader.appendChild(captureBtn);
+  try {
+    _zxingScanner = new Html5Qrcode('barcode-reader', {
+      formatsToSupport: [9, 10, 5, 14, 15],
+      verbose: false,
+    });
 
-  const input = document.createElement('input');
-  input.type = 'file'; input.accept = 'image/*'; input.capture = 'environment';
-  input.style.display = 'none';
-  document.body.appendChild(input);
-
-  captureBtn.addEventListener('click', () => input.click());
-
-  input.addEventListener('change', async () => {
-    const file = input.files[0];
-    if (!file) return;
-    captureBtn.disabled = true;
-    status.textContent  = '解析中…';
-
-    // Html5Qrcode のコンストラクタは要素が DOM に存在している必要がある
-    // → 先に要素を作成してから new Html5Qrcode() を呼ぶ
-    const tmp = document.createElement('div');
-    tmp.id = '__zxing_tmp__';
-    tmp.style.display = 'none';
-    document.body.appendChild(tmp);
-
-    try {
-      // iOS の高解像度写真（12MP 以上）を 1200px に縮小してから渡す
-      const scanFile = await _resizeImageForScan(file, 1200);
-      const scanner  = new Html5Qrcode('__zxing_tmp__');
-      const result   = await scanner.scanFile(scanFile, /* showImage= */ false);
-      document.body.removeChild(tmp);
-
-      const val = result.trim();
-      if (/^\d{8,14}$/.test(val)) {
-        closeBarcodeScanner();
-        _applyBarcode(val);
-      } else {
-        status.textContent = `読み取れませんでした（${val}）。バーコードを正面・大きめに再撮影してください。`;
-        captureBtn.disabled = false;
-        input.value = '';
-      }
-    } catch (err) {
-      if (document.body.contains(tmp)) document.body.removeChild(tmp);
-      // エラー内容を表示して診断できるようにする
-      const msg = err?.message ?? String(err);
-      status.textContent = `失敗: ${msg}　正面からはっきり撮影して再試行してください。`;
-      captureBtn.disabled = false;
-      input.value = '';
-    }
-  });
-
-  // モーダルを閉じるときに input も消す
-  document.getElementById('barcode-modal')._photoInput = input;
+    await _zxingScanner.start(
+      { facingMode: { ideal: 'environment' } },
+      { fps: 10, qrbox: { width: 260, height: 100 } },
+      (decodedText) => {
+        const val = decodedText.trim();
+        if (/^\d{8,14}$/.test(val)) {
+          _zxingScanner.stop().catch(() => {});
+          _zxingScanner = null;
+          closeBarcodeScanner();
+          _applyBarcode(val);
+        }
+      },
+      () => {}
+    );
+    status.textContent = 'バーコードを枠内に合わせてください';
+  } catch (err) {
+    reader.innerHTML = '';
+    status.textContent = `カメラにアクセスできません: ${err?.message ?? err}`;
+  }
 }
 
 // ── 共通: 開く / 閉じる ─────────────────────────────────────────────
@@ -2014,8 +1968,8 @@ async function openBarcodeScanner() {
   btn.classList.add('scanning');
   document.getElementById('barcode-status').className = '';
 
-  if (_hasBarcodeDetector) { await _startVideoScanner(); }
-  else                     { _startPhotoScanner(); }
+  if (_hasBarcodeDetector) { await _startNativeScanner(); }
+  else                     { await _startZXingScanner(); }
 }
 
 function closeBarcodeScanner() {
@@ -2025,9 +1979,7 @@ function closeBarcodeScanner() {
   btn.classList.remove('scanning');
   if (_scanAnimFrame) { cancelAnimationFrame(_scanAnimFrame); _scanAnimFrame = null; }
   if (_scanStream)    { _scanStream.getTracks().forEach(t => t.stop()); _scanStream = null; }
-  // 写真モードの input 後始末
-  const pi = modal._photoInput;
-  if (pi && document.body.contains(pi)) { document.body.removeChild(pi); modal._photoInput = null; }
+  if (_zxingScanner)  { _zxingScanner.stop().catch(() => {}); _zxingScanner.clear(); _zxingScanner = null; }
   document.getElementById('barcode-reader').innerHTML = '';
 }
 

@@ -1379,26 +1379,38 @@ function renderChart(productName) {
     },
   });
 
-  // テーブル描画（最新20件）
-  const sorted = [...rows].sort((a, b) => b.date.localeCompare(a.date) || a.store.localeCompare(b.store));
+  // テーブル描画（店舗ごとに最新価格のみ）
   const tbody = document.getElementById('data-tbody');
   tbody.innerHTML = '';
 
-  // 前日比を計算
-  const priceByDateStore = {};
-  rows.forEach(r => { priceByDateStore[`${r.date}__${r.store}`] = r.price; });
+  // 店舗ごとに日付降順でグループ化
+  const storeRowsMap = {};
+  rows.forEach(r => {
+    if (!storeRowsMap[r.store]) storeRowsMap[r.store] = [];
+    storeRowsMap[r.store].push(r);
+  });
+  Object.values(storeRowsMap).forEach(arr => arr.sort((a, b) => b.date.localeCompare(a.date)));
 
-  sorted.slice(0, 40).forEach(r => {
-    const prevDate = dates[dates.indexOf(r.date) - 1];
-    const prevPrice = prevDate ? (priceByDateStore[`${prevDate}__${r.store}`] || null) : null;
+  // 買取一丁目を先に、ヤフオクを後に並べる
+  const yahooOrder = { 'ヤフオク 最安': 0, 'ヤフオク 中央値': 1, 'ヤフオク 最高': 2 };
+  const tableStores = Object.keys(storeRowsMap).sort((a, b) => {
+    const aY = a.startsWith('ヤフオク'), bY = b.startsWith('ヤフオク');
+    if (aY !== bY) return aY ? 1 : -1;
+    if (aY && bY) return (yahooOrder[a] ?? 9) - (yahooOrder[b] ?? 9);
+    return a.localeCompare(b);
+  });
+
+  tableStores.forEach(store => {
+    const arr = storeRowsMap[store];
+    const r    = arr[0];               // 最新
+    const prev = arr[1] || null;       // 1つ前
     let diffCell = '—';
-    if (prevPrice !== null) {
-      const diff = r.price - prevPrice;
+    if (prev) {
+      const diff = r.price - prev.price;
       const sign = diff >= 0 ? '+' : '';
       const color = diff > 0 ? 'var(--green)' : diff < 0 ? 'var(--accent2)' : 'var(--text-muted)';
       diffCell = `<span style="color:${color}">${sign}¥${diff.toLocaleString()}</span>`;
     }
-    // 定価・買取率（その行の日付時点の定価を使用）
     const msrpForRow = getMsrpForDate(productName, r.date);
     const msrpCell = msrpForRow ? `¥${msrpForRow.toLocaleString()}` : '—';
     const rate = calcRate(r.price, msrpForRow);

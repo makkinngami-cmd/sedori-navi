@@ -1948,17 +1948,20 @@ function _startPhotoScanner() {
     if (!file) return;
     captureBtn.disabled = true;
     status.textContent  = '解析中…';
+
+    // Html5Qrcode のコンストラクタは要素が DOM に存在している必要がある
+    // → 先に要素を作成してから new Html5Qrcode() を呼ぶ
+    const tmp = document.createElement('div');
+    tmp.id = '__zxing_tmp__';
+    tmp.style.display = 'none';
+    document.body.appendChild(tmp);
+
     try {
       const scanner = new Html5Qrcode('__zxing_tmp__');
-      // 一時マウント先
-      const tmp = document.createElement('div');
-      tmp.id = '__zxing_tmp__'; tmp.style.display = 'none';
-      document.body.appendChild(tmp);
-
-      const result = await scanner.scanFile(file, false);
+      const result  = await scanner.scanFile(file, /* showImage= */ false);
       document.body.removeChild(tmp);
 
-      const val = (typeof result === 'string' ? result : result.text || '').trim();
+      const val = result.trim(); // scanFile は string を返す
       if (/^\d{8,14}$/.test(val)) {
         closeBarcodeScanner();
         _applyBarcode(val);
@@ -1967,13 +1970,12 @@ function _startPhotoScanner() {
         captureBtn.disabled = false;
         input.value = '';
       }
-    } catch {
-      status.textContent = '読み取り失敗。バーコードをはっきり映して再試行してください。';
+    } catch (err) {
+      if (document.body.contains(tmp)) document.body.removeChild(tmp);
+      status.textContent = '読み取り失敗。バーコードを正面からはっきり撮影して再試行してください。';
       captureBtn.disabled = false;
       input.value = '';
     }
-    // input を再利用可能にするため付け直し
-    if (!document.body.contains(input)) document.body.appendChild(input);
   });
 
   // モーダルを閉じるときに input も消す

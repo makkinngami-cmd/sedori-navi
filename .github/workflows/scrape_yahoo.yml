@@ -2,7 +2,8 @@ name: Weekly Yahoo Auctions Scraper
 
 on:
   schedule:
-    - cron: '0 22 * * 0'   # JST 月曜 07:00（UTC 日曜 22:00）
+    # [TEST] 30分ごとに実行（today マーカーで重複スキップ）
+    - cron: '*/30 * * * *'
   workflow_dispatch:         # 手動実行ボタン
 
 permissions:
@@ -20,8 +21,23 @@ jobs:
         with:
           fetch-depth: 0
 
+      # ── 1.5. 今日実行済みならスキップ ─────────────────────────────
+      - name: Check if already scraped today
+        id: skip_check
+        run: |
+          TODAY=$(python -c "from datetime import datetime, timezone, timedelta; print(datetime.now(timezone(timedelta(hours=9))).strftime('%Y-%m-%d'))")
+          echo "today=$TODAY" >> $GITHUB_OUTPUT
+          if [ -f data/last_yahoo_scrape.txt ] && [ "$(cat data/last_yahoo_scrape.txt)" = "$TODAY" ]; then
+            echo "Already scraped Yahoo today — skipping"
+            echo "skip=true" >> $GITHUB_OUTPUT
+          else
+            echo "Yahoo not yet scraped today — proceeding"
+            echo "skip=false" >> $GITHUB_OUTPUT
+          fi
+
       # ── 2. Python セットアップ ────────────────────────────────────
       - name: Set up Python
+        if: steps.skip_check.outputs.skip != 'true'
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
@@ -30,26 +46,35 @@ jobs:
 
       # ── 3. 依存関係インストール ────────────────────────────────────
       - name: Install Python dependencies
+        if: steps.skip_check.outputs.skip != 'true'
         run: |
           pip install --upgrade pip
           pip install -r scraper/requirements.txt
 
       # ── 4. Playwright ブラウザインストール ────────────────────────
       - name: Install Playwright Chromium
+        if: steps.skip_check.outputs.skip != 'true'
         run: playwright install chromium --with-deps
 
       # ── 5. スクレイパー実行 ────────────────────────────────────────
       - name: Run Yahoo scraper
+        if: steps.skip_check.outputs.skip != 'true'
         run: |
           cd scraper
           python scrape_yahoo.py
         env:
           PYTHONUNBUFFERED: "1"
 
-      # ── 6. 取得件数チェック ─────────────────────────────────────────
+      # ── 6. マーカーファイル書き込み ────────────────────────────────
+      - name: Write today marker
+        if: steps.skip_check.outputs.skip != 'true'
+        run: echo "${{ steps.skip_check.outputs.today }}" > data/last_yahoo_scrape.txt
+
+      # ── 7. 取得件数チェック ─────────────────────────────────────────
       - name: Verify scraped records
+        if: steps.skip_check.outputs.skip != 'true'
         run: |
-          TODAY=$(python -c "from datetime import datetime, timezone, timedelta; print(datetime.now(timezone(timedelta(hours=9))).strftime('%Y-%m-%d'))")
+          TODAY=${{ steps.skip_check.outputs.today }}
           COUNT=$(python -c "
           import csv
           with open('data/prices.csv', encoding='utf-8') as f:
@@ -58,19 +83,23 @@ jobs:
           ")
           echo "Today's Yahoo records: $COUNT"
           if [ "$COUNT" -eq 0 ]; then
-            echo "WARNING: No Yahoo records scraped for $TODAY (may be normal if no auctions)"
+            echo "WARNING: No Yahoo records scraped for $TODAY"
           fi
 
-      # ── 7. prices.csv を docs/ にコピー ───────────────────────────
+      # ── 8. prices.csv / マーカー を docs/ にコピー ─────────────────
       - name: Copy CSV to docs/
-        run: cp data/prices.csv docs/prices.csv
+        if: steps.skip_check.outputs.skip != 'true'
+        run: |
+          cp data/prices.csv docs/prices.csv
+          cp data/last_yahoo_scrape.txt docs/last_yahoo_scrape.txt
 
-      # ── 8. コミット & プッシュ ────────────────────────────────────
+      # ── 9. コミット & プッシュ ────────────────────────────────────
       - name: Commit and push
+        if: steps.skip_check.outputs.skip != 'true'
         run: |
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add data/prices.csv docs/prices.csv
+          git add data/prices.csv docs/prices.csv data/last_yahoo_scrape.txt docs/last_yahoo_scrape.txt
           if git diff --cached --quiet; then
             echo "No changes to commit"
           else

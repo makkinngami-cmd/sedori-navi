@@ -433,6 +433,23 @@
     }
     @keyframes spin { to { transform: rotate(360deg); } }
 
+    /* ── お気に入りボタン ────────────────────────────────── */
+    .fav-btn {
+      background: none;
+      border: none;
+      color: var(--yellow);
+      cursor: pointer;
+      font-size: 0.85rem;
+      line-height: 1;
+      opacity: 0.2;
+      padding: 2px 3px;
+      transition: opacity 0.15s, transform 0.12s;
+      flex-shrink: 0;
+      align-self: flex-start;
+    }
+    .fav-btn:hover { opacity: 0.65; transform: scale(1.2); }
+    .fav-btn.active { opacity: 1; }
+
     /* ── レスポンシブ ─────────────────────────────────── */
     @media (max-width: 720px) {
       .app { grid-template-columns: 1fr; height: auto; }
@@ -461,6 +478,7 @@
   <aside id="sidebar">
     <div id="category-tabs">
       <button class="cat-tab active" data-cat="all">すべて</button>
+      <button class="cat-tab" id="fav-tab" data-cat="favorites">⭐ お気に入り</button>
       <button class="cat-tab" data-cat="ゲーム">🎮 ゲーム</button>
       <button class="cat-tab" data-cat="カメラ">📷 カメラ</button>
       <button class="cat-tab" data-cat="ポケカ">🃏 ポケカ</button>
@@ -862,6 +880,24 @@ const STORE_NAMES = Object.keys(STORE_COLORS);
 let allRows = [];        // 全CSV行
 let janMap = {};         // product_name → JAN code
 let urlMap = {};         // product_name → 買取一丁目 URL
+
+// ── お気に入り（localStorage 永続）──────────────────────────────────
+let favorites = new Set(JSON.parse(localStorage.getItem('sedori_favorites') || '[]'));
+function saveFavorites() {
+  localStorage.setItem('sedori_favorites', JSON.stringify([...favorites]));
+}
+function toggleFavorite(name, e) {
+  e.stopPropagation();
+  if (favorites.has(name)) favorites.delete(name); else favorites.add(name);
+  saveFavorites();
+  updateFavTab();
+  renderProductList();
+}
+function updateFavTab() {
+  const btn = document.getElementById('fav-tab');
+  if (!btn) return;
+  btn.textContent = favorites.size ? `⭐ お気に入り (${favorites.size})` : '⭐ お気に入り';
+}
 // msrpHistory: { product_name: [{effective_date:'YYYY-MM-DD', msrp:number}, ...] }
 // 同一商品に複数行持つことで値上げ・値下げの履歴を表現する
 let msrpHistory = {};
@@ -944,6 +980,7 @@ function getProductsInCategory(cat) {
   // CSV に登録された商品の中からカテゴリでフィルタ
   const names = [...new Set(allRows.map(r => r.product_name))];
   if (cat === 'all') return names.sort();
+  if (cat === 'favorites') return names.filter(n => favorites.has(n)).sort();
   return names.filter(n => (PRODUCT_CATEGORIES[n] || 'その他') === cat).sort();
 }
 
@@ -1109,6 +1146,7 @@ function renderProductList() {
   const allMasterNames = Object.keys(PRODUCT_CATEGORIES);
   const additionalMaster = allMasterNames.filter(n => {
     if (!products.includes(n)) {
+      if (currentCat === 'favorites') return favorites.has(n);
       if (currentCat !== 'all' && (PRODUCT_CATEGORIES[n] || 'その他') !== currentCat) return false;
       if (query && !n.toLowerCase().includes(query)) return false;
       if (activeSc && !matchSubcat(n, activeSc)) return false;
@@ -1152,6 +1190,15 @@ function renderProductList() {
 
     const pricesEl = document.createElement('div');
     pricesEl.className = 'prod-prices';
+
+    // ★ お気に入りボタン
+    const favBtn = document.createElement('button');
+    const isFav = favorites.has(name);
+    favBtn.className = 'fav-btn' + (isFav ? ' active' : '');
+    favBtn.textContent = isFav ? '⭐' : '☆';
+    favBtn.title = isFav ? 'お気に入り解除' : 'お気に入り登録';
+    favBtn.addEventListener('click', e => toggleFavorite(name, e));
+    pricesEl.appendChild(favBtn);
 
     const sidebarKeys = Object.keys(latest).filter(s => SIDEBAR_STORES.has(s));
     if (sidebarKeys.length === 0) {
@@ -1508,6 +1555,7 @@ async function loadData() {
     }
 
     updateSummaryCards();
+    updateFavTab();
     renderSubcatTabs();
     renderProductList();
   } catch (e) {

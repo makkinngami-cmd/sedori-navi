@@ -1042,6 +1042,20 @@ function getUniqueDates(productName) {
   return [...new Set(allRows.filter(r => r.product_name === productName).map(r => r.date))].sort();
 }
 
+// 商品の初回データ日〜全体最新日までの連続日付配列を生成
+function buildChartDates(productName) {
+  const productDates = getUniqueDates(productName);
+  if (!productDates.length) return [];
+  const globalLatest = allRows.reduce((max, r) => r.date > max ? r.date : max, '');
+  const start = new Date(productDates[0]);
+  const end   = new Date(globalLatest);
+  const dates = [];
+  for (const d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
+    dates.push(d.toISOString().split('T')[0]);
+  }
+  return dates;
+}
+
 function getProductsInCategory(cat) {
   // CSV に登録された商品の中からカテゴリでフィルタ
   const names = [...new Set(allRows.map(r => r.product_name))];
@@ -1327,7 +1341,7 @@ function renderChart(productName) {
   const titleEl = document.getElementById('product-title');
   const tableWrap = document.getElementById('data-table-wrap');
 
-  const dates = getUniqueDates(productName);
+  const dates = buildChartDates(productName);
   const rows = allRows.filter(r => r.product_name === productName);
 
   document.getElementById('pt-name').textContent = productName;

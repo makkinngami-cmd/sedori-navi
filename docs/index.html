@@ -1246,7 +1246,16 @@ function renderChart(productName) {
 
   // Chart.js データセット構築
   const YAHOO_STORES = new Set(['ヤフオク 最安', 'ヤフオク 中央値', 'ヤフオク 最高']);
-  const storeData = s => dates.map(d => { const r = rows.find(x => x.store === s && x.date === d); return r ? r.price : null; });
+  // 日付がない場合は直前の価格を引き継ぐ（前値補完）
+  const storeData = s => {
+    const storeRows = rows.filter(x => x.store === s).sort((a, b) => a.date.localeCompare(b.date));
+    let last = null;
+    return dates.map(d => {
+      const r = storeRows.find(x => x.date === d);
+      if (r) last = r.price;
+      return last;
+    });
+  };
 
   // 通常ストア（ヤフオク以外）
   const normalStores = [...new Set(rows.map(r => r.store))].filter(s => !YAHOO_STORES.has(s));

@@ -1925,14 +1925,33 @@ async function _startNativeScanner() {
 }
 
 // ── iOS / Safari: html5-qrcode リアルタイム映像 ──────────────────────
-// formatsToSupport の数値:  EAN_13=9, EAN_8=10, CODE_128=5, UPC_A=14, UPC_E=15
-// ※ コンストラクタに渡す（start() の設定オブジェクトではない）
+// formatsToSupport 数値: EAN_13=9, EAN_8=10, CODE_128=5, UPC_A=14, UPC_E=15
+// getCameras() でデバイスID取得 → facingMode より iOS 互換性が高い
 async function _startZXingScanner() {
   const status = document.getElementById('barcode-status');
   const reader = document.getElementById('barcode-reader');
   status.textContent = 'カメラを起動中…';
   reader.innerHTML   = '';
 
+  // ① カメラ一覧取得（ここでパーミッションダイアログが出る）
+  let cameras;
+  try {
+    cameras = await Html5Qrcode.getCameras();
+  } catch (err) {
+    status.textContent = `カメラへのアクセスが拒否されています。\niOS設定 › Safari › カメラ を「許可」にしてから再試行してください。\n(${err?.message ?? err})`;
+    return;
+  }
+
+  if (!cameras || cameras.length === 0) {
+    status.textContent = 'カメラが見つかりません。';
+    return;
+  }
+
+  // 背面カメラを優先（ラベルに back/rear/environment を含む、なければ末尾）
+  const cam = cameras.find(c => /back|rear|environment/i.test(c.label ?? ''))
+           ?? cameras[cameras.length - 1];
+
+  // ② スキャナ起動（デバイスIDで指定）
   try {
     _zxingScanner = new Html5Qrcode('barcode-reader', {
       formatsToSupport: [9, 10, 5, 14, 15],
@@ -1940,7 +1959,7 @@ async function _startZXingScanner() {
     });
 
     await _zxingScanner.start(
-      { facingMode: { ideal: 'environment' } },
+      cam.id,
       { fps: 10, qrbox: { width: 260, height: 100 } },
       (decodedText) => {
         const val = decodedText.trim();
@@ -1956,7 +1975,7 @@ async function _startZXingScanner() {
     status.textContent = 'バーコードを枠内に合わせてください';
   } catch (err) {
     reader.innerHTML = '';
-    status.textContent = `カメラにアクセスできません: ${err?.message ?? err}`;
+    status.textContent = `スキャナ起動失敗: ${err?.message ?? err}`;
   }
 }
 

@@ -147,28 +147,52 @@
     }
 
     /* 検索 */
-    /* ── お気に入りフィルタバー ──────────────────────────── */
+    /* ── フィルタ／ソートバー ────────────────────────────── */
     #fav-filter-bar {
+      display: flex;
+      gap: 0.4rem;
       padding: 0.4rem 0.75rem;
       border-bottom: 1px solid var(--border);
     }
     #fav-filter-btn {
-      width: 100%;
+      flex: 1;
+      min-width: 0;
       background: var(--surface2);
       border: 1px solid var(--border);
       border-radius: 6px;
       color: var(--text-muted);
       cursor: pointer;
-      font-size: 0.78rem;
-      padding: 0.35rem 0.6rem;
+      font-size: 0.75rem;
+      padding: 0.32rem 0.55rem;
       transition: all 0.15s;
       text-align: left;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
     #fav-filter-btn:hover { border-color: var(--yellow); color: var(--text); }
     #fav-filter-btn.active {
       background: rgba(242,201,76,0.12);
       border-color: var(--yellow);
       color: var(--yellow);
+    }
+    #sort-rate-btn {
+      flex-shrink: 0;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 0.75rem;
+      padding: 0.32rem 0.55rem;
+      transition: all 0.15s;
+      white-space: nowrap;
+    }
+    #sort-rate-btn:hover { border-color: var(--accent); color: var(--text); }
+    #sort-rate-btn.active {
+      background: rgba(92,115,242,0.15);
+      border-color: var(--accent);
+      color: var(--accent);
     }
 
     #search-wrap {
@@ -511,7 +535,8 @@
     </div>
     <div id="subcat-tabs"></div>
     <div id="fav-filter-bar">
-      <button id="fav-filter-btn">☆ お気に入りのみ表示</button>
+      <button id="fav-filter-btn">☆ お気に入り</button>
+      <button id="sort-rate-btn">買取率 ▼</button>
     </div>
     <div id="search-wrap">
       <input id="search" type="search" placeholder="商品名・JANコードで検索…" autocomplete="off" spellcheck="false">
@@ -910,6 +935,15 @@ let urlMap = {};         // product_name → 買取一丁目 URL
 // ── お気に入り（localStorage 永続）──────────────────────────────────
 let favorites = new Set(JSON.parse(localStorage.getItem('sedori_favorites') || '[]'));
 let filterFavorites = false;
+let sortByRate = false;
+
+function getRateForProduct(name) {
+  const latest = getProductLatestPrices(name);
+  const keys = Object.keys(latest).filter(s => SIDEBAR_STORES.has(s));
+  if (!keys.length) return null;
+  const best = Math.max(...keys.map(s => latest[s].price));
+  return calcRate(best, getMsrpLatest(name));
+}
 
 function saveFavorites() {
   localStorage.setItem('sedori_favorites', JSON.stringify([...favorites]));
@@ -1185,10 +1219,20 @@ function renderProductList() {
     }
     return false;
   });
-  // お気に入りフィルタ適用
-  const allProducts = filterFavorites
+  // お気に入りフィルタ・買取率ソート適用
+  let allProducts = filterFavorites
     ? [...products, ...additionalMaster].filter(n => favorites.has(n))
     : [...products, ...additionalMaster];
+
+  if (sortByRate) {
+    allProducts.sort((a, b) => {
+      const ra = getRateForProduct(a), rb = getRateForProduct(b);
+      if (ra === null && rb === null) return 0;
+      if (ra === null) return 1;
+      if (rb === null) return -1;
+      return rb - ra;
+    });
+  }
 
   const list = document.getElementById('product-list');
   list.innerHTML = '';
@@ -1724,6 +1768,15 @@ sidebarSearchEl.addEventListener('keydown', e => {
 document.getElementById('fav-filter-btn').addEventListener('click', () => {
   filterFavorites = !filterFavorites;
   updateFavBtn();
+  renderProductList();
+});
+
+// ── 買取率ソートトグル ───────────────────────────────────────────────
+document.getElementById('sort-rate-btn').addEventListener('click', () => {
+  sortByRate = !sortByRate;
+  const btn = document.getElementById('sort-rate-btn');
+  btn.classList.toggle('active', sortByRate);
+  btn.textContent = sortByRate ? '買取率 ▲' : '買取率 ▼';
   renderProductList();
 });
 

@@ -2,9 +2,8 @@ name: Daily Price Scraper
 
 on:
   schedule:
-    # UTC 22:17 = JST 07:17（オフピーク帯・非:00分でスロットリング回避）
-    # 複数クロンのバーストがスロットリングの原因だったため1本に集約
-    - cron: '17 22 * * *'
+    # UTC 02:27 = JST 11:27（買取一丁目の開店後・非:00分でスロットリング回避）
+    - cron: '27 2 * * *'
   workflow_dispatch:        # 手動実行ボタンも有効化
 
 permissions:

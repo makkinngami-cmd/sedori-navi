@@ -83,12 +83,62 @@ CUSTOM_QUERIES: dict[str, str] = {
     'Steam Deck 有機EL 512GB':      'Steam Deck OLED 512GB',
 }
 
-# 商品ごとの価格上限（定価の2〜3倍程度。これを超えたら本体込みバンドルと判断）
+# 商品ごとの価格上限（これを超えたら本体込みバンドルと判断）
 PRICE_CAPS: dict[str, int] = {
     'PlayStation5 ディスクドライブ': 25000,  # MSRP ¥11,980
     'リモートプレーヤー':            50000,  # MSRP ¥29,980
     'PlayStation VR2':              100000,  # MSRP ¥74,980
 }
+
+# 商品ごとの価格下限（ヤフオク検索の min= パラメータに渡す）
+# カメラ系は「互換バッテリー」「レンズキャップ」等のアクセサリーが
+# 商品名を含んで出品されるため、現実的な最低価格を設定して除外する
+PRICE_FLOORS: dict[str, int] = {
+    'G7 X Mark II':                    8000,
+    'G7 X Mark III シルバー':          8000,
+    'G7 X Mark III ブラック':          8000,
+    'G7X Mark III 30th Anniversary':  30000,
+    'PowerShot G1 X Mark III':         8000,
+    'PowerShot V10':                   8000,
+    'PowerShot V1':                    8000,
+    'IXY 650 シルバー':                5000,
+    'IXY 650 ブラック':                5000,
+    'IXY 650 m シルバー':              5000,
+    'IXY 650 m ブラック':              5000,
+    'SX740 シルバー':                  8000,
+    'SX740 ブラック':                  8000,
+    'SX70':                            5000,
+    'X100VI シルバー（新）':          50000,
+    'X100VI ブラック（新）':          50000,
+    'X100VI シルバー（旧）':          50000,
+    'X100VI ブラック（旧）':          50000,
+    'X-T30 レンズキット':             15000,
+    'LUMIX DC-TZ99 ブラック':         10000,
+    'LUMIX DC-TZ99 ホワイト':         10000,
+    'RICOH GR IV Monochrome':         50000,
+    'RICOH GR IV':                    50000,
+    'RICOH GR IIIx Urban Edition':    30000,
+    'RICOH GR III Diary Edition':     30000,
+    'RICOH GR IIIx':                  30000,
+    'RICOH GR III':                   30000,
+    'Nikon Z50II ダブルズームキット': 30000,
+    'Nikon Z50II 18-140 VRキット':    25000,
+    'Nikon Z50II 16-50 VRキット':     20000,
+    'Nikon Z50II ボディ':             20000,
+    'OM SYSTEM PEN E-P7':             15000,
+}
+
+# アクセサリー出品の除外ワード
+# （カメラ等で本体名を「対応機種」として記載した周辺機器が引っかかる対策）
+ACCESSORY_WORDS = [
+    'レンズキャップ', '前キャップ', 'レンズ前キャップ',
+    '互換バッテリー', '互換充電器', '互換品',
+    'ストラップ', 'ネックストラップ', 'ハンドストラップ',
+    'フィルター', 'PLフィルター', 'UVフィルター', 'NDフィルター',
+    'レンズフード', 'レンズ フード',
+    '液晶保護フィルム', '液晶保護シート', 'スクリーン保護',
+    'シリコンカバー', 'シリコンケース',
+]
 
 
 # ── ユーティリティ ────────────────────────────────────────────────────
@@ -326,11 +376,15 @@ async def scrape_product_yahoo(
     def is_bad_condition(title: str) -> bool:
         return any(w in title for w in BAD_CONDITION_WORDS)
 
+    def is_accessory(title: str) -> bool:
+        return any(w in title for w in ACCESSORY_WORDS)
+
     matched = [
         it for it in items
         if matches(it['title'])
         and not is_bundle(it['title'])
         and not is_bad_condition(it['title'])
+        and not is_accessory(it['title'])
         and (max_price == 0 or it['price'] <= max_price)
     ]
     if not matched:
@@ -438,6 +492,7 @@ async def main() -> None:
 
             records = await scrape_product_yahoo(
                 page, name, query, keywords,
+                min_price=PRICE_FLOORS.get(name, 0),
                 max_price=PRICE_CAPS.get(name, 0),
             )
             all_records.extend(records)

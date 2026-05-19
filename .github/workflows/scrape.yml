@@ -2,18 +2,9 @@ name: Daily Price Scraper
 
 on:
   schedule:
-    # JST 12:00〜21:00 の毎時リトライ（UTC 03:00〜12:00）
-    # 1回成功すれば以降はスキップ処理で数秒で終了
-    - cron: '0 3 * * *'   # JST 12:00
-    - cron: '0 4 * * *'   # JST 13:00
-    - cron: '0 5 * * *'   # JST 14:00
-    - cron: '0 6 * * *'   # JST 15:00
-    - cron: '0 7 * * *'   # JST 16:00
-    - cron: '0 8 * * *'   # JST 17:00
-    - cron: '0 9 * * *'   # JST 18:00
-    - cron: '0 10 * * *'  # JST 19:00
-    - cron: '0 11 * * *'  # JST 20:00
-    - cron: '0 12 * * *'  # JST 21:00
+    # UTC 22:17 = JST 07:17（オフピーク帯・非:00分でスロットリング回避）
+    # 複数クロンのバーストがスロットリングの原因だったため1本に集約
+    - cron: '17 22 * * *'
   workflow_dispatch:        # 手動実行ボタンも有効化
 
 permissions:

@@ -147,6 +147,30 @@
     }
 
     /* 検索 */
+    /* ── お気に入りフィルタバー ──────────────────────────── */
+    #fav-filter-bar {
+      padding: 0.4rem 0.75rem;
+      border-bottom: 1px solid var(--border);
+    }
+    #fav-filter-btn {
+      width: 100%;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 0.78rem;
+      padding: 0.35rem 0.6rem;
+      transition: all 0.15s;
+      text-align: left;
+    }
+    #fav-filter-btn:hover { border-color: var(--yellow); color: var(--text); }
+    #fav-filter-btn.active {
+      background: rgba(242,201,76,0.12);
+      border-color: var(--yellow);
+      color: var(--yellow);
+    }
+
     #search-wrap {
       padding: 0.6rem 0.75rem;
       border-bottom: 1px solid var(--border);
@@ -478,7 +502,6 @@
   <aside id="sidebar">
     <div id="category-tabs">
       <button class="cat-tab active" data-cat="all">すべて</button>
-      <button class="cat-tab" id="fav-tab" data-cat="favorites">⭐ お気に入り</button>
       <button class="cat-tab" data-cat="ゲーム">🎮 ゲーム</button>
       <button class="cat-tab" data-cat="カメラ">📷 カメラ</button>
       <button class="cat-tab" data-cat="ポケカ">🃏 ポケカ</button>
@@ -487,6 +510,9 @@
       <button class="cat-tab" data-cat="その他">📦 その他</button>
     </div>
     <div id="subcat-tabs"></div>
+    <div id="fav-filter-bar">
+      <button id="fav-filter-btn">☆ お気に入りのみ表示</button>
+    </div>
     <div id="search-wrap">
       <input id="search" type="search" placeholder="商品名・JANコードで検索…" autocomplete="off" spellcheck="false">
       <button id="sidebar-barcode-btn" title="バーコード読み取り（準備中）" disabled>📷</button>
@@ -883,6 +909,8 @@ let urlMap = {};         // product_name → 買取一丁目 URL
 
 // ── お気に入り（localStorage 永続）──────────────────────────────────
 let favorites = new Set(JSON.parse(localStorage.getItem('sedori_favorites') || '[]'));
+let filterFavorites = false;
+
 function saveFavorites() {
   localStorage.setItem('sedori_favorites', JSON.stringify([...favorites]));
 }
@@ -890,13 +918,17 @@ function toggleFavorite(name, e) {
   e.stopPropagation();
   if (favorites.has(name)) favorites.delete(name); else favorites.add(name);
   saveFavorites();
-  updateFavTab();
+  updateFavBtn();
   renderProductList();
 }
-function updateFavTab() {
-  const btn = document.getElementById('fav-tab');
+function updateFavBtn() {
+  const btn = document.getElementById('fav-filter-btn');
   if (!btn) return;
-  btn.textContent = favorites.size ? `⭐ お気に入り (${favorites.size})` : '⭐ お気に入り';
+  const count = favorites.size;
+  btn.textContent = filterFavorites
+    ? `⭐ お気に入りのみ表示中 (${count}件)`
+    : count ? `☆ お気に入りのみ表示 (${count}件)` : '☆ お気に入りのみ表示';
+  btn.classList.toggle('active', filterFavorites);
 }
 // msrpHistory: { product_name: [{effective_date:'YYYY-MM-DD', msrp:number}, ...] }
 // 同一商品に複数行持つことで値上げ・値下げの履歴を表現する
@@ -980,7 +1012,6 @@ function getProductsInCategory(cat) {
   // CSV に登録された商品の中からカテゴリでフィルタ
   const names = [...new Set(allRows.map(r => r.product_name))];
   if (cat === 'all') return names.sort();
-  if (cat === 'favorites') return names.filter(n => favorites.has(n)).sort();
   return names.filter(n => (PRODUCT_CATEGORIES[n] || 'その他') === cat).sort();
 }
 
@@ -1146,7 +1177,7 @@ function renderProductList() {
   const allMasterNames = Object.keys(PRODUCT_CATEGORIES);
   const additionalMaster = allMasterNames.filter(n => {
     if (!products.includes(n)) {
-      if (currentCat === 'favorites') return favorites.has(n);
+      if (filterFavorites && !favorites.has(n)) return false;
       if (currentCat !== 'all' && (PRODUCT_CATEGORIES[n] || 'その他') !== currentCat) return false;
       if (query && !n.toLowerCase().includes(query)) return false;
       if (activeSc && !matchSubcat(n, activeSc)) return false;
@@ -1154,7 +1185,10 @@ function renderProductList() {
     }
     return false;
   });
-  const allProducts = [...products, ...additionalMaster];
+  // お気に入りフィルタ適用
+  const allProducts = filterFavorites
+    ? [...products, ...additionalMaster].filter(n => favorites.has(n))
+    : [...products, ...additionalMaster];
 
   const list = document.getElementById('product-list');
   list.innerHTML = '';
@@ -1555,7 +1589,7 @@ async function loadData() {
     }
 
     updateSummaryCards();
-    updateFavTab();
+    updateFavBtn();
     renderSubcatTabs();
     renderProductList();
   } catch (e) {
@@ -1684,6 +1718,13 @@ sidebarSearchEl.addEventListener('keydown', e => {
     renderSidebarSearch('');
     sidebarSearchEl.blur();
   }
+});
+
+// ── お気に入りフィルタトグル ─────────────────────────────────────────
+document.getElementById('fav-filter-btn').addEventListener('click', () => {
+  filterFavorites = !filterFavorites;
+  updateFavBtn();
+  renderProductList();
 });
 
 // ─────────────────────────────────────────────────────────────────────

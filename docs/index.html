@@ -5,8 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>せどりナビ</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
-  <!-- html5-qrcode: iOS の写真モードでのデコードに使用 -->
-  <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+  <!-- Quagga2: iOS の1Dバーコードスキャンに使用 -->
+  <script src="https://cdn.jsdelivr.net/npm/@ericblade/quagga2@1.4.2/dist/quagga.min.js"></script>
   <style>
     /* ── リセット & 変数 ─────────────────────────────── */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -1874,7 +1874,7 @@ document.getElementById('sort-rate-btn').addEventListener('click', () => {
 const _hasBarcodeDetector = typeof BarcodeDetector !== 'undefined';
 let _scanStream    = null;
 let _scanAnimFrame = null;
-let _zxingScanner  = null;
+let _quaggaRunning = false;
 
 function _applyBarcode(val) {
   const el = document.getElementById('search');
@@ -1925,59 +1925,50 @@ async function _startNativeScanner() {
   _scanAnimFrame = setTimeout(scan, 0);
 }
 
-// ── iOS / Safari: html5-qrcode リアルタイム映像 ──────────────────────
-// formatsToSupport 数値: EAN_13=9, EAN_8=10, CODE_128=5, UPC_A=14, UPC_E=15
-// getCameras() でデバイスID取得 → facingMode より iOS 互換性が高い
-async function _startZXingScanner() {
+// ── iOS / Safari: Quagga2 リアルタイム映像（1Dバーコード特化）────────
+function _startQuaggaScanner() {
   const status = document.getElementById('barcode-status');
   const reader = document.getElementById('barcode-reader');
   status.textContent = 'カメラを起動中…';
   reader.innerHTML   = '';
 
-  // ① カメラ一覧取得（ここでパーミッションダイアログが出る）
-  let cameras;
-  try {
-    cameras = await Html5Qrcode.getCameras();
-  } catch (err) {
-    status.textContent = `カメラへのアクセスが拒否されています。\niOS設定 › Safari › カメラ を「許可」にしてから再試行してください。\n(${err?.message ?? err})`;
-    return;
-  }
-
-  if (!cameras || cameras.length === 0) {
-    status.textContent = 'カメラが見つかりません。';
-    return;
-  }
-
-  // 背面カメラを優先（ラベルに back/rear/environment を含む、なければ末尾）
-  const cam = cameras.find(c => /back|rear|environment/i.test(c.label ?? ''))
-           ?? cameras[cameras.length - 1];
-
-  // ② スキャナ起動（デバイスIDで指定）
-  try {
-    _zxingScanner = new Html5Qrcode('barcode-reader', {
-      formatsToSupport: [9, 10, 5, 14, 15],
-      verbose: false,
-    });
-
-    await _zxingScanner.start(
-      cam.id,
-      { fps: 10, qrbox: { width: 260, height: 100 } },
-      (decodedText) => {
-        const val = decodedText.trim();
-        if (/^\d{8,14}$/.test(val)) {
-          _zxingScanner.stop().catch(() => {});
-          _zxingScanner = null;
-          closeBarcodeScanner();
-          _applyBarcode(val);
-        }
+  Quagga.init({
+    inputStream: {
+      type: 'LiveStream',
+      target: reader,
+      constraints: {
+        facingMode: { ideal: 'environment' },
+        width:  { ideal: 1280 },
+        height: { ideal: 720 },
       },
-      () => {}
-    );
-    status.textContent = 'バーコードを枠内に合わせてください';
-  } catch (err) {
-    reader.innerHTML = '';
-    status.textContent = `スキャナ起動失敗: ${err?.message ?? err}`;
-  }
+    },
+    decoder: {
+      readers: ['ean_reader', 'ean_8_reader', 'code_128_reader', 'upc_reader', 'upc_e_reader'],
+      tryHarder: true,
+    },
+    locate: true,
+    locator: { patchSize: 'medium', halfSample: true },
+  }, (err) => {
+    if (err) {
+      status.textContent = `カメラにアクセスできません: ${err?.message ?? err}`;
+      return;
+    }
+    Quagga.start();
+    _quaggaRunning = true;
+    status.textContent = 'バーコードをカメラに向けてください';
+  });
+
+  Quagga.onDetected((result) => {
+    const val = (result.codeResult?.code ?? '').trim();
+    if (!/^\d{8,14}$/.test(val)) return;
+    // 誤検知除去: decodedCodes の平均エラー率が低いものだけ採用
+    const errs = (result.codeResult.decodedCodes ?? [])
+      .map(x => x.error).filter(e => e != null);
+    const avgErr = errs.length ? errs.reduce((a, b) => a + b, 0) / errs.length : 1;
+    if (avgErr > 0.25) return;
+    closeBarcodeScanner();
+    _applyBarcode(val);
+  });
 }
 
 // ── 共通: 開く / 閉じる ─────────────────────────────────────────────
@@ -1989,7 +1980,7 @@ async function openBarcodeScanner() {
   document.getElementById('barcode-status').className = '';
 
   if (_hasBarcodeDetector) { await _startNativeScanner(); }
-  else                     { await _startZXingScanner(); }
+  else                     { _startQuaggaScanner(); }
 }
 
 function closeBarcodeScanner() {
@@ -1999,7 +1990,7 @@ function closeBarcodeScanner() {
   btn.classList.remove('scanning');
   if (_scanAnimFrame) { clearTimeout(_scanAnimFrame); _scanAnimFrame = null; }
   if (_scanStream)    { _scanStream.getTracks().forEach(t => t.stop()); _scanStream = null; }
-  if (_zxingScanner)  { _zxingScanner.stop().catch(() => {}); _zxingScanner.clear(); _zxingScanner = null; }
+  if (_quaggaRunning) { try { Quagga.stop(); } catch {} _quaggaRunning = false; }
   document.getElementById('barcode-reader').innerHTML = '';
 }
 

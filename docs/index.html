@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>せどりナビ</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+  <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
   <style>
     /* ── リセット & 変数 ─────────────────────────────── */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -219,13 +220,66 @@
       border: 1px solid var(--border);
       border-radius: 6px;
       color: var(--text-muted);
-      cursor: not-allowed;
+      cursor: pointer;
       font-size: 0.95rem;
       line-height: 1;
-      opacity: 0.45;
       padding: 0.38rem 0.45rem;
       flex-shrink: 0;
+      transition: all 0.15s;
     }
+    #sidebar-barcode-btn:hover { border-color: var(--accent); color: var(--text); }
+    #sidebar-barcode-btn.scanning { border-color: var(--green); color: var(--green); }
+
+    /* ── バーコードスキャナ モーダル ────────────────────── */
+    #barcode-modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.82);
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    #barcode-modal.hidden { display: none; }
+    .barcode-modal-inner {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      width: min(360px, 92vw);
+    }
+    .barcode-modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.7rem 1rem;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
+    #barcode-close {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 1.1rem;
+      line-height: 1;
+      padding: 0.1rem 0.3rem;
+    }
+    #barcode-close:hover { color: var(--text); }
+    #barcode-reader {
+      width: 100%;
+    }
+    #barcode-reader video { border-radius: 0 !important; }
+    #barcode-status {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      text-align: center;
+      padding: 0.55rem 1rem;
+      border-top: 1px solid var(--border);
+      min-height: 2.2rem;
+    }
+    #barcode-status.success { color: var(--green); font-weight: 600; }
     /* 検索結果パネル（サイドバー内インライン） */
     #search-results {
       flex: 1;
@@ -540,9 +594,21 @@
     </div>
     <div id="search-wrap">
       <input id="search" type="search" placeholder="商品名・JANコードで検索…" autocomplete="off" spellcheck="false">
-      <button id="sidebar-barcode-btn" title="バーコード読み取り（準備中）" disabled>📷</button>
+      <button id="sidebar-barcode-btn" title="バーコードで検索">📷</button>
     </div>
     <div id="search-results" class="hidden"></div>
+
+    <!-- バーコードスキャナ モーダル -->
+    <div id="barcode-modal" class="hidden">
+      <div class="barcode-modal-inner">
+        <div class="barcode-modal-header">
+          <span>📷 バーコードをスキャン</span>
+          <button id="barcode-close">✕</button>
+        </div>
+        <div id="barcode-reader"></div>
+        <div id="barcode-status">カメラを起動中…</div>
+      </div>
+    </div>
     <div id="product-list"></div>
   </aside>
 
@@ -1792,6 +1858,71 @@ document.getElementById('sort-rate-btn').addEventListener('click', () => {
   btn.classList.toggle('active', sortByRate);
   btn.textContent = sortByRate ? '買取率 ▲' : '買取率 ▼';
   renderProductList();
+});
+
+// ─────────────────────────────────────────────────────────────────────
+// バーコードスキャナ
+// ─────────────────────────────────────────────────────────────────────
+let _barcodeScanner = null;
+
+function openBarcodeScanner() {
+  const modal  = document.getElementById('barcode-modal');
+  const status = document.getElementById('barcode-status');
+  const btn    = document.getElementById('sidebar-barcode-btn');
+
+  modal.classList.remove('hidden');
+  btn.classList.add('scanning');
+  status.textContent = 'カメラを起動中…';
+  status.className = '';
+
+  _barcodeScanner = new Html5Qrcode('barcode-reader');
+  _barcodeScanner.start(
+    { facingMode: 'environment' },
+    {
+      fps: 10,
+      qrbox: { width: 240, height: 100 },
+      formatsToSupport: [
+        Html5QrcodeSupportedFormats.EAN_13,
+        Html5QrcodeSupportedFormats.EAN_8,
+        Html5QrcodeSupportedFormats.CODE_128,
+      ],
+    },
+    (decodedText) => {
+      // 数字のみ8桁or13桁 = EAN/JAN コード
+      if (/^\d{8,13}$/.test(decodedText)) {
+        status.textContent = `✓ ${decodedText}`;
+        status.className = 'success';
+        closeBarcodeScanner();
+        const searchEl = document.getElementById('search');
+        searchEl.value = decodedText;
+        renderSidebarSearch(decodedText);
+        searchEl.focus();
+      }
+    },
+    () => {} // フレームエラーは無視
+  ).then(() => {
+    status.textContent = 'バーコードをカメラに向けてください';
+  }).catch(err => {
+    status.textContent = `カメラにアクセスできません: ${err}`;
+  });
+}
+
+function closeBarcodeScanner() {
+  const modal = document.getElementById('barcode-modal');
+  const btn   = document.getElementById('sidebar-barcode-btn');
+  modal.classList.add('hidden');
+  btn.classList.remove('scanning');
+  if (_barcodeScanner) {
+    _barcodeScanner.stop().catch(() => {});
+    _barcodeScanner.clear();
+    _barcodeScanner = null;
+  }
+}
+
+document.getElementById('sidebar-barcode-btn').addEventListener('click', openBarcodeScanner);
+document.getElementById('barcode-close').addEventListener('click', closeBarcodeScanner);
+document.getElementById('barcode-modal').addEventListener('click', e => {
+  if (e.target === document.getElementById('barcode-modal')) closeBarcodeScanner();
 });
 
 // ─────────────────────────────────────────────────────────────────────

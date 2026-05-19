@@ -2,8 +2,18 @@ name: Daily Price Scraper
 
 on:
   schedule:
-    # [TEST] 30分ごとに実行（last_scrape.txt でスキップ制御 — 重複実行なし）
-    - cron: '*/30 * * * *'
+    # JST 12:00〜21:00 の毎時リトライ（UTC 03:00〜12:00）
+    # 1回成功すれば以降はスキップ処理で数秒で終了
+    - cron: '0 3 * * *'   # JST 12:00
+    - cron: '0 4 * * *'   # JST 13:00
+    - cron: '0 5 * * *'   # JST 14:00
+    - cron: '0 6 * * *'   # JST 15:00
+    - cron: '0 7 * * *'   # JST 16:00
+    - cron: '0 8 * * *'   # JST 17:00
+    - cron: '0 9 * * *'   # JST 18:00
+    - cron: '0 10 * * *'  # JST 19:00
+    - cron: '0 11 * * *'  # JST 20:00
+    - cron: '0 12 * * *'  # JST 21:00
   workflow_dispatch:        # 手動実行ボタンも有効化
 
 permissions:

@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>せどりナビ</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+  <!-- html5-qrcode: iOS の写真モードでのデコードに使用 -->
+  <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
   <style>
     /* ── リセット & 変数 ─────────────────────────────── */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -1860,35 +1862,34 @@ document.getElementById('sort-rate-btn').addEventListener('click', () => {
 });
 
 // ─────────────────────────────────────────────────────────────────────
-// バーコードスキャナ（BarcodeDetector API）
-// Android Chrome 83+ / iOS Safari 17+ 対応
+// バーコードスキャナ
+//   Android Chrome 83+  → BarcodeDetector でリアルタイム映像スキャン
+//   iOS Safari / 他     → 写真を撮影して静止画からデコード（html5-qrcode scanFile）
 // ─────────────────────────────────────────────────────────────────────
+const _hasBarcodeDetector = typeof BarcodeDetector !== 'undefined';
 let _scanStream    = null;
 let _scanAnimFrame = null;
 
-async function openBarcodeScanner() {
-  const modal  = document.getElementById('barcode-modal');
+function _applyBarcode(val) {
+  const el = document.getElementById('search');
+  el.value = val;
+  renderSidebarSearch(val);
+  el.focus();
+}
+
+// ── Android Chrome: リアルタイム動画スキャン ─────────────────────────
+async function _startVideoScanner() {
   const status = document.getElementById('barcode-status');
-  const btn    = document.getElementById('sidebar-barcode-btn');
   const reader = document.getElementById('barcode-reader');
-
-  modal.classList.remove('hidden');
-  btn.classList.add('scanning');
   status.textContent = 'カメラを起動中…';
-  status.className   = '';
   reader.innerHTML   = '';
-
-  if (typeof BarcodeDetector === 'undefined') {
-    status.textContent = 'このブラウザは非対応です（Android Chrome または iOS 17+ Safari をお使いください）';
-    return;
-  }
 
   let stream;
   try {
     stream = await navigator.mediaDevices.getUserMedia({
       video: { facingMode: { ideal: 'environment' }, width: { ideal: 1280 }, height: { ideal: 720 } },
     });
-  } catch (err) {
+  } catch {
     status.textContent = 'カメラにアクセスできません。ブラウザの権限設定を確認してください。';
     return;
   }
@@ -1896,37 +1897,99 @@ async function openBarcodeScanner() {
 
   const video = document.createElement('video');
   video.srcObject = stream;
-  video.setAttribute('playsinline', ''); // iOS 必須
+  video.setAttribute('playsinline', '');
   video.muted = true;
   video.style.cssText = 'width:100%;max-height:260px;display:block;object-fit:cover;';
   reader.appendChild(video);
-
   try { await video.play(); } catch {}
   status.textContent = 'バーコードをカメラに向けてください';
 
-  const detector = new BarcodeDetector({
-    formats: ['ean_13', 'ean_8', 'upc_a', 'upc_e', 'code_128', 'code_39'],
-  });
-
+  const detector = new BarcodeDetector({ formats: ['ean_13','ean_8','upc_a','upc_e','code_128','code_39'] });
   const scan = async () => {
     if (!_scanStream) return;
     try {
-      const codes = await detector.detect(video);
-      for (const code of codes) {
+      for (const code of await detector.detect(video)) {
         const val = code.rawValue.trim();
-        if (/^\d{8,14}$/.test(val)) {
-          closeBarcodeScanner();
-          const searchEl = document.getElementById('search');
-          searchEl.value = val;
-          renderSidebarSearch(val);
-          searchEl.focus();
-          return;
-        }
+        if (/^\d{8,14}$/.test(val)) { closeBarcodeScanner(); _applyBarcode(val); return; }
       }
     } catch {}
     _scanAnimFrame = requestAnimationFrame(scan);
   };
   _scanAnimFrame = requestAnimationFrame(scan);
+}
+
+// ── iOS / その他: 写真撮影 → 静止画デコード ─────────────────────────
+function _startPhotoScanner() {
+  const status = document.getElementById('barcode-status');
+  const reader = document.getElementById('barcode-reader');
+  reader.innerHTML = '';
+  status.textContent = 'バーコードをカメラで撮影してください';
+
+  // 撮影ボタン
+  const captureBtn = document.createElement('button');
+  captureBtn.textContent = '📷  バーコードを撮影する';
+  captureBtn.style.cssText = [
+    'display:block','width:calc(100% - 2rem)','margin:1.2rem 1rem',
+    'background:var(--accent)','border:none','border-radius:8px',
+    'color:#fff','font-size:0.95rem','font-weight:600',
+    'padding:0.85rem','cursor:pointer',
+  ].join(';');
+  reader.appendChild(captureBtn);
+
+  const input = document.createElement('input');
+  input.type = 'file'; input.accept = 'image/*'; input.capture = 'environment';
+  input.style.display = 'none';
+  document.body.appendChild(input);
+
+  captureBtn.addEventListener('click', () => input.click());
+
+  input.addEventListener('change', async () => {
+    const file = input.files[0];
+    if (!file) return;
+    captureBtn.disabled = true;
+    status.textContent  = '解析中…';
+    try {
+      const scanner = new Html5Qrcode('__zxing_tmp__');
+      // 一時マウント先
+      const tmp = document.createElement('div');
+      tmp.id = '__zxing_tmp__'; tmp.style.display = 'none';
+      document.body.appendChild(tmp);
+
+      const result = await scanner.scanFile(file, false);
+      document.body.removeChild(tmp);
+
+      const val = (typeof result === 'string' ? result : result.text || '').trim();
+      if (/^\d{8,14}$/.test(val)) {
+        closeBarcodeScanner();
+        _applyBarcode(val);
+      } else {
+        status.textContent = '読み取れませんでした。バーコードを正面・大きめに撮影して再試行してください。';
+        captureBtn.disabled = false;
+        input.value = '';
+      }
+    } catch {
+      status.textContent = '読み取り失敗。バーコードをはっきり映して再試行してください。';
+      captureBtn.disabled = false;
+      input.value = '';
+    }
+    // input を再利用可能にするため付け直し
+    if (!document.body.contains(input)) document.body.appendChild(input);
+  });
+
+  // モーダルを閉じるときに input も消す
+  document.getElementById('barcode-modal')._photoInput = input;
+}
+
+// ── 共通: 開く / 閉じる ─────────────────────────────────────────────
+async function openBarcodeScanner() {
+  const modal = document.getElementById('barcode-modal');
+  const btn   = document.getElementById('sidebar-barcode-btn');
+  modal.classList.remove('hidden');
+  btn.classList.add('scanning');
+  document.getElementById('barcode-status').className = '';
+
+  if (_hasBarcodeDetector) { await _startVideoScanner(); }
+  else                     { _startPhotoScanner(); }
 }
 
 function closeBarcodeScanner() {
@@ -1936,8 +1999,10 @@ function closeBarcodeScanner() {
   btn.classList.remove('scanning');
   if (_scanAnimFrame) { cancelAnimationFrame(_scanAnimFrame); _scanAnimFrame = null; }
   if (_scanStream)    { _scanStream.getTracks().forEach(t => t.stop()); _scanStream = null; }
-  const reader = document.getElementById('barcode-reader');
-  if (reader) reader.innerHTML = '';
+  // 写真モードの input 後始末
+  const pi = modal._photoInput;
+  if (pi && document.body.contains(pi)) { document.body.removeChild(pi); modal._photoInput = null; }
+  document.getElementById('barcode-reader').innerHTML = '';
 }
 
 document.getElementById('sidebar-barcode-btn').addEventListener('click', openBarcodeScanner);

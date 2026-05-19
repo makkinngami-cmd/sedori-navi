@@ -2,8 +2,7 @@ name: Weekly Yahoo Auctions Scraper
 
 on:
   schedule:
-    # [TEST] 30分ごとに実行（today マーカーで重複スキップ）
-    - cron: '*/30 * * * *'
+    - cron: '0 22 * * 0'   # JST 月曜 07:00（UTC 日曜 22:00）
   workflow_dispatch:         # 手動実行ボタン
 
 permissions:

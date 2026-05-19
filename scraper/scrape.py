@@ -64,7 +64,10 @@ def match_product(text: str) -> dict | None:
 # 買取一丁目スクレイパー（JSON REST API）
 # ════════════════════════════════════════════════════════════════════════
 ICHOME_BASE = 'https://www.1-chome.com'
-ICHOME_API = ICHOME_BASE + '/api/goods/listPage'
+ICHOME_API  = ICHOME_BASE + '/api/goods/listPage'
+KEITAI_API  = ICHOME_BASE + '/api/keitai/listPage'
+KEITAI_CATE = 'RGNg976kptBN7UjF'
+KEITAI_TARGETS = {'iPhone 17 Pro Max', 'iPhone 17 Pro'}
 
 # (cateCode, 説明, isImpo)
 # isImpo=true: 主要商品のみ（ハードのみ47件）
@@ -126,6 +129,94 @@ def _ichome_price(item: dict) -> int | None:
     if p and int(p) > 0:
         return int(p)
     return None
+
+
+def _keitai_price_per_color(item: dict) -> list[dict]:
+    """未開封 × 各色の (color, jan, price) リストを返す"""
+    miko = next(
+        (d for d in item.get('goodsKbDetails', [])
+         if d.get('kbDetailName') == '未開封' and d.get('kbDetailPrice')),
+        None,
+    )
+    if not miko:
+        return []
+    base_price = miko['kbDetailPrice']
+    detail_id  = miko['allGoodsKbDetailId']
+
+    results = []
+    for opt in item.get('keitaiColorOptions', []):
+        color = opt.get('color', '')
+        jan   = str(opt.get('jan') or '')
+        var   = 0
+        for rel in opt.get('keitaiKbDetailColorRels', []):
+            if rel.get('keitaiKbDetailId') == detail_id and rel.get('varPrice') is not None:
+                var = rel['varPrice']
+                break
+        final = base_price + var
+        if final > 0:
+            results.append({'color': color, 'jan': jan, 'price': final})
+    return results
+
+
+def scrape_ichome_keitai() -> list[dict]:
+    """携帯・スマートフォン系（/api/keitai/listPage）未開封 × 色別価格を取得"""
+    results = []
+    store   = '買取一丁目'
+    session = requests.Session()
+    headers = {
+        **COMMON_HEADERS,
+        'Accept': 'application/json, text/plain, */*',
+        'Referer': f'{ICHOME_BASE}/mobile?category={KEITAI_CATE}',
+    }
+
+    page = 1
+    total_fetched = 0
+    while True:
+        params = {
+            'accCode': '', 'page': page, 'size': 50,
+            'keyword': '', 'isImpo': 'false',
+            'isCampaign': 'false', 'cateCode': KEITAI_CATE,
+            'kbNames': '', 'isImpoCate': 'false',
+        }
+        try:
+            resp = session.get(KEITAI_API, params=params, headers=headers, timeout=30)
+            if resp.status_code != 200:
+                logger.warning(f'keitai API HTTP {resp.status_code}')
+                break
+            data = resp.json().get('data', {})
+        except Exception as e:
+            logger.error(f'keitai API エラー: {e}')
+            break
+
+        content = data.get('content', [])
+        if not content:
+            break
+        total_fetched += len(content)
+
+        for item in content:
+            title = item.get('title', '').strip()
+            if not any(t in title for t in KEITAI_TARGETS):
+                continue
+            goods_id = item.get('goodsId', '')
+            url = (f'{ICHOME_BASE}/mobileDetail/{goods_id}/{goods_id}' if goods_id
+                   else f'{ICHOME_BASE}/mobile?category={KEITAI_CATE}')
+            for ci in _keitai_price_per_color(item):
+                pname = f'{title} {ci["color"]}'
+                results.append({
+                    'date': TODAY, 'product_name': pname,
+                    'store': store, 'price': ci['price'],
+                    'jan': ci['jan'], 'url': url,
+                })
+                logger.info(f'  ✓ {pname} → ¥{ci["price"]:,}')
+
+        total_pages = data.get('totalPages', 1)
+        if page >= total_pages:
+            break
+        page += 1
+        time.sleep(0.5)
+
+    logger.info(f'  keitai: {total_fetched} アイテム取得, {len(results)} 件マッチ')
+    return results
 
 
 def scrape_ichome() -> list[dict]:
@@ -244,8 +335,11 @@ def main() -> None:
         logger.info('=== 完了（スキップ） ===')
         return
 
-    logger.info('--- 買取一丁目 ---')
+    logger.info('--- 買取一丁目 (通常商品) ---')
     all_records = scrape_ichome()
+
+    logger.info('--- 買取一丁目 (スマートフォン) ---')
+    all_records += scrape_ichome_keitai()
 
     logger.info(f'合計 {len(all_records)} 件取得')
     save_to_csv(all_records)

@@ -81,6 +81,29 @@ CUSTOM_QUERIES: dict[str, str] = {
     'Meta Quest 3 128':            'Meta Quest 3 128GB',
     'Steam Deck 有機EL 1TB':        'Steam Deck OLED 1TB',
     'Steam Deck 有機EL 512GB':      'Steam Deck OLED 512GB',
+    # iPhone 17 Pro Max
+    'iPhone 17 Pro Max 256GB シルバー':         'iPhone 17 Pro Max 256GB シルバー SIMフリー',
+    'iPhone 17 Pro Max 256GB ディープブルー':   'iPhone 17 Pro Max 256GB ディープブルー SIMフリー',
+    'iPhone 17 Pro Max 256GB コズミックオレンジ':'iPhone 17 Pro Max 256GB コズミックオレンジ SIMフリー',
+    'iPhone 17 Pro Max 512GB シルバー':         'iPhone 17 Pro Max 512GB シルバー SIMフリー',
+    'iPhone 17 Pro Max 512GB ディープブルー':   'iPhone 17 Pro Max 512GB ディープブルー SIMフリー',
+    'iPhone 17 Pro Max 512GB コズミックオレンジ':'iPhone 17 Pro Max 512GB コズミックオレンジ SIMフリー',
+    'iPhone 17 Pro Max 1TB シルバー':           'iPhone 17 Pro Max 1TB シルバー SIMフリー',
+    'iPhone 17 Pro Max 1TB ディープブルー':     'iPhone 17 Pro Max 1TB ディープブルー SIMフリー',
+    'iPhone 17 Pro Max 1TB コズミックオレンジ': 'iPhone 17 Pro Max 1TB コズミックオレンジ SIMフリー',
+    'iPhone 17 Pro Max 2TB シルバー':           'iPhone 17 Pro Max 2TB シルバー SIMフリー',
+    'iPhone 17 Pro Max 2TB ディープブルー':     'iPhone 17 Pro Max 2TB ディープブルー SIMフリー',
+    'iPhone 17 Pro Max 2TB コズミックオレンジ': 'iPhone 17 Pro Max 2TB コズミックオレンジ SIMフリー',
+    # iPhone 17 Pro
+    'iPhone 17 Pro 256GB シルバー':             'iPhone 17 Pro 256GB シルバー SIMフリー',
+    'iPhone 17 Pro 256GB ディープブルー':       'iPhone 17 Pro 256GB ディープブルー SIMフリー',
+    'iPhone 17 Pro 256GB コズミックオレンジ':   'iPhone 17 Pro 256GB コズミックオレンジ SIMフリー',
+    'iPhone 17 Pro 512GB シルバー':             'iPhone 17 Pro 512GB シルバー SIMフリー',
+    'iPhone 17 Pro 512GB ディープブルー':       'iPhone 17 Pro 512GB ディープブルー SIMフリー',
+    'iPhone 17 Pro 512GB コズミックオレンジ':   'iPhone 17 Pro 512GB コズミックオレンジ SIMフリー',
+    'iPhone 17 Pro 1TB シルバー':               'iPhone 17 Pro 1TB シルバー SIMフリー',
+    'iPhone 17 Pro 1TB ディープブルー':         'iPhone 17 Pro 1TB ディープブルー SIMフリー',
+    'iPhone 17 Pro 1TB コズミックオレンジ':     'iPhone 17 Pro 1TB コズミックオレンジ SIMフリー',
 }
 
 # 商品ごとの価格上限（これを超えたら本体込みバンドルと判断）
@@ -126,6 +149,29 @@ PRICE_FLOORS: dict[str, int] = {
     'Nikon Z50II 16-50 VRキット':     20000,
     'Nikon Z50II ボディ':             20000,
     'OM SYSTEM PEN E-P7':             15000,
+    # iPhone 17 Pro Max
+    'iPhone 17 Pro Max 256GB シルバー':          160000,
+    'iPhone 17 Pro Max 256GB ディープブルー':    160000,
+    'iPhone 17 Pro Max 256GB コズミックオレンジ':160000,
+    'iPhone 17 Pro Max 512GB シルバー':          180000,
+    'iPhone 17 Pro Max 512GB ディープブルー':    180000,
+    'iPhone 17 Pro Max 512GB コズミックオレンジ':180000,
+    'iPhone 17 Pro Max 1TB シルバー':            215000,
+    'iPhone 17 Pro Max 1TB ディープブルー':      215000,
+    'iPhone 17 Pro Max 1TB コズミックオレンジ':  215000,
+    'iPhone 17 Pro Max 2TB シルバー':            250000,
+    'iPhone 17 Pro Max 2TB ディープブルー':      250000,
+    'iPhone 17 Pro Max 2TB コズミックオレンジ':  250000,
+    # iPhone 17 Pro
+    'iPhone 17 Pro 256GB シルバー':              140000,
+    'iPhone 17 Pro 256GB ディープブルー':        140000,
+    'iPhone 17 Pro 256GB コズミックオレンジ':    140000,
+    'iPhone 17 Pro 512GB シルバー':              160000,
+    'iPhone 17 Pro 512GB ディープブルー':        160000,
+    'iPhone 17 Pro 512GB コズミックオレンジ':    160000,
+    'iPhone 17 Pro 1TB シルバー':                195000,
+    'iPhone 17 Pro 1TB ディープブルー':          195000,
+    'iPhone 17 Pro 1TB コズミックオレンジ':      195000,
 }
 
 # アクセサリー出品の除外ワード

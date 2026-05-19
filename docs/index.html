@@ -465,6 +465,7 @@
       <button class="cat-tab" data-cat="カメラ">📷 カメラ</button>
       <button class="cat-tab" data-cat="ポケカ">🃏 ポケカ</button>
       <button class="cat-tab" data-cat="ワンピ">🃏 ワンピ</button>
+      <button class="cat-tab" data-cat="スマートフォン">📱 スマートフォン</button>
       <button class="cat-tab" data-cat="その他">📦 その他</button>
     </div>
     <div id="subcat-tabs"></div>
@@ -764,6 +765,28 @@ const PRODUCT_CATEGORIES = {
   'EB-04 EGGHEAD CRISIS': 'ワンピ',
   'PRB-01 THE BEST': 'ワンピ',
   'PRB-02 THE BEST vol.2': 'ワンピ',
+  // スマートフォン
+  'iPhone 17 Pro Max 256GB シルバー': 'スマートフォン',
+  'iPhone 17 Pro Max 256GB ディープブルー': 'スマートフォン',
+  'iPhone 17 Pro Max 256GB コズミックオレンジ': 'スマートフォン',
+  'iPhone 17 Pro Max 512GB シルバー': 'スマートフォン',
+  'iPhone 17 Pro Max 512GB ディープブルー': 'スマートフォン',
+  'iPhone 17 Pro Max 512GB コズミックオレンジ': 'スマートフォン',
+  'iPhone 17 Pro Max 1TB シルバー': 'スマートフォン',
+  'iPhone 17 Pro Max 1TB ディープブルー': 'スマートフォン',
+  'iPhone 17 Pro Max 1TB コズミックオレンジ': 'スマートフォン',
+  'iPhone 17 Pro Max 2TB シルバー': 'スマートフォン',
+  'iPhone 17 Pro Max 2TB ディープブルー': 'スマートフォン',
+  'iPhone 17 Pro Max 2TB コズミックオレンジ': 'スマートフォン',
+  'iPhone 17 Pro 256GB シルバー': 'スマートフォン',
+  'iPhone 17 Pro 256GB ディープブルー': 'スマートフォン',
+  'iPhone 17 Pro 256GB コズミックオレンジ': 'スマートフォン',
+  'iPhone 17 Pro 512GB シルバー': 'スマートフォン',
+  'iPhone 17 Pro 512GB ディープブルー': 'スマートフォン',
+  'iPhone 17 Pro 512GB コズミックオレンジ': 'スマートフォン',
+  'iPhone 17 Pro 1TB シルバー': 'スマートフォン',
+  'iPhone 17 Pro 1TB ディープブルー': 'スマートフォン',
+  'iPhone 17 Pro 1TB コズミックオレンジ': 'スマートフォン',
   // その他
   'Tamagotchi Paradise Purple Sky': 'その他',
   'Tamagotchi Paradise Blue Water': 'その他',
@@ -808,6 +831,11 @@ const SUBCATEGORIES = {
     { id: 'op',   label: 'OPシリーズ', prefixes: ['OP-'] },
     { id: 'eb',   label: 'EBシリーズ', prefixes: ['EB-'] },
     { id: 'prb',  label: 'PRBシリーズ',prefixes: ['PRB-'] },
+  ],
+  'スマートフォン': [
+    { id: 'all',     label: 'すべて',             prefixes: null },
+    { id: 'promax',  label: 'iPhone 17 Pro Max', prefixes: ['iPhone 17 Pro Max'] },
+    { id: 'pro',     label: 'iPhone 17 Pro',     prefixes: ['iPhone 17 Pro 256', 'iPhone 17 Pro 512', 'iPhone 17 Pro 1TB'] },
   ],
 };
 

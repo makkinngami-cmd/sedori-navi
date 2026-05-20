@@ -636,7 +636,7 @@
     <div id="product-title" style="display:none">
       <span id="pt-name">—</span>
       <span id="pt-cat">—</span>
-      <span id="pt-msrp" style="display:none; color:var(--text-muted); font-size:0.75rem; font-weight:400">定価 —</span>
+
       <a id="pt-link" href="#" target="_blank" rel="noopener" class="hidden">🔗 買取一丁目</a>
     </div>
 
@@ -980,7 +980,7 @@ const STORE_COLORS = {
   'ヤフオク 最高': { border: '#f2a83b', bg: 'rgba(242,168,59,0.06)',  dash: [2, 2] },
 };
 // サイドバーに表示するストア（最安のみ）
-const SIDEBAR_STORES = new Set(['モバイル一番', '買取一丁目', 'ヤフオク 最安']);
+const SIDEBAR_STORES = new Set(['モバイル一番', '買取一丁目', 'ヤフオク 中央値']);
 const STORE_NAMES = Object.keys(STORE_COLORS);
 
 let allRows = [];        // 全CSV行
@@ -1371,15 +1371,7 @@ function renderChart(productName) {
   document.getElementById('pt-cat').textContent =
     PRODUCT_CATEGORIES[productName] || 'その他';
 
-  // 定価バッジ
-  const ptMsrp = document.getElementById('pt-msrp');
-  const msrpVal = getMsrpLatest(productName);
-  if (msrpVal) {
-    ptMsrp.textContent = `定価 ¥${msrpVal.toLocaleString()}`;
-    ptMsrp.style.display = '';
-  } else {
-    ptMsrp.style.display = 'none';
-  }
+
 
   const ptLink = document.getElementById('pt-link');
   const url = urlMap[productName];
@@ -1463,7 +1455,7 @@ function renderChart(productName) {
     });
     // 下限（上限との間をレンジ塗り）
     datasets.push({
-      label: 'ヤフオク 最安',
+      label: 'ヤフオク 最安〜最高',
       data: storeDataExact('ヤフオク 最安'),
       borderColor: 'rgba(76,175,135,0.35)',
       backgroundColor: 'rgba(76,175,135,0.1)',
@@ -1503,6 +1495,7 @@ function renderChart(productName) {
       borderDash: [8, 5],
       pointRadius: 0,
       pointHoverRadius: 0,
+      pointStyle: 'line',
       fill: false,
       tension: 0,
       spanGaps: true,

@@ -1185,8 +1185,11 @@ function updateProductCards(productName) {
   }
 
   const rows = allRows.filter(r => r.product_name === productName);
+  // 指標カードはすべて買取一丁目のデータで計算する
+  const ichomeRows = rows.filter(r => r.store === '買取一丁目');
+  const statRows   = ichomeRows.length ? ichomeRows : rows;
 
-  // ── データ期間（商品別）──────────────────────────────
+  // ── データ期間（買取一丁目ベース）──────────────────────
   const rangeEl = document.getElementById('date-range');
   const subEl   = document.getElementById('date-range-sub');
   if (!rows.length) {
@@ -1195,42 +1198,43 @@ function updateProductCards(productName) {
     return;
   }
 
-  const dates = [...new Set(rows.map(r => r.date))].sort();
-  const latestDate  = dates[dates.length - 1];
-  const oldestDate  = dates[0];
-  const storeCount  = [...new Set(rows.map(r => r.store))].length;
+  const statDates  = [...new Set(statRows.map(r => r.date))].sort();
+  const latestDate = statDates[statDates.length - 1];
+  const oldestDate = statDates[0];
 
-  if (dates.length === 1) {
+  if (statDates.length === 1) {
     rangeEl.textContent = latestDate;
-    subEl.textContent   = `${storeCount} 店舗`;
+    subEl.textContent   = '買取一丁目';
   } else {
     rangeEl.textContent = `${oldestDate} 〜`;
-    subEl.textContent   = `${latestDate}  /  ${storeCount} 店舗`;
+    subEl.textContent   = `最終更新 ${latestDate}`;
   }
 
-  // ── 過去最高買取 ──────────────────────────────────────
-  const maxRow = rows.reduce((a, b) => a.price > b.price ? a : b);
+  // ── 過去最高買取（買取一丁目）────────────────────────
+  const maxRow = statRows.reduce((a, b) => a.price > b.price ? a : b);
   document.getElementById('card-alltime-high').textContent     = `¥${maxRow.price.toLocaleString()}`;
   document.getElementById('card-alltime-high-sub').textContent = maxRow.date;
 
-  // ── 直近30日の日次最高価格の平均 ──────────────────────
+  // ── 直近30日平均（買取一丁目の日次価格の平均）────────
   const d30ago = new Date(latestDate);
   d30ago.setDate(d30ago.getDate() - 29);
   const d30agoStr   = d30ago.toISOString().split('T')[0];
-  const recentDates = dates.filter(d => d >= d30agoStr);
-  const dailyMaxes  = recentDates.map(d =>
-    Math.max(...rows.filter(r => r.date === d).map(r => r.price))
-  );
-  const avg30 = dailyMaxes.length
-    ? Math.round(dailyMaxes.reduce((s, p) => s + p, 0) / dailyMaxes.length)
+  const recentDates = statDates.filter(d => d >= d30agoStr);
+  const dailyPrices = recentDates.map(d => {
+    const dayRows = statRows.filter(r => r.date === d);
+    return dayRows.length ? dayRows[0].price : null;
+  }).filter(p => p !== null);
+  const avg30 = dailyPrices.length
+    ? Math.round(dailyPrices.reduce((s, p) => s + p, 0) / dailyPrices.length)
     : null;
 
   document.getElementById('card-avg30').textContent     = avg30 ? `¥${avg30.toLocaleString()}` : '—';
   document.getElementById('card-avg30-sub').textContent =
-    avg30 ? `直近 ${dailyMaxes.length} 日の平均` : '—';
+    avg30 ? `直近 ${dailyPrices.length} 日の平均` : '—';
 
-  // ── 現在（最新日の最高）vs 30日平均 ──────────────────
-  const currentPrice = Math.max(...rows.filter(r => r.date === latestDate).map(r => r.price));
+  // ── 現在の買取一丁目価格 vs 30日平均 ─────────────────
+  const latestStatRow = statRows.filter(r => r.date === latestDate)[0];
+  const currentPrice  = latestStatRow ? latestStatRow.price : NaN;
   if (avg30 && isFinite(currentPrice)) {
     const diff   = currentPrice - avg30;
     const pct    = ((diff / avg30) * 100).toFixed(1);

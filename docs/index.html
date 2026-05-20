@@ -1452,7 +1452,7 @@ function renderChart(productName) {
 
   // Chart.js データセット構築
   const YAHOO_STORES = new Set(['ヤフオク 最安', 'ヤフオク 中央値', 'ヤフオク 最高']);
-  // 日付がない場合は直前の価格を引き継ぐ（前値補完）
+  // 買取一丁目など日次ストア: 日付がない場合は直前の価格を引き継ぐ（前値補完）
   const storeData = s => {
     const storeRows = rows.filter(x => x.store === s).sort((a, b) => a.date.localeCompare(b.date));
     let last = null;
@@ -1460,6 +1460,14 @@ function renderChart(productName) {
       const r = storeRows.find(x => x.date === d);
       if (r) last = r.price;
       return last;
+    });
+  };
+  // ヤフオクなど週次ストア: 実際にデータがある日のみプロット（補完しない）
+  const storeDataExact = s => {
+    const storeRows = rows.filter(x => x.store === s);
+    return dates.map(d => {
+      const r = storeRows.find(x => x.date === d);
+      return r ? r.price : null;
     });
   };
 
@@ -1487,7 +1495,7 @@ function renderChart(productName) {
     // 上限（凡例非表示・境界線のみ）
     datasets.push({
       label: 'ヤフオク 最高',
-      data: storeData('ヤフオク 最高'),
+      data: storeDataExact('ヤフオク 最高'),
       borderColor: 'rgba(76,175,135,0.35)',
       backgroundColor: 'transparent',
       borderWidth: 1,
@@ -1501,7 +1509,7 @@ function renderChart(productName) {
     // 下限（上限との間をレンジ塗り）
     datasets.push({
       label: 'ヤフオク 最安',
-      data: storeData('ヤフオク 最安'),
+      data: storeDataExact('ヤフオク 最安'),
       borderColor: 'rgba(76,175,135,0.35)',
       backgroundColor: 'rgba(76,175,135,0.1)',
       borderWidth: 1,
@@ -1515,7 +1523,7 @@ function renderChart(productName) {
     // 平均（メインライン）
     datasets.push({
       label: 'ヤフオク 中央値',
-      data: storeData('ヤフオク 中央値'),
+      data: storeDataExact('ヤフオク 中央値'),
       borderColor: '#4caf87',
       backgroundColor: 'transparent',
       borderWidth: 2.5,

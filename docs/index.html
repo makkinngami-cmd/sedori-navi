@@ -372,38 +372,38 @@
       gap: 1rem;
     }
 
-    /* サマリーカード */
-    #summary-cards {
-      display: flex;
+    /* スタッツカード（4枚横並び） */
+    #stat-cards {
+      display: none;
       gap: 0.75rem;
       flex-wrap: wrap;
     }
-    .card {
+    .stat-card {
       background: var(--surface);
       border: 1px solid var(--border);
       border-radius: var(--radius);
       flex: 1;
-      min-width: 140px;
-      padding: 0.9rem 1rem;
+      min-width: 130px;
+      padding: 0.8rem 1rem;
     }
-    .card .card-label {
-      color: var(--text-muted);
-      font-size: 0.75rem;
-      margin-bottom: 0.3rem;
-    }
-    .card .card-value {
-      font-size: 1.3rem;
-      font-weight: 700;
-    }
-    .card .card-sub {
+    .stat-card .sc-label {
       color: var(--text-muted);
       font-size: 0.72rem;
+      margin-bottom: 0.2rem;
+    }
+    .stat-card .sc-value {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--accent);
+    }
+    .stat-card .sc-sub {
+      color: var(--text-muted);
+      font-size: 0.7rem;
       margin-top: 0.2rem;
     }
-    .card.green .card-value { color: var(--green); }
-    .card.blue .card-value { color: var(--accent); }
-    .card.red .card-value { color: var(--accent2); }
-    .card.yellow .card-value { color: var(--yellow); }
+    .stat-card.green .sc-value { color: var(--green); }
+    .stat-card.red   .sc-value { color: var(--accent2); }
+    .stat-card.yellow .sc-value { color: var(--yellow); }
 
     /* 商品タイトル */
     #product-title {
@@ -559,7 +559,7 @@
       #sidebar { height: 50vh; }
       #main { height: auto; overflow-y: auto; padding: 1rem; }
       #chart-wrap { min-height: 280px; }
-      #summary-cards .card { min-width: 120px; }
+      #stat-cards .stat-card { min-width: 110px; }
     }
   </style>
 </head>
@@ -615,31 +615,21 @@
 
   <!-- ── メイン ─────────────────────────────────── -->
   <main id="main">
-    <div id="summary-cards">
-      <div class="card yellow">
-        <div class="card-label">データ期間</div>
-        <div class="card-value" id="date-range" style="font-size:1rem;letter-spacing:-0.01em">—</div>
-        <div class="card-sub" id="date-range-sub">—</div>
+    <div id="stat-cards">
+      <div class="stat-card" id="sc-price-wrap">
+        <div class="sc-label">現在買取額</div>
+        <div class="sc-value" id="sc-price">—</div>
+        <div class="sc-sub"  id="sc-price-sub">—</div>
       </div>
-      <div class="card blue" id="card-alltime-wrap">
-        <div class="card-label">過去最高買取</div>
-        <div class="card-value" id="card-alltime-high">—</div>
-        <div class="card-sub" id="card-alltime-high-sub">商品を選択</div>
+      <div class="stat-card" id="sc-rate-wrap">
+        <div class="sc-label">買取率</div>
+        <div class="sc-value" id="sc-rate">—</div>
+        <div class="sc-sub"  id="sc-rate-sub">—</div>
       </div>
-      <div class="card blue" id="card-avg30-wrap">
-        <div class="card-label">直近30日平均</div>
-        <div class="card-value" id="card-avg30">—</div>
-        <div class="card-sub" id="card-avg30-sub">商品を選択</div>
-      </div>
-      <div class="card blue" id="card-vs-avg-wrap">
-        <div class="card-label">現在 vs 30日平均</div>
-        <div class="card-value" id="card-vs-avg">—</div>
-        <div class="card-sub" id="card-vs-avg-sub">商品を選択</div>
-      </div>
-      <div class="card blue" id="card-msrp-wrap">
-        <div class="card-label">定価 / 買取率</div>
-        <div class="card-value" id="card-msrp-rate">—</div>
-        <div class="card-sub" id="card-msrp-sub">商品を選択</div>
+      <div class="stat-card" id="sc-avg30-wrap">
+        <div class="sc-label">30日平均</div>
+        <div class="sc-value" id="sc-avg30">—</div>
+        <div class="sc-sub"  id="sc-avg30-sub">—</div>
       </div>
     </div>
 
@@ -661,12 +651,10 @@
     <div id="data-table-wrap" style="display:none">
       <table>
         <thead><tr>
-          <th>日付</th>
-          <th>店舗</th>
-          <th>買取価格</th>
-          <th>前日比</th>
-          <th>定価</th>
-          <th>買取率</th>
+          <th>日付（ヤフオク）</th>
+          <th>最高</th>
+          <th>中央値</th>
+          <th>最安</th>
         </tr></thead>
         <tbody id="data-tbody"></tbody>
       </table>
@@ -1084,9 +1072,9 @@ function parseCSV(text) {
     const obj = {};
     headers.forEach((h, i) => { obj[h] = (vals[i] || '').trim(); });
     obj.price = parseInt(obj.price, 10) || 0;
-    // JAN・URL マップを更新（最新行で上書き）
+    // JAN・URL マップを更新（買取一丁目の行のみ。ヤフオクURLで上書きしない）
     if (obj.jan && obj.product_name) janMap[obj.product_name] = obj.jan;
-    if (obj.url && obj.product_name) urlMap[obj.product_name] = obj.url;
+    if (obj.url && obj.product_name && obj.store === '買取一丁目') urlMap[obj.product_name] = obj.url;
     return obj;
   }).filter(r => r.date && r.product_name && r.store && r.price > 0);
 }
@@ -1136,21 +1124,6 @@ function getProductsInCategory(cat) {
 function updateSummaryCards() {
   const allDates = [...new Set(allRows.map(r => r.date))].sort();
   const latestDate = allDates[allDates.length - 1] || '—';
-  const oldestDate = allDates[0] || '—';
-  const storeCount = [...new Set(allRows.map(r => r.store))].length;
-
-  const rangeEl = document.getElementById('date-range');
-  const subEl   = document.getElementById('date-range-sub');
-  if (allDates.length === 0) {
-    rangeEl.textContent = '—';
-    subEl.textContent   = '—';
-  } else if (allDates.length === 1) {
-    rangeEl.textContent = latestDate;
-    subEl.textContent   = `${storeCount} 店舗`;
-  } else {
-    rangeEl.textContent = `${oldestDate} 〜`;
-    subEl.textContent   = `${latestDate}  /  ${storeCount} 店舗`;
-  }
 
   const badge = document.getElementById('status-badge');
   badge.textContent = allRows.length ? `✓ ${allRows.length}件` : '⚠ データなし';
@@ -1162,100 +1135,79 @@ function updateSummaryCards() {
 // 商品別スタッツカード更新
 // ─────────────────────────────────────────────────────────────────────
 function updateProductCards(productName) {
-  // 3つの商品カードをリセット
-  const noSel = !productName;
-  const resetSub = noSel ? '商品を選択' : '—';
-  document.getElementById('card-alltime-high').textContent     = '—';
-  document.getElementById('card-alltime-high-sub').textContent = resetSub;
-  document.getElementById('card-avg30').textContent            = '—';
-  document.getElementById('card-avg30-sub').textContent        = resetSub;
-  document.getElementById('card-vs-avg').textContent           = '—';
-  document.getElementById('card-vs-avg-sub').textContent       = resetSub;
-  document.getElementById('card-alltime-wrap').className       = 'card blue';
-  document.getElementById('card-avg30-wrap').className         = 'card blue';
-  document.getElementById('card-vs-avg-wrap').className        = 'card blue';
-  document.getElementById('card-msrp-rate').textContent        = '—';
-  document.getElementById('card-msrp-sub').textContent         = resetSub;
-  document.getElementById('card-msrp-wrap').className          = 'card blue';
+  const statCards = document.getElementById('stat-cards');
 
-  // データ期間カード: 商品未選択はグローバル値に戻す
-  if (!productName) {
-    updateSummaryCards();
-    return;
-  }
+  if (!productName) { statCards.style.display = 'none'; return; }
 
   const rows = allRows.filter(r => r.product_name === productName);
-  // 指標カードはすべて買取一丁目のデータで計算する
+  if (!rows.length) { statCards.style.display = 'none'; return; }
+
+  // すべての指標は買取一丁目のデータで計算する
   const ichomeRows = rows.filter(r => r.store === '買取一丁目');
   const statRows   = ichomeRows.length ? ichomeRows : rows;
-
-  // ── データ期間（買取一丁目ベース）──────────────────────
-  const rangeEl = document.getElementById('date-range');
-  const subEl   = document.getElementById('date-range-sub');
-  if (!rows.length) {
-    rangeEl.textContent = '—';
-    subEl.textContent   = 'データなし';
-    return;
-  }
-
   const statDates  = [...new Set(statRows.map(r => r.date))].sort();
   const latestDate = statDates[statDates.length - 1];
-  const oldestDate = statDates[0];
+  const latestRow  = statRows.filter(r => r.date === latestDate)[0];
+  const currentPrice = latestRow ? latestRow.price : NaN;
 
-  if (statDates.length === 1) {
-    rangeEl.textContent = latestDate;
-    subEl.textContent   = '買取一丁目';
+  // ── 現在買取額 + 前日比 ──────────────────────────────
+  const priceEl   = document.getElementById('sc-price');
+  const priceSubEl = document.getElementById('sc-price-sub');
+  const priceWrap  = document.getElementById('sc-price-wrap');
+  priceEl.textContent = isFinite(currentPrice) ? `¥${currentPrice.toLocaleString()}` : '—';
+
+  if (isFinite(currentPrice)) {
+    const yday = new Date(latestDate);
+    yday.setDate(yday.getDate() - 1);
+    const ydayStr = yday.toISOString().split('T')[0];
+    const prevRow = statRows
+      .filter(r => r.date <= ydayStr)
+      .sort((a, b) => b.date.localeCompare(a.date))[0] || null;
+    if (prevRow) {
+      const diff = currentPrice - prevRow.price;
+      const sign = diff >= 0 ? '+' : '';
+      priceSubEl.textContent = `前日比 ${sign}¥${diff.toLocaleString()}`;
+      priceWrap.className    = 'stat-card ' + (diff > 0 ? 'green' : diff < 0 ? 'red' : '');
+    } else {
+      priceSubEl.textContent = '前日比 —';
+      priceWrap.className    = 'stat-card';
+    }
   } else {
-    rangeEl.textContent = `${oldestDate} 〜`;
-    subEl.textContent   = `最終更新 ${latestDate}`;
+    priceSubEl.textContent = '—';
+    priceWrap.className    = 'stat-card';
   }
 
-  // ── 過去最高買取（買取一丁目）────────────────────────
-  const maxRow = statRows.reduce((a, b) => a.price > b.price ? a : b);
-  document.getElementById('card-alltime-high').textContent     = `¥${maxRow.price.toLocaleString()}`;
-  document.getElementById('card-alltime-high-sub').textContent = maxRow.date;
+  // ── 買取率 ────────────────────────────────────────────
+  const msrp     = getMsrpLatest(productName);
+  const rateWrap = document.getElementById('sc-rate-wrap');
+  if (msrp && isFinite(currentPrice)) {
+    const rate = calcRate(currentPrice, msrp);
+    document.getElementById('sc-rate').textContent     = rate !== null ? `${rate}%` : '—';
+    document.getElementById('sc-rate-sub').textContent = `定価 ¥${msrp.toLocaleString()}`;
+    rateWrap.className = 'stat-card ' + (rate >= 75 ? 'green' : rate >= 50 ? 'yellow' : 'red');
+  } else {
+    document.getElementById('sc-rate').textContent     = '—';
+    document.getElementById('sc-rate-sub').textContent = '—';
+    rateWrap.className = 'stat-card';
+  }
 
-  // ── 直近30日平均（買取一丁目の日次価格の平均）────────
+  // ── 30日平均 ──────────────────────────────────────────
   const d30ago = new Date(latestDate);
   d30ago.setDate(d30ago.getDate() - 29);
   const d30agoStr   = d30ago.toISOString().split('T')[0];
   const recentDates = statDates.filter(d => d >= d30agoStr);
   const dailyPrices = recentDates.map(d => {
-    const dayRows = statRows.filter(r => r.date === d);
-    return dayRows.length ? dayRows[0].price : null;
+    const r = statRows.filter(x => x.date === d)[0];
+    return r ? r.price : null;
   }).filter(p => p !== null);
   const avg30 = dailyPrices.length
     ? Math.round(dailyPrices.reduce((s, p) => s + p, 0) / dailyPrices.length)
     : null;
+  const maxRow = statRows.reduce((a, b) => a.price > b.price ? a : b);
+  document.getElementById('sc-avg30').textContent     = avg30 ? `¥${avg30.toLocaleString()}` : '—';
+  document.getElementById('sc-avg30-sub').textContent = `過去最高 ¥${maxRow.price.toLocaleString()}`;
 
-  document.getElementById('card-avg30').textContent     = avg30 ? `¥${avg30.toLocaleString()}` : '—';
-  document.getElementById('card-avg30-sub').textContent =
-    avg30 ? `直近 ${dailyPrices.length} 日の平均` : '—';
-
-  // ── 現在の買取一丁目価格 vs 30日平均 ─────────────────
-  const latestStatRow = statRows.filter(r => r.date === latestDate)[0];
-  const currentPrice  = latestStatRow ? latestStatRow.price : NaN;
-  if (avg30 && isFinite(currentPrice)) {
-    const diff   = currentPrice - avg30;
-    const pct    = ((diff / avg30) * 100).toFixed(1);
-    const sign   = diff >= 0 ? '+' : '';
-    const absStr = `¥${Math.abs(diff).toLocaleString()}`;
-    document.getElementById('card-vs-avg').textContent =
-      diff >= 0 ? `+${absStr}` : `-${absStr}`;
-    document.getElementById('card-vs-avg-sub').textContent = `${sign}${pct}% vs 30日平均`;
-    document.getElementById('card-vs-avg-wrap').className  =
-      'card ' + (diff > 0 ? 'green' : diff < 0 ? 'red' : 'blue');
-  }
-
-  // ── 定価 / 買取率 ─────────────────────────────────────
-  const msrp = getMsrpLatest(productName);
-  if (msrp && isFinite(currentPrice)) {
-    const rate = calcRate(currentPrice, msrp);
-    document.getElementById('card-msrp-rate').textContent     = rate !== null ? `${rate}%` : '—';
-    document.getElementById('card-msrp-sub').textContent      = `定価 ¥${msrp.toLocaleString()}`;
-    document.getElementById('card-msrp-wrap').className       =
-      'card ' + (rate >= 75 ? 'green' : rate >= 50 ? 'yellow' : 'red');
-  }
+  statCards.style.display = 'flex';
 }
 
 // ─────────────────────────────────────────────────────────────────────
@@ -1452,7 +1404,6 @@ function renderChart(productName) {
 
   placeholder.style.display = 'none';
   canvas.style.display = 'block';
-  tableWrap.style.display = 'block';
 
   // Chart.js データセット構築
   const YAHOO_STORES = new Set(['ヤフオク 最安', 'ヤフオク 中央値', 'ヤフオク 最高']);
@@ -1606,56 +1557,36 @@ function renderChart(productName) {
     },
   });
 
-  // テーブル描画（店舗ごとに最新価格のみ）
+  // ── ヤフオク専用テーブル ──────────────────────────────
   const tbody = document.getElementById('data-tbody');
   tbody.innerHTML = '';
 
-  // 店舗ごとに日付降順でグループ化
-  const storeRowsMap = {};
-  rows.forEach(r => {
-    if (!storeRowsMap[r.store]) storeRowsMap[r.store] = [];
-    storeRowsMap[r.store].push(r);
-  });
-  Object.values(storeRowsMap).forEach(arr => arr.sort((a, b) => b.date.localeCompare(a.date)));
-
-  // 買取一丁目を先に、ヤフオクを後に並べる
-  const yahooOrder = { 'ヤフオク 最安': 0, 'ヤフオク 中央値': 1, 'ヤフオク 最高': 2 };
-  const tableStores = Object.keys(storeRowsMap).sort((a, b) => {
-    const aY = a.startsWith('ヤフオク'), bY = b.startsWith('ヤフオク');
-    if (aY !== bY) return aY ? 1 : -1;
-    if (aY && bY) return (yahooOrder[a] ?? 9) - (yahooOrder[b] ?? 9);
-    return a.localeCompare(b);
-  });
-
-  tableStores.forEach(store => {
-    const arr = storeRowsMap[store];
-    const r    = arr[0];               // 最新
-    const prev = arr[1] || null;       // 1つ前
-    let diffCell = '—';
-    if (prev) {
-      const diff = r.price - prev.price;
-      const sign = diff >= 0 ? '+' : '';
-      const color = diff > 0 ? 'var(--green)' : diff < 0 ? 'var(--accent2)' : 'var(--text-muted)';
-      diffCell = `<span style="color:${color}">${sign}¥${diff.toLocaleString()}</span>`;
-    }
-    const msrpForRow = getMsrpForDate(productName, r.date);
-    const msrpCell = msrpForRow ? `¥${msrpForRow.toLocaleString()}` : '—';
-    const rate = calcRate(r.price, msrpForRow);
-    const rc = rateClass(rate);
-    const rateCell = rate !== null
-      ? `<span class="rate-badge ${rc}">${rate}%</span>`
-      : '<span style="color:var(--text-muted)">—</span>';
+  const yahooRows = rows.filter(r => r.store.startsWith('ヤフオク'));
+  if (!yahooRows.length) {
+    tableWrap.style.display = 'none';
+  } else {
+    tableWrap.style.display = 'block';
+    // 最新のヤフオクスクレイプ日
+    const yahooDate = [...new Set(yahooRows.map(r => r.date))].sort().pop();
+    const msrpY = getMsrpForDate(productName, yahooDate);
+    const getYCell = store => {
+      const r = yahooRows.find(x => x.store === store && x.date === yahooDate);
+      if (!r) return '<span style="color:var(--text-muted)">—</span>';
+      const rate = calcRate(r.price, msrpY);
+      const badge = rate !== null
+        ? `<br><span class="rate-badge ${rateClass(rate)}">${rate}%</span>`
+        : '';
+      return `¥${r.price.toLocaleString()}${badge}`;
+    };
     const tr = document.createElement('tr');
     tr.innerHTML = `
-      <td>${r.date}</td>
-      <td>${r.store}</td>
-      <td>¥${r.price.toLocaleString()}</td>
-      <td>${diffCell}</td>
-      <td style="color:var(--text-muted)">${msrpCell}</td>
-      <td>${rateCell}</td>
+      <td>${yahooDate}</td>
+      <td>${getYCell('ヤフオク 最高')}</td>
+      <td>${getYCell('ヤフオク 中央値')}</td>
+      <td>${getYCell('ヤフオク 最安')}</td>
     `;
     tbody.appendChild(tr);
-  });
+  }
 }
 
 // ─────────────────────────────────────────────────────────────────────

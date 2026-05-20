@@ -1333,9 +1333,10 @@ function renderProductList() {
         badge.title = `定価 ¥${msrp.toLocaleString()}`;
         pricesEl.appendChild(badge);
       }
-      sidebarKeys.forEach((s, i) => {
+      const PILL_CLASS = { '買取一丁目': 'store-b', 'モバイル一番': 'store-a', 'ヤフオク 中央値': 'store-c' };
+      sidebarKeys.forEach(s => {
         const pill = document.createElement('span');
-        pill.className = `price-pill store-${['a','b','c'][i] || 'a'}`;
+        pill.className = `price-pill ${PILL_CLASS[s] || 'store-a'}`;
         pill.textContent = `¥${latest[s].price.toLocaleString()}`;
         pill.title = s;
         pricesEl.appendChild(pill);

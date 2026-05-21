@@ -1161,12 +1161,12 @@ function updateProductCards(productName) {
   priceEl.textContent = isFinite(currentPrice) ? `¥${currentPrice.toLocaleString()}` : '—';
 
   if (isFinite(currentPrice)) {
-    const yday = new Date(latestDate);
-    yday.setDate(yday.getDate() - 1);
-    const ydayStr = yday.toISOString().split('T')[0];
-    const prevRow = statRows
-      .filter(r => r.date <= ydayStr)
-      .sort((a, b) => b.date.localeCompare(a.date))[0] || null;
+    const globalDates = [...new Set(allRows.map(r => r.date))].sort();
+    const globalPrev  = globalDates.length >= 2 ? globalDates[globalDates.length - 2] : null;
+    const prevRow = globalPrev
+      ? statRows.filter(r => r.date <= globalPrev)
+          .sort((a, b) => b.date.localeCompare(a.date))[0] || null
+      : null;
     if (prevRow) {
       const diff = currentPrice - prevRow.price;
       const sign = diff >= 0 ? '+' : '';

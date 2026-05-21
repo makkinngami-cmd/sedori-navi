@@ -405,6 +405,15 @@
     .stat-card.red   .sc-value { color: var(--accent2); }
     .stat-card.yellow .sc-value { color: var(--yellow); }
 
+    /* ヘッダーサブタイトル */
+    h1 small {
+      display: block;
+      font-size: 0.65rem;
+      font-weight: 400;
+      opacity: 0.75;
+      letter-spacing: 0.03em;
+    }
+
     /* 商品タイトル */
     #product-title {
       font-size: 1rem;
@@ -559,7 +568,11 @@
       #sidebar { height: 50vh; }
       #main { height: auto; overflow-y: auto; padding: 1rem; }
       #chart-wrap { min-height: 280px; }
-      #stat-cards .stat-card { min-width: 110px; }
+      #stat-cards { flex-wrap: nowrap; gap: 0.4rem; }
+      #stat-cards .stat-card { min-width: 0; padding: 0.5rem 0.6rem; }
+      #stat-cards .stat-card .sc-value { font-size: 1rem; }
+      #stat-cards .stat-card .sc-label { font-size: 0.65rem; }
+      #stat-cards .stat-card .sc-sub   { font-size: 0.62rem; }
     }
   </style>
 </head>
@@ -622,7 +635,7 @@
         <div class="sc-sub"  id="sc-price-sub">—</div>
       </div>
       <div class="stat-card" id="sc-rate-wrap">
-        <div class="sc-label">買取率</div>
+        <div class="sc-label" id="sc-rate-label">買取率</div>
         <div class="sc-value" id="sc-rate">—</div>
         <div class="sc-sub"  id="sc-rate-sub">—</div>
       </div>
@@ -1022,6 +1035,8 @@ function updateFavBtn() {
 // msrpHistory: { product_name: [{effective_date:'YYYY-MM-DD', msrp:number}, ...] }
 // 同一商品に複数行持つことで値上げ・値下げの履歴を表現する
 let msrpHistory = {};
+// priceTypeMap: { product_name: 'market'|'' }
+let priceTypeMap = {};
 let myChart = null;
 let currentProduct = null;
 let currentCat = 'all';
@@ -1177,13 +1192,14 @@ function updateProductCards(productName) {
     priceWrap.className    = 'stat-card';
   }
 
-  // ── 買取率 ────────────────────────────────────────────
+  // ── 買取率 / 市場比 ──────────────────────────────────
   const msrp     = getMsrpLatest(productName);
   const rateWrap = document.getElementById('sc-rate-wrap');
+  document.getElementById('sc-rate-label').textContent = getPriceLabel(productName);
   if (msrp && isFinite(currentPrice)) {
     const rate = calcRate(currentPrice, msrp);
     document.getElementById('sc-rate').textContent     = rate !== null ? `${rate}%` : '—';
-    document.getElementById('sc-rate-sub').textContent = `定価 ¥${msrp.toLocaleString()}`;
+    document.getElementById('sc-rate-sub').textContent = `${getPriceSubLabel(productName)} ¥${msrp.toLocaleString()}`;
     rateWrap.className = 'stat-card ' + (rate >= 75 ? 'green' : rate >= 50 ? 'yellow' : 'red');
   } else {
     document.getElementById('sc-rate').textContent     = '—';
@@ -1593,17 +1609,27 @@ function parseMsrpCSV(text) {
   const nameIdx = headers.indexOf('product_name');
   const msrpIdx = headers.indexOf('msrp');
   const dateIdx = headers.indexOf('effective_date');
+  const typeIdx = headers.indexOf('price_type');
   if (nameIdx < 0 || msrpIdx < 0) return;
   lines.slice(1).forEach(line => {
     const vals = line.split(',');
     const name  = (vals[nameIdx] || '').trim();
     const price = parseInt(vals[msrpIdx], 10);
     const effDate = (dateIdx >= 0 ? vals[dateIdx] || '' : '').trim() || '2000-01-01';
+    const ptype = typeIdx >= 0 ? (vals[typeIdx] || '').trim() : '';
     if (name && price > 0) {
       if (!msrpHistory[name]) msrpHistory[name] = [];
       msrpHistory[name].push({ effective_date: effDate, msrp: price });
+      if (ptype) priceTypeMap[name] = ptype;
     }
   });
+}
+
+function getPriceLabel(name) {
+  return priceTypeMap[name] === 'market' ? '市場比' : '買取率';
+}
+function getPriceSubLabel(name) {
+  return priceTypeMap[name] === 'market' ? '市場' : '定価';
 }
 
 async function loadData() {

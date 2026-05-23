@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-ヤフオク落札価格スクレイパー（週1回実行）
-落札済み新品商品の過去7日分から 最安・平均・最高 を取得し prices.csv に追記する
+ヤフオク落札価格スクレイパー（毎日実行・同日重複スキップ）
+落札済み新品商品の過去7日分から 最安・中央値・最高 を取得し prices.csv に追記する
 
 実行:
     cd scraper
@@ -494,7 +494,7 @@ def save_to_csv(records: list[dict]) -> None:
 # ── エントリポイント ──────────────────────────────────────────────────
 
 def _already_scraped_today() -> bool:
-    """マーカーファイルで今週実行済みか判定"""
+    """マーカーファイルで今日実行済みか判定"""
     return SCRAPE_MARKER.exists() and SCRAPE_MARKER.read_text(encoding='utf-8').strip() == TODAY
 
 def _mark_scraped_today() -> None:

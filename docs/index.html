@@ -1443,37 +1443,32 @@ function renderChart(productName) {
     };
   });
 
-  // ヤフオク: 最高(上限)→最安(下限=レンジ塗り)→平均(ライン)
+  // ヤフオク: エラーバー（最安〜最高）＋中央値ライン
   if (rows.some(r => YAHOO_STORES.has(r.store))) {
-    // 上限（凡例非表示・境界線のみ）
+    // 最高・最安は不可視データとして保持（プラグインがエラーバー描画に使用）
     datasets.push({
       label: 'ヤフオク 最高',
       data: storeDataExact('ヤフオク 最高'),
-      borderColor: 'rgba(76,175,135,0.35)',
+      borderColor: 'transparent',
       backgroundColor: 'transparent',
-      borderWidth: 1,
-      borderDash: [4, 3],
-      pointRadius: 3,
-      pointHoverRadius: 5,
+      borderWidth: 0,
+      pointRadius: 0,
+      pointHoverRadius: 0,
       fill: false,
-      tension: 0.3,
       spanGaps: true,
     });
-    // 下限（上限との間をレンジ塗り）
     datasets.push({
-      label: 'ヤフオク 最安〜最高',
+      label: 'ヤフオク 最安',
       data: storeDataExact('ヤフオク 最安'),
-      borderColor: 'rgba(76,175,135,0.35)',
-      backgroundColor: 'rgba(76,175,135,0.1)',
-      borderWidth: 1,
-      borderDash: [4, 3],
-      pointRadius: 3,
-      pointHoverRadius: 5,
-      fill: '-1',
-      tension: 0.3,
+      borderColor: 'transparent',
+      backgroundColor: 'transparent',
+      borderWidth: 0,
+      pointRadius: 0,
+      pointHoverRadius: 0,
+      fill: false,
       spanGaps: true,
     });
-    // 平均（メインライン）
+    // 中央値（メインライン）
     datasets.push({
       label: 'ヤフオク 中央値',
       data: storeDataExact('ヤフオク 中央値'),
@@ -1511,7 +1506,46 @@ function renderChart(productName) {
 
   if (myChart) myChart.destroy();
 
+  // ヤフオク エラーバープラグイン（最安〜最高を縦棒＋キャップで描画）
+  const yahooErrorBarPlugin = {
+    id: 'yahooErrorBar',
+    afterDatasetsDraw(chart) {
+      const maxIdx = chart.data.datasets.findIndex(d => d.label === 'ヤフオク 最高');
+      const minIdx = chart.data.datasets.findIndex(d => d.label === 'ヤフオク 最安');
+      const midIdx = chart.data.datasets.findIndex(d => d.label === 'ヤフオク 中央値');
+      if (maxIdx < 0 || minIdx < 0 || midIdx < 0) return;
+
+      const ctx2d = chart.ctx;
+      const meta  = chart.getDatasetMeta(midIdx);
+      const hiArr = chart.data.datasets[maxIdx].data;
+      const loArr = chart.data.datasets[minIdx].data;
+
+      ctx2d.save();
+      ctx2d.strokeStyle = 'rgba(76,175,135,0.75)';
+      ctx2d.lineWidth   = 1.5;
+      const CAP = 5;
+
+      meta.data.forEach((pt, i) => {
+        const lo = loArr[i];
+        const hi = hiArr[i];
+        if (lo == null || hi == null) return;
+        const x   = pt.x;
+        const yLo = chart.scales.y.getPixelForValue(lo);
+        const yHi = chart.scales.y.getPixelForValue(hi);
+        // 縦棒
+        ctx2d.beginPath(); ctx2d.moveTo(x, yLo); ctx2d.lineTo(x, yHi); ctx2d.stroke();
+        // 下キャップ
+        ctx2d.beginPath(); ctx2d.moveTo(x - CAP, yLo); ctx2d.lineTo(x + CAP, yLo); ctx2d.stroke();
+        // 上キャップ
+        ctx2d.beginPath(); ctx2d.moveTo(x - CAP, yHi); ctx2d.lineTo(x + CAP, yHi); ctx2d.stroke();
+      });
+
+      ctx2d.restore();
+    },
+  };
+
   myChart = new Chart(canvas, {
+    plugins: [yahooErrorBarPlugin],
     type: 'line',
     data: { labels: dates, datasets },
     options: {
@@ -1525,7 +1559,7 @@ function renderChart(productName) {
             font: { size: 12 },
             padding: 16,
             usePointStyle: true,
-            filter: item => item.text !== 'ヤフオク 最高',
+            filter: item => item.text !== 'ヤフオク 最高' && item.text !== 'ヤフオク 最安',
           },
         },
         tooltip: {
@@ -1535,7 +1569,10 @@ function renderChart(productName) {
           titleColor: '#e4e6f0',
           bodyColor: '#b0b3c8',
           callbacks: {
-            label: ctx => ` ${ctx.dataset.label}: ¥${(ctx.parsed.y || 0).toLocaleString()}`,
+            label: ctx => {
+              if (ctx.dataset.label === 'ヤフオク 最高' || ctx.dataset.label === 'ヤフオク 最安') return null;
+              return ` ${ctx.dataset.label}: ¥${(ctx.parsed.y || 0).toLocaleString()}`;
+            },
           },
         },
       },

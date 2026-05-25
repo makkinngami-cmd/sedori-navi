@@ -278,7 +278,7 @@ async def fetch_closed_auctions(
 ) -> list[dict]:
     """
     ヤフオク落札済み検索（新品: istatus=1）から過去7日分の落札価格リストを取得。
-    Returns: [{'title': str, 'price': int, 'date': 'YYYY-MM-DD', 'url': str}, ...]
+    Returns: [{'title': str, 'price': int, 'date': 'YYYY-MM-DD', 'url': str, 'is_store': bool}, ...]
     """
     params = urllib.parse.urlencode({
         'p':       query,
@@ -347,9 +347,11 @@ async def fetch_closed_auctions(
             // URL
             const linkEl = card.querySelector('a[href*="/auction/"]');
             const href = linkEl ? linkEl.href : '';
+            const cardText = card.textContent.replace(/\s+/g, ' ').trim();
+            const isStore = cardText.includes('ストア');
 
             if (title && price > 0) {
-                results.push({ title, price, dateStr, url: href });
+                results.push({ title, price, dateStr, url: href, isStore });
             }
         }
         return results;
@@ -365,6 +367,7 @@ async def fetch_closed_auctions(
                 'price': item['price'],
                 'date':  date,
                 'url':   item['url'],
+                'is_store': bool(item.get('isStore')),
             })
 
     return results
@@ -428,6 +431,7 @@ async def scrape_product_yahoo(
     matched = [
         it for it in items
         if matches(it['title'])
+        and not it.get('is_store')
         and not is_bundle(it['title'])
         and not is_bad_condition(it['title'])
         and not is_accessory(it['title'])

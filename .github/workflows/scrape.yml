@@ -2,8 +2,8 @@ name: Daily Price Scraper
 
 on:
   schedule:
-    # UTC 22:17 = JST 07:17（バックアップ用：ローカルトリガー失敗時のみ実質稼働）
-    - cron: '17 22 * * *'
+    # UTC 03:17 = JST 12:17（バックアップ用：ローカルトリガー失敗時のみ実質稼働）
+    - cron: '17 3 * * *'
   workflow_dispatch:        # 手動実行ボタンも有効化
 
 permissions:

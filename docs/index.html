@@ -600,10 +600,10 @@
       header { padding: 0.6rem 0.75rem; gap: 0.5rem; }
       #sidebar { height: 50vh; }
       #main { height: auto; overflow-y: auto; padding: 1rem; }
-      #chart-wrap { flex: none; min-height: 0; }
+      #chart-wrap { flex: none; height: 440px; max-height: 440px; min-height: 0; overflow: hidden; }
       #chart-store-filter { gap: 0.35rem; margin-bottom: 0.6rem; }
       .plot-toggle { font-size: 0.68rem; min-height: 24px; padding: 0.3rem 0.45rem; }
-      #myChart { height: 320px !important; }
+      #myChart { display: block; height: 300px !important; max-height: 300px !important; }
       #stat-cards { flex-wrap: nowrap; gap: 0.4rem; }
       #stat-cards .stat-card { min-width: 0; padding: 0.5rem 0.6rem; }
       #stat-cards .stat-card .sc-value { font-size: 1rem; }

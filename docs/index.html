@@ -302,7 +302,7 @@
       flex-direction: column;
       gap: 1px;
       overflow: hidden;
-      max-width: 180px;
+      max-width: 210px;
     }
     .product-item .prod-name {
       font-size: 0.82rem;
@@ -324,7 +324,7 @@
       display: flex;
       flex-direction: column;
       align-items: flex-end;
-      gap: 2px;
+      gap: 6px;
       flex-shrink: 0;
     }
     .price-pill {
@@ -579,20 +579,26 @@
 
     /* ── お気に入りボタン ────────────────────────────────── */
     .fav-btn {
-      background: none;
-      border: none;
+      align-items: center;
+      background: rgba(242,201,76,0.08);
+      border: 1px solid transparent;
+      border-radius: 6px;
       color: var(--yellow);
       cursor: pointer;
-      font-size: 0.85rem;
+      display: inline-flex;
+      font-size: 1.15rem;
+      height: 26px;
+      justify-content: center;
       line-height: 1;
       opacity: 0.2;
-      padding: 2px 3px;
-      transition: opacity 0.15s, transform 0.12s;
+      padding: 0;
       flex-shrink: 0;
       align-self: flex-start;
+      transition: opacity 0.15s, transform 0.12s, border-color 0.15s, background 0.15s;
+      width: 26px;
     }
-    .fav-btn:hover { opacity: 0.65; transform: scale(1.2); }
-    .fav-btn.active { opacity: 1; }
+    .fav-btn:hover { border-color: rgba(242,201,76,0.45); opacity: 0.8; transform: scale(1.08); }
+    .fav-btn.active { background: rgba(242,201,76,0.16); border-color: rgba(242,201,76,0.45); opacity: 1; }
 
     /* ── レスポンシブ ─────────────────────────────────── */
     @media (max-width: 720px) {
@@ -1111,10 +1117,8 @@ function renderPlotFilters(datasets) {
 
 function getRateForProduct(name) {
   const latest = getProductLatestPrices(name);
-  const keys = Object.keys(latest).filter(s => SIDEBAR_STORES.has(s));
-  if (!keys.length) return null;
-  const best = Math.max(...keys.map(s => latest[s].price));
-  return calcRate(best, getMsrpLatest(name));
+  const ichome = latest['買取一丁目'];
+  return ichome ? calcRate(ichome.price, getMsrpLatest(name)) : null;
 }
 
 function saveFavorites() {
@@ -1435,33 +1439,22 @@ function renderProductList() {
     favBtn.addEventListener('click', e => toggleFavorite(name, e));
     pricesEl.appendChild(favBtn);
 
-    const sidebarKeys = Object.keys(latest).filter(s => SIDEBAR_STORES.has(s));
-    if (sidebarKeys.length === 0) {
+    const ichome = latest['買取一丁目'];
+    if (!ichome) {
       const nd = document.createElement('span');
       nd.className = 'no-data';
       nd.textContent = 'データなし';
       pricesEl.appendChild(nd);
     } else {
-      // 最高買取価格で買取率を計算
-      const bestPrice = Math.max(...sidebarKeys.map(s => latest[s].price));
       const msrp = getMsrpLatest(name);
-      const rate = calcRate(bestPrice, msrp);
+      const rate = calcRate(ichome.price, msrp);
       if (rate !== null) {
         const badge = document.createElement('span');
         badge.className = `rate-badge ${rateClass(rate)}`;
         badge.textContent = `${rate}%`;
-        badge.title = `定価 ¥${msrp.toLocaleString()}`;
+        badge.title = `買取一丁目 ¥${ichome.price.toLocaleString()} / 定価 ¥${msrp.toLocaleString()}`;
         pricesEl.appendChild(badge);
       }
-      const PILL_CLASS = { '買取一丁目': 'store-b', 'モバイル一番': 'store-a', 'ヤフオク 中央値': 'store-c' };
-      sidebarKeys.forEach(s => {
-        const pill = document.createElement('span');
-        pill.className = `price-pill ${PILL_CLASS[s] || 'store-a'}`;
-        if (STORE_COLORS[s]) pill.style.borderLeft = `2px solid ${STORE_COLORS[s].border}`;
-        pill.textContent = `¥${latest[s].price.toLocaleString()}`;
-        pill.title = s;
-        pricesEl.appendChild(pill);
-      });
     }
 
     item.appendChild(nameWrap);

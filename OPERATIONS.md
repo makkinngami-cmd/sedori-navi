@@ -67,18 +67,22 @@ raw CSV は業者ごとの元データ確認用。業者追加やスクレイパ
 
 `run_scraper.ps1` の流れ:
 
-1. `scraper/scrape.py`
-2. `scraper/scrape_yahoo.py`
-3. `data/prices.csv` を `docs/prices.csv` にコピー
-4. `data/msrp.csv` を `docs/msrp.csv` にコピー
-5. `last_scrape.txt` を `docs` にコピー
-6. 変更があれば git commit / push
+1. 実行前に `git fetch` / `git rebase --autostash` で公開側の先行更新を取り込む
+2. `scraper/scrape.py`
+3. `scraper/scrape_yahoo.py`
+4. `data/prices.csv` を `docs/prices.csv` にコピー
+5. `data/msrp.csv` を `docs/msrp.csv` にコピー
+6. `last_scrape.txt` を `docs` にコピー
+7. 変更があれば git commit
+8. push 前に再度 `git fetch` / `git rebase --autostash`
+9. `git push origin main`
 
 GitHub Actions バックアップ:
 
 - `.github/workflows/scrape.yml`
-- cron: `17 3 * * *`
-- JST 12:17 相当
+- cron: `10 4 * * *`
+- JST 13:10 相当
+- ローカル 12:17 実行との同時 push 衝突を避けるため、Actions は少し後ろにずらす。
 
 ## 日次監視
 
@@ -155,6 +159,27 @@ Codex heartbeat automation:
 - 買取商店は白い丸。
 - ヤフオク中央値は黄色の丸。
 - CSVキャッシュ回避は `Date.now()` を使う。
+- スマホ表示ではチャートカードとキャンバスの高さを固定し、SE2 など小さい画面で縦長に崩れないようにする。
+- サイドバーの商品行は、価格ピルを出さず、星と買取率だけを表示する。
+- サイドバーの買取率は、全業者の最高値ではなく `買取一丁目` の最新価格を基準に計算する。
+- お気に入りの星は視認性とタップしやすさを優先して大きめにする。
+
+## ヤフオクデータの扱い
+
+ヤフオクは個人が売るときの換金相場を見る目的で使う。
+
+ルール:
+
+- ヤフオクのストア出品は集計から除外する。
+- 検索結果カード内の `ストア` 表示を検出し、該当落札を除外する。
+- 価格上限で切る運用は、将来の値上げや相場変化に弱いため、原則として使わない。
+- ストア価格は小売価格に近い場合があり、個人出品の換金相場とは別物として扱う。
+
+PS5 Pro の補正:
+
+- `157,300円` のヤフオク落札はストア出品だったため除外対象と判断。
+- 2026-05-21 の PS5 Pro ヤフオク履歴は、ストア除外後の `137,000円` に補正。
+- 2026-05-24 の PS5 Pro ヤフオク履歴は、ストア出品しか残らなかったため削除。
 
 ## 既知の注意点
 

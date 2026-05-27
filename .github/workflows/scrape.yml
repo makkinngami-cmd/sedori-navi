@@ -70,6 +70,6 @@ jobs:
           if git diff --cached --quiet; then
             echo "No changes to commit"
           else
-            git commit -m "chore: update prices $(date +'%Y-%m-%d') [skip ci]"
+            git commit -m "chore: update prices $(date +'%Y-%m-%d')"
             git push
           fi

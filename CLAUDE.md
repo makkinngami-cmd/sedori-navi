@@ -1,6 +1,6 @@
 # sedori-navi — メンテナンスガイド
 
-買取店（買取一丁目・モバイル一番）とヤフオクの価格を毎日自動収集し、GitHub Pages でチャート表示するシステム。
+買取店（買取一丁目・モバイル一番・買取ルデヤ・森森買取・買取ホムラ・買取商店）とヤフオクの価格を毎日自動収集し、GitHub Pages でチャート表示するシステム。
 
 ---
 
@@ -41,7 +41,7 @@ date,product_name,store,price
 2026-05-21,Switch 有機白,ヤフオク 中央値,47500
 2026-05-21,Switch 有機白,ヤフオク 最高,52000
 ```
-- `store` の値: `買取一丁目` / `モバイル一番` / `ヤフオク 最安` / `ヤフオク 中央値` / `ヤフオク 最高`
+- `store` の値: `買取一丁目` / `モバイル一番` / `買取ルデヤ` / `森森買取` / `買取ホムラ` / `買取商店` / `ヤフオク 最安` / `ヤフオク 中央値` / `ヤフオク 最高`
 - 同日・同商品・同店舗が重複した場合は最後の行が有効（上書きではなく追記形式）
 
 ### msrp.csv
@@ -149,7 +149,7 @@ $PYTHON = "C:\Users\makki\AppData\Local\Programs\Python\Python311\python.exe"
 schtasks /query /tn "sedori-navi-scraper" /fo LIST
 ```
 
-毎朝 JST 07:17 に `run_scraper.ps1` を自動実行する設定になっている。
+毎日 JST 12:17 に `run_scraper.ps1` を自動実行する設定になっている。
 
 ---
 
@@ -178,6 +178,7 @@ schtasks /query /tn "sedori-navi-scraper" /fo LIST
 
 - URL: `https://makkinngami-cmd.github.io/sedori-navi/`
 - `docs/` フォルダが公開ルート
+- `Deploy GitHub Pages` ワークフローで `docs/` を公開する
 - pushから反映まで通常1〜2分
 
 ---
@@ -187,3 +188,34 @@ schtasks /query /tn "sedori-navi-scraper" /fo LIST
 - `data/` と `docs/` のCSVは必ず同期する（run_scraper.ps1 が自動化しているが手動編集時は注意）
 - GitHub Actions の cron は遅延・スキップが多いため、スクレイプの主体はWindowsタスクスケジューラ
 - MSRPのカメラ類は kakaku.com の「新品最安値」を参照価格とする（Amazon出品価格は不正確）
+
+---
+
+# STATUS.md の書き方
+
+作業が一区切りついたら `STATUS.md`（このファイルと同じフォルダ）を以下のフォーマットで更新すること。
+`STATUS.md` がない場合は新規作成する。
+
+```
+# STATUS.md — sedori-navi（買取価格収集・表示）
+
+更新日: YYYY-MM-DD
+
+## 現在地
+今どのフェーズか、一言で書く。
+
+## 直近の完了（更新日時点）
+- 何が終わったか箇条書き（日付付き）
+
+## 次にやること
+- タスクを優先度順に箇条書き
+
+## 何待ち・いつ以降に対応
+- 自動実行の時刻、外部待ち、期日など
+
+## 注意・触ってはいけないもの
+- data/raw/ は元データ確認用。勝手に削除しない
+- .bak_... ファイルも削除前にユーザー確認
+- データが取れていないとき手動でCSVを埋めて終わりにしない。仕組みを直す
+- GitHub Actions はバックアップ扱い。主運用はWindowsタスクスケジューラ
+```

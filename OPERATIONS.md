@@ -84,6 +84,16 @@ GitHub Actions バックアップ:
 - JST 13:10 相当
 - ローカル 12:17 実行との同時 push 衝突を避けるため、Actions は少し後ろにずらす。
 
+GitHub Pages 公開:
+
+- `.github/workflows/pages.yml`
+- workflow 名: `Deploy GitHub Pages`
+- `docs/` を Pages artifact としてアップロードし、GitHub Pages にデプロイする。
+- legacy Pages ビルドが失敗したため、公開方式は workflow を使う。
+- 日次価格更新コミットには `[skip ci]` を付けない。付けると Pages デプロイも止まり、公開CSVが古いままになる。
+- 公開CSV確認: `https://makkinngami-cmd.github.io/sedori-navi/prices.csv`
+- 2026-05-26 は GitHubアカウント制限で Pages デプロイが失敗した。ログイン後に再実行し、公開CSVが 236 件へ更新されたことを確認済み。
+
 ## 日次監視
 
 Codex heartbeat automation:
@@ -193,7 +203,7 @@ PS5 Pro の補正:
 
 優先度高:
 
-- 2026-05-26 12:45 の日次確認で、追加5業者が自動統合されるか検証する。
+- 2026-05-27 12:45 の日次確認で、追加5業者が自動統合されるか継続検証する。
 - 取れていない業者があれば、ログと raw CSV から原因を調査し、仕組み側を修正する。
 - モバイル一番は継続して安定取得できるか重点確認する。
 

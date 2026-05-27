@@ -6,6 +6,7 @@
 import csv
 from html import unescape
 import logging
+import os
 import re
 import time
 from datetime import datetime, timezone, timedelta
@@ -92,6 +93,14 @@ def _build_jan_index() -> dict[str, dict]:
 JAN_PRODUCT_INDEX = _build_jan_index()
 
 
+def known_jan_for_product(product: dict) -> str:
+    """既存CSVや商品マスタから分かる代表JANを返す。"""
+    for jan, indexed_product in JAN_PRODUCT_INDEX.items():
+        if indexed_product.get('name') == product.get('name'):
+            return jan
+    return ''
+
+
 def match_product_by_jan(jan: str | int | None) -> dict | None:
     """JANが分かる場合はJANを最優先で商品マスタに対応させる"""
     return JAN_PRODUCT_INDEX.get(_normalize_jan(jan))
@@ -137,7 +146,52 @@ def _prefer_new_record(current: dict | None, new: dict) -> bool:
     """同じ商品で複数候補がある場合はJAN付き候補を優先する"""
     if current is None:
         return True
-    return not _normalize_jan(current.get('jan')) and bool(_normalize_jan(new.get('jan')))
+    current_jan = bool(_normalize_jan(current.get('jan')))
+    new_jan = bool(_normalize_jan(new.get('jan')))
+    if current_jan != new_jan:
+        return new_jan
+    return int(new.get('price') or 0) > int(current.get('price') or 0)
+
+
+def _mobile_ichiban_color_variants(block: str, item_id: str) -> list[tuple[str, int]]:
+    select_m = re.search(
+        rf'<select[^>]+id="NewColor_{re.escape(item_id)}"[^>]*>(.*?)</select>',
+        block,
+        re.S,
+    )
+    if not select_m:
+        return []
+
+    color_map = {
+        '銀': 'シルバー',
+        '青': 'ディープブルー',
+        '橙': 'コズミックオレンジ',
+    }
+    variants = []
+    for value, option_html in re.findall(r'<option\s+value="([^"]+)"[^>]*>(.*?)</option>', select_m.group(1), re.S):
+        if value == '0':
+            continue
+        option_text = _clean_html_text(option_html)
+        color_key = re.sub(r'\s*\(.*?\)\s*', '', option_text).strip()
+        color_name = color_map.get(color_key)
+        if not color_name:
+            continue
+
+        adjustment = 0
+        adj_m = re.search(r'\(([-−+]?[0-9,]+)円\)', option_text)
+        if adj_m:
+            adjustment = int(adj_m.group(1).replace('−', '-').replace(',', ''))
+        variants.append((color_name, adjustment))
+
+    return variants
+
+
+def _mobile_ichiban_status(block: str) -> str:
+    labels = re.findall(
+        r'<label[^>]+title="([^"]+)"[^>]*style="height:21px"[^>]*>',
+        block,
+    )
+    return _clean_html_text(labels[1]) if len(labels) > 1 else ''
 
 
 def _mobile_ichiban_cards(html: str) -> list[dict]:
@@ -167,12 +221,25 @@ def _mobile_ichiban_cards(html: str) -> list[dict]:
         price = int(price_m.group(1).replace(',', ''))
         jan = jan_m.group(1) if jan_m else ''
         if title and price > 0:
-            cards.append({
-                'item_id': item_id,
-                'title': title,
-                'jan': jan,
-                'price': price,
-            })
+            status = _mobile_ichiban_status(block)
+            variants = _mobile_ichiban_color_variants(block, item_id)
+            if variants and title.startswith('iPhone '):
+                for color_name, adjustment in variants:
+                    cards.append({
+                        'item_id': item_id,
+                        'title': f'{title} {color_name}',
+                        'status': status,
+                        'jan': jan,
+                        'price': price + adjustment,
+                    })
+            else:
+                cards.append({
+                    'item_id': item_id,
+                    'title': title,
+                    'status': status,
+                    'jan': jan,
+                    'price': price,
+                })
 
     return cards
 
@@ -195,13 +262,16 @@ def scrape_mobile_ichiban() -> list[dict]:
         cards = _mobile_ichiban_cards(resp.text)
         matched = 0
         for card in cards:
+            if card['title'].startswith('iPhone ') and '開封' in card.get('status', '') and '未開封' not in card.get('status', ''):
+                continue
             product = match_product_record(card['title'], card['jan'])
             if not product:
                 continue
             matched += 1
+            jan = _normalize_jan(card['jan']) or known_jan_for_product(product)
             candidate = {
                 'price': card['price'],
-                'jan': card['jan'],
+                'jan': jan,
                 'url': f'{url}#Img_{card["item_id"]}',
             }
             if not _prefer_new_record(found_products.get(product['name']), candidate):
@@ -209,7 +279,7 @@ def scrape_mobile_ichiban() -> list[dict]:
             found_products[product['name']] = candidate
             logger.info(
                 f'  ✓ {product["name"]} → ¥{card["price"]:,}  '
-                f'({card["title"]} / JAN:{card["jan"]})'
+                f'({card["title"]} / JAN:{jan})'
             )
 
         logger.info(f'  {page_name}: {len(cards)} アイテム取得, {matched} 件マッチ')
@@ -302,6 +372,8 @@ def scrape_rudeya() -> list[dict]:
             if not product:
                 continue
             matched += 1
+            jan = _normalize_jan(item['jan']) or known_jan_for_product(product)
+            item = {**item, 'jan': jan}
             if not _prefer_new_record(found_products.get(product['name']), item):
                 continue
             found_products[product['name']] = item
@@ -495,6 +567,8 @@ def scrape_homura() -> list[dict]:
             if not product:
                 continue
             matched += 1
+            jan = _normalize_jan(item['jan']) or known_jan_for_product(product)
+            item = {**item, 'jan': jan}
             if not _prefer_new_record(found_products.get(product['name']), item):
                 continue
             found_products[product['name']] = item
@@ -904,6 +978,9 @@ def scrape_extra_stores_to_raw() -> tuple[int, list[dict]]:
 
 def _already_scraped_today() -> bool:
     """マーカーファイルで今日実行済みか判定（価格変化なしでも正しく判定できる）"""
+    if os.environ.get('SEDORI_FORCE_SCRAPE') == '1':
+        logger.info('SEDORI_FORCE_SCRAPE=1 のため今日分も再取得します')
+        return False
     return SCRAPE_MARKER.exists() and SCRAPE_MARKER.read_text(encoding='utf-8').strip() == TODAY
 
 def _mark_scraped_today() -> None:

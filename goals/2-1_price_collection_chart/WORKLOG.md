@@ -20,3 +20,14 @@
 - iPhone 17 Pro系は21商品/167行、モバイル一番21件、買取ホムラ9件、JAN欠け0件を確認
 - `python scraper/generate_coverage_report.py` を実行し、取得カバレッジを再生成
 - カバレッジは完全未取得1件（トモダチコレクション Switch 2）、取得業者数1の商品24件で維持
+
+## 2026-05-31
+
+- 日次自動確認を実施
+- `data/prices.csv` と `docs/prices.csv` は同期済み、`data/last_scrape.txt` と `docs/last_scrape.txt` はどちらも `2026-05-31`
+- `data/raw/20260531_121703_*.csv` が追加5業者分保存されていることを確認
+- raw確認では、モバイル一番 iPhone 17 Pro系21商品、買取ホムラ iPhone 17 Pro系9商品がJAN欠けなし
+- 今日分の `prices.csv` は146行。価格変化追記方式のため、今日の日付だけではiPhone全商品数を判定しない
+- `logs/scraper.log` に2026-05-31分のERROR/Traceback/失敗/failedはなし
+- `python scraper/generate_coverage_report.py` を実行し、取得カバレッジを再生成
+- カバレッジは完全未取得1件（トモダチコレクション Switch 2）、取得業者数1の商品24件で維持

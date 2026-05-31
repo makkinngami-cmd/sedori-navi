@@ -1,6 +1,6 @@
 # 取得カバレッジ表
 
-更新日: 2026-05-30
+更新日: 2026-05-31
 
 凡例: `○` 取得実績あり / 空欄 取得実績なし
 
@@ -290,4 +290,4 @@
 | Tamagotchi Paradise Purple Sky | 1 | ○ |  |  |  |  |  |  |  |  |
 | Tamagotchi Paradise Blue Water | 2 | ○ |  |  |  |  | ○ | ○ | ○ | ○ |
 | Tamagotchi Paradise Pink Land | 1 | ○ |  |  |  |  |  |  |  |  |
-| Tamagotchi Paradise Jade Forest | 1 | ○ |  |  |  |  |  |  |  |  |
+| Tamagotchi Paradise Jade Forest | 1 | ○ |  |  |  |  |  | ○ | ○ | ○ |

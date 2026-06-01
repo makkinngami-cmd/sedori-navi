@@ -977,41 +977,41 @@ const PRODUCT_CATEGORIES = {
 // ─────────────────────────────────────────────────────────────────────
 // サブカテゴリ定義
 // ─────────────────────────────────────────────────────────────────────
-// prefixes: null = すべて / 配列 = いずれかで startsWith
+// prefixes: null = すべて / 配列 = いずれかに一致
 const SUBCATEGORIES = {
   'ゲーム': [
     { id: 'all',    label: 'すべて',           prefixes: null },
-    { id: 'switch', label: 'Nintendo Switch',  prefixes: ['Switch', 'Joy-Con'] },
-    { id: 'ps',     label: 'PlayStation',      prefixes: ['PS5', 'PlayStation', 'リモートプレーヤー', 'DualSense'] },
+    { id: 'switch', label: 'Nintendo Switch',  prefixes: ['Nintendo Switch', 'Joy-Con', 'Switch2'] },
+    { id: 'ps',     label: 'PlayStation',      prefixes: ['PS5', 'PlayStation', 'DualSense'] },
     { id: 'xbox',   label: 'Xbox',             prefixes: ['Xbox'] },
     { id: 'meta',   label: 'Meta Quest',       prefixes: ['Meta Quest'] },
     { id: 'steam',  label: 'Steam Deck',       prefixes: ['Steam Deck'] },
     { id: 'asus',   label: 'ASUS',             prefixes: ['ASUS'] },
-    { id: 'software',label: 'ゲームソフト',      prefixes: ['PS5 Split Fiction', 'PS5 It Takes Two', 'PS5 プラグマタ', 'Pokemon LEGENDS Z-A Switch', 'ゼルダ', 'リングフィット', 'マリオパーティ ジャンボリー', 'ゼノブレイドクロス Switch 2', 'トモダチコレクション Switch', 'モンスターハンターストーリーズ3 Switch', 'マリオカート ワールド ソフト'] },
-    { id: 'other',  label: 'その他',           prefixes: ['Pokemon GO', 'Alarmo'] },
+    { id: 'software',label: 'ゲームソフト',      prefixes: ['【NS1】', '【NS2】', '【PS5】', 'リングフィット', 'トモダチコレクション Switch 2'] },
+    { id: 'other',  label: 'その他',           match: 'contains', prefixes: ['Pokemon GO', 'Alarmo'] },
   ],
   'カメラ': [
     { id: 'all',       label: 'すべて',           prefixes: null },
-    { id: 'mirrorless',label: 'デジタル一眼カメラ', prefixes: ['X100VI', 'X-T30', 'Nikon Z50II', 'OM SYSTEM PEN'] },
-    { id: 'compact',   label: '一体型デジタルカメラ', prefixes: ['IXY', 'SX740', 'SX70', 'PowerShot', 'G7 X', 'G1 X', 'LUMIX', 'RICOH GR'] },
-    { id: 'lens',      label: '交換レンズ',        prefixes: ['Tamron', 'NIKKOR', 'Sigma'] },
+    { id: 'mirrorless',label: 'デジタル一眼カメラ', match: 'contains', prefixes: ['X100VI', 'X-T30', 'Z50II', 'PEN E-P7'] },
+    { id: 'compact',   label: '一体型デジタルカメラ', match: 'contains', prefixes: ['IXY', 'SX740', 'SX70', 'PowerShot', 'G7 X', 'G1 X', 'LUMIX', 'RICOH GR'] },
+    { id: 'lens',      label: '交換レンズ',        match: 'contains', prefixes: ['Tamron', 'TAMRON', 'NIKKOR', 'Sigma'] },
     { id: 'action',    label: 'アクションカメラ',   prefixes: [] },
     { id: 'video',     label: 'ビデオカメラ',      prefixes: [] },
     { id: 'peripheral',label: 'カメラ周辺機器',    prefixes: [] },
-    { id: 'instax',    label: 'インスタントカメラ', prefixes: ['instax'] },
-    { id: 'film',      label: 'チェキフイルム',    prefixes: ['チェキフィルム', '写ルンです', 'instax SQUARE フィルム', 'instax WIDE フィルム', 'instax mini フィルム'] },
+    { id: 'instax',    label: 'インスタントカメラ', match: 'contains', prefixes: ['instax mini 12', 'instax mini 13', 'instax mini 40', 'instax mini 90', 'instax mini 99', 'instax mini Evo', 'instax WIDE 400', 'instax WIDE Evo', 'instax SQUARE SQ'] },
+    { id: 'film',      label: 'チェキフイルム',    match: 'contains', prefixes: ['フィルム', '写ルンです', '【mini】FUJIFILM instax', '【SQUARE】FUJIFILM instax', '【WIDE】FUJIFILM instax'] },
     { id: 'sd',        label: 'SDカード',         prefixes: [] },
   ],
   'ポケカ': [
     { id: 'all',  label: 'すべて',  prefixes: null },
-    { id: 'mega', label: 'MEGA系',  prefixes: ['ニンジャスピナー','ムニキスゼロ','MEGAドリーム','インフェルノ','メガブレイブ','メガシンフォニア'] },
-    { id: 'sv',   label: 'S&V系',   prefixes: ['ブラックボルト','ホワイトフレア','ロケット団','熱風','バトルパートナーズ','テラスタルフェス','超電ブレイカー','楽園ドラゴーナ','ステラミラクル','ナイトワンダラー','変幻の仮面','クリムゾンヘイズ','ワイルドフォース','サイバージャッジ','シャイニートレジャー','古代の咆哮','未来の一閃','レイジングサーフ','黒炎の支配者','ポケモンカード151','VSTARユニバース','クレイバースト','スノーハザード','トリプレットビート','スカーレットex','バイオレットex'] },
+    { id: 'mega', label: 'MEGA系',  match: 'contains', prefixes: ['【MEGA】', 'MEGA', 'ニンジャスピナー','ムニキスゼロ','インフェルノ','メガブレイブ','メガシンフォニア'] },
+    { id: 'sv',   label: 'S&V系',   match: 'contains', prefixes: ['【S＆V】','【S＆S】','ブラックボルト','ホワイトフレア','ロケット団','熱風','バトルパートナーズ','テラスタルフェス','超電ブレイカー','楽園ドラゴーナ','ステラミラクル','ナイトワンダラー','変幻の仮面','クリムゾンヘイズ','ワイルドフォース','サイバージャッジ','シャイニートレジャー','古代の咆哮','未来の一閃','レイジングサーフ','黒炎の支配者','ポケモンカード151','VSTARユニバース','クレイバースト','スノーハザード','トリプレットビート','スカーレットex','バイオレットex'] },
   ],
   'ワンピ': [
     { id: 'all',  label: 'すべて',  prefixes: null },
-    { id: 'op',   label: 'OPシリーズ', prefixes: ['OP-'] },
-    { id: 'eb',   label: 'EBシリーズ', prefixes: ['EB-'] },
-    { id: 'prb',  label: 'PRBシリーズ',prefixes: ['PRB-'] },
+    { id: 'op',   label: 'OPシリーズ', match: 'contains', prefixes: ['【OP-', 'OP-'] },
+    { id: 'eb',   label: 'EBシリーズ', match: 'contains', prefixes: ['【EB-', 'EB-'] },
+    { id: 'prb',  label: 'PRBシリーズ',match: 'contains', prefixes: ['【PRB-', 'PRB-'] },
   ],
   'スマートフォン': [
     { id: 'all',     label: 'すべて',             prefixes: null },
@@ -1023,6 +1023,9 @@ const SUBCATEGORIES = {
 function matchSubcat(productName, subcat) {
   if (!subcat || subcat.id === 'all' || subcat.prefixes === null) return true;
   if (!subcat.prefixes.length) return false;
+  if (subcat.match === 'contains') {
+    return subcat.prefixes.some(p => productName.includes(p));
+  }
   return subcat.prefixes.some(p => productName.startsWith(p));
 }
 

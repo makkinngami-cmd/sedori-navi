@@ -54,3 +54,6 @@
 - `python -m py_compile scraper\products.py scraper\scrape.py scraper\scrape_yahoo.py scraper\scrape_msrp.py scraper\generate_coverage_report.py` 成功
 - `python scraper\generate_coverage_report.py` 成功
 - ローカル `http://localhost:8010/` で旧名の `Switch 新型ネオン` / `PlayStation5 Pro` が消え、買取一丁目側名称で表示されることを確認
+- 買取一丁目名に含まれていた13桁JANを商品名から除去。JAN列・下段表示は維持
+- 対象は41商品、`prices.csv` 375行、`msrp.csv` 41行。作業前バックアップを `.bak_20260601_215426` として保存
+- マスタ・CSV内の商品名に13桁JANが残っていないこと、ローカル画面の商品リスト名にも13桁JANが出ないことを確認

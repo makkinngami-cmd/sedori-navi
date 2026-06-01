@@ -41,8 +41,8 @@
 | PlayStation5 Pro CFI-7000B01 | 6 | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ |
 | PlayStation5 Slim Disc CFI-2000A01 | 6 | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ |
 | PlayStation5 Slim Digital エディション CFI-2000B01 | 5 | ○ |  | ○ | ○ | ○ | ○ | ○ | ○ | ○ |
-| PlayStation 5 デジタル ・ エディション 日本語 専用 CFI-2200B01 4948872417419 | 5 | ○ |  | ○ | ○ | ○ | ○ | ○ | ○ | ○ |
-| PlayStation 5 デジタルED ダブルパック 日本語専用 CFIJ-10032 4948872850599 | 4 | ○ |  | ○ | ○ |  | ○ | ○ | ○ | ○ |
+| PlayStation 5 デジタル ・ エディション 日本語 専用 CFI-2200B01 | 5 | ○ |  | ○ | ○ | ○ | ○ | ○ | ○ | ○ |
+| PlayStation 5 デジタルED ダブルパック 日本語専用 CFIJ-10032 | 4 | ○ |  | ○ | ○ |  | ○ | ○ | ○ | ○ |
 | PlayStation(R)5 ”Ghost of Yotei” ゴールド リミテッドエディション CFIJ-10029 | 4 | ○ |  | ○ | ○ | ○ |  | ○ | ○ | ○ |
 | PlayStation VR2 “Horizon Call of the Mountain” 同梱版 CFIJ-17001 | 3 | ○ |  |  | ○ | ○ |  |  |  |  |
 | PlayStation VR2 CFIJ-17000 | 3 | ○ |  |  | ○ | ○ |  |  |  |  |
@@ -162,47 +162,47 @@
 | instax SQUARE SQ1 [ブルー] | 3 | ○ |  | ○ | ○ |  |  |  |  |  |
 | instax SQUARE SQ1 [オレンジ] | 3 | ○ |  | ○ | ○ |  |  | ○ | ○ | ○ |
 | instax SQUARE SQ1 [ホワイト] | 3 | ○ |  | ○ | ○ |  |  |  |  |  |
-| CANON PowerShot IXY 650 m [シルバー]　25年 4549292250961 | 4 | ○ |  | ○ | ○ | ○ |  | ○ | ○ | ○ |
-| CANON PowerShot IXY 650 m [ブラック] 25年 4549292250954 | 4 | ○ |  | ○ | ○ | ○ |  | ○ | ○ | ○ |
-| ◆デジタルカメラ IXY 650 [シルバー] 4549292057584 | 2 | ○ |  | ○ |  |  |  |  |  |  |
-| ◆デジタルカメラ IXY 650 [ブラック] 4549292057522 | 3 | ○ |  | ○ |  | ○ |  |  |  |  |
+| CANON PowerShot IXY 650 m [シルバー]　25年 | 4 | ○ |  | ○ | ○ | ○ |  | ○ | ○ | ○ |
+| CANON PowerShot IXY 650 m [ブラック] 25年 | 4 | ○ |  | ○ | ○ | ○ |  | ○ | ○ | ○ |
+| ◆デジタルカメラ IXY 650 [シルバー] | 2 | ○ |  | ○ |  |  |  |  |  |  |
+| ◆デジタルカメラ IXY 650 [ブラック] | 3 | ○ |  | ○ |  | ○ |  |  |  |  |
 | ◆Canon PowerShot SX740 HS [シルバー] | 5 | ○ | ○ | ○ | ○ | ○ |  |  |  |  |
 | ◆PowerShot SX740 HS [ブラック] | 4 | ○ |  | ○ | ○ | ○ |  |  |  |  |
-| CANON PowerShot SX70 HS 4549292119183 | 3 | ○ |  | ○ | ○ |  |  | ○ | ○ | ○ |
+| CANON PowerShot SX70 HS | 3 | ○ |  | ○ | ○ |  |  | ○ | ○ | ○ |
 | Canon PowerShot V10 [ブラック] トライポッドグリップキット | 3 | ○ |  | ○ | ○ |  |  | ○ | ○ | ○ |
-| CANON PowerShot V1 4549292228090 | 3 | ○ |  | ○ | ○ |  |  |  |  |  |
-| CANON PowerShot G7 X Mark III PowerShot 30th Anniversary Edition 4957792181706 | 3 | ○ |  | ○ | ○ |  |  | ○ | ○ | ○ |
-| ◆PowerShot G7 X Mark III　SV 4549292137804 | 4 | ○ |  | ○ | ○ | ○ |  |  |  |  |
-| PowerShot G7 X Mark III　B 4549292137743 | 5 | ○ | ○ | ○ | ○ | ○ |  |  |  |  |
-| Canon PowerShot G7 X MarkII 4549292056389 | 3 | ○ |  | ○ | ○ |  |  | ○ | ○ | ○ |
+| CANON PowerShot V1 | 3 | ○ |  | ○ | ○ |  |  |  |  |  |
+| CANON PowerShot G7 X Mark III PowerShot 30th Anniversary Edition | 3 | ○ |  | ○ | ○ |  |  | ○ | ○ | ○ |
+| ◆PowerShot G7 X Mark III　SV | 4 | ○ |  | ○ | ○ | ○ |  |  |  |  |
+| PowerShot G7 X Mark III　B | 5 | ○ | ○ | ○ | ○ | ○ |  |  |  |  |
+| Canon PowerShot G7 X MarkII | 3 | ○ |  | ○ | ○ |  |  | ○ | ○ | ○ |
 | デジタルカメラ PowerShot G1 X Mark III | 2 | ○ |  |  | ○ |  |  |  |  |  |
-| FUJIFILM X100VI Silver 【新型2025】 E/J 4547410554281 | 3 | ○ |  | ○ |  | ○ |  |  |  |  |
-| FUJIFILM X100VI Black 【新型2025】 E/J 4547410554267 | 3 | ○ |  | ○ |  | ○ |  |  |  |  |
-| FUJIFILM X100VI [シルバー] 4547410528282 | 3 | ○ |  | ○ |  | ○ |  |  |  |  |
-| FUJIFILM X100VI [ブラック] 4547410529494 | 3 | ○ |  | ○ |  | ○ |  |  |  |  |
-| FUJIFILM X-T30 II XC15-45mmレンズキット  4547410538304 | 1 | ○ |  |  |  |  |  |  |  |  |
-| Panasonic LUMIX DC-TZ99-K [ブラック] 4549980888247 | 2 | ○ |  | ○ |  |  |  |  |  |  |
+| FUJIFILM X100VI Silver 【新型2025】 E/J | 3 | ○ |  | ○ |  | ○ |  |  |  |  |
+| FUJIFILM X100VI Black 【新型2025】 E/J | 3 | ○ |  | ○ |  | ○ |  |  |  |  |
+| FUJIFILM X100VI [シルバー] | 3 | ○ |  | ○ |  | ○ |  |  |  |  |
+| FUJIFILM X100VI [ブラック] | 3 | ○ |  | ○ |  | ○ |  |  |  |  |
+| FUJIFILM X-T30 II XC15-45mmレンズキット | 1 | ○ |  |  |  |  |  |  |  |  |
+| Panasonic LUMIX DC-TZ99-K [ブラック] | 2 | ○ |  | ○ |  |  |  |  |  |  |
 | LUMIX DC-TZ99 ホワイト | 1 | ○ |  |  |  |  |  |  |  |  |
-| RICOH GR IV Monochrome 4549212311994 | 4 | ○ |  | ○ | ○ | ○ |  |  |  |  |
-| RICOH GR IV Black 4549212311291 | 4 | ○ |  | ○ | ○ | ○ |  | ○ | ○ | ○ |
-| RICOH GR IIIx Urban Edition 4549212304507 | 3 | ○ |  | ○ | ○ |  |  |  |  |  |
-| RICOH GR III Diary Edition 4549212305863 | 3 | ○ |  | ○ | ○ |  |  |  |  |  |
-| ◆RICOH GR IIIx 4549212303739 | 4 | ○ |  | ○ | ○ | ○ |  |  |  |  |
-| ◆RICOH GR III  4549212300202 | 4 | ○ |  | ○ | ○ | ○ |  |  |  |  |
-| Nikon Z50II ダブルズームキット 4960759916921 | 1 | ○ |  |  |  |  |  |  |  |  |
-| Z50II 18-140 VR レンズキット 4960759917003 | 1 | ○ |  |  |  |  |  |  |  |  |
-| Z50II 16-50 VR レンズキット 4960759916846 | 1 | ○ |  |  |  |  |  |  |  |  |
-| Nikon Z50II ボディ  4960759916761 | 1 | ○ |  |  |  |  |  |  |  |  |
-| TAMRON 18-300mm F/3.5-6.3 Di III-A VC VXD (B061) ニコンZ用 4960371007007 | 1 | ○ |  |  |  |  |  |  |  |  |
+| RICOH GR IV Monochrome | 4 | ○ |  | ○ | ○ | ○ |  |  |  |  |
+| RICOH GR IV Black | 4 | ○ |  | ○ | ○ | ○ |  | ○ | ○ | ○ |
+| RICOH GR IIIx Urban Edition | 3 | ○ |  | ○ | ○ |  |  |  |  |  |
+| RICOH GR III Diary Edition | 3 | ○ |  | ○ | ○ |  |  |  |  |  |
+| ◆RICOH GR IIIx | 4 | ○ |  | ○ | ○ | ○ |  |  |  |  |
+| ◆RICOH GR III | 4 | ○ |  | ○ | ○ | ○ |  |  |  |  |
+| Nikon Z50II ダブルズームキット | 1 | ○ |  |  |  |  |  |  |  |  |
+| Z50II 18-140 VR レンズキット | 1 | ○ |  |  |  |  |  |  |  |  |
+| Z50II 16-50 VR レンズキット | 1 | ○ |  |  |  |  |  |  |  |  |
+| Nikon Z50II ボディ | 1 | ○ |  |  |  |  |  |  |  |  |
+| TAMRON 18-300mm F/3.5-6.3 Di III-A VC VXD (B061) ニコンZ用 | 1 | ○ |  |  |  |  |  |  |  |  |
 | TAMRON 18-300mm F/3.5-6.3 Di III-A VC VXD (B061) [フジフイルム用] | 1 | ○ |  |  |  |  |  |  |  |  |
-| ◇TAMRON 18-300mm F/3.5-6.3 Di III-A VC VXD (B061) [ソニーE用]  4960371006765 | 2 | ○ |  |  |  | ○ |  |  |  |  |
-| TAMRON 28-75mm F/2.8 Di III VXD G2 (A063) [ニコンZ用]  4960371006901 | 1 | ○ |  |  |  |  |  |  |  |  |
-| TAMRON 28-75mm F/2.8 Di III VXD G2 (A063S) 4960371006796 | 2 | ○ |  |  |  | ○ |  |  |  |  |
-| TAMRON 28-300mm F/4-7.1 Di III VC VXD (A074) 4960371006925 | 1 | ○ |  |  |  |  |  |  |  |  |
-| TAMRON 28-200mm F/2.8-5.6 Di III RXD (A071)  4960371006703 | 2 | ○ |  |  |  | ○ |  |  |  |  |
-| TAMRON 25-200mm F/2.8-5.6 Di III VXD G2 (A075) 4960371007014 | 2 | ○ |  |  |  | ○ |  |  |  |  |
-| Nikon NIKKOR Z DX 50-250F4.5-6.3 VR  4960759900340 | 1 | ○ |  |  |  |  |  |  |  |  |
-| OLYMPUS PEN E-P7 EZダブルズームキット [シルバー] 4545350055844 | 1 | ○ |  |  |  |  |  |  |  |  |
+| ◇TAMRON 18-300mm F/3.5-6.3 Di III-A VC VXD (B061) [ソニーE用] | 2 | ○ |  |  |  | ○ |  |  |  |  |
+| TAMRON 28-75mm F/2.8 Di III VXD G2 (A063) [ニコンZ用] | 1 | ○ |  |  |  |  |  |  |  |  |
+| TAMRON 28-75mm F/2.8 Di III VXD G2 (A063S) | 2 | ○ |  |  |  | ○ |  |  |  |  |
+| TAMRON 28-300mm F/4-7.1 Di III VC VXD (A074) | 1 | ○ |  |  |  |  |  |  |  |  |
+| TAMRON 28-200mm F/2.8-5.6 Di III RXD (A071) | 2 | ○ |  |  |  | ○ |  |  |  |  |
+| TAMRON 25-200mm F/2.8-5.6 Di III VXD G2 (A075) | 2 | ○ |  |  |  | ○ |  |  |  |  |
+| Nikon NIKKOR Z DX 50-250F4.5-6.3 VR | 1 | ○ |  |  |  |  |  |  |  |  |
+| OLYMPUS PEN E-P7 EZダブルズームキット [シルバー] | 1 | ○ |  |  |  |  |  |  |  |  |
 | Sigma 28-70mm F2.8 | 1 | ○ |  |  |  |  |  |  |  |  |
 
 ## ポケカ
@@ -287,7 +287,7 @@
 
 | 商品 | 取得業者数 | 買取一丁目 | モバイル一番 | 買取ルデヤ | 森森買取 | 買取ホムラ | 買取商店 | ヤフオク 中央値 | ヤフオク 最安 | ヤフオク 最高 |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| バンダイ たまごっちパラダイスTamagotchi Paradise - Purple Sky 4582769733369 | 1 | ○ |  |  |  |  |  |  |  |  |
-| バンダイ たまごっちパラダイスTamagotchi Paradise - Blue Water 4582769733352 | 2 | ○ |  |  |  |  | ○ | ○ | ○ | ○ |
-| バンダイ たまごっちパラダイスTamagotchi Paradise - Pink Land 4582769733345 | 1 | ○ |  |  |  |  |  |  |  |  |
-| バンダイ たまごっちパラダイスTamagotchi Paradise - Jade Forest 4582769806223 | 1 | ○ |  |  |  |  |  | ○ | ○ | ○ |
+| バンダイ たまごっちパラダイスTamagotchi Paradise - Purple Sky | 1 | ○ |  |  |  |  |  |  |  |  |
+| バンダイ たまごっちパラダイスTamagotchi Paradise - Blue Water | 2 | ○ |  |  |  |  | ○ | ○ | ○ | ○ |
+| バンダイ たまごっちパラダイスTamagotchi Paradise - Pink Land | 1 | ○ |  |  |  |  |  |  |  |  |
+| バンダイ たまごっちパラダイスTamagotchi Paradise - Jade Forest | 1 | ○ |  |  |  |  |  | ○ | ○ | ○ |

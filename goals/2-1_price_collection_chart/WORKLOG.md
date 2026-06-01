@@ -44,3 +44,13 @@
 - `python scraper/generate_coverage_report.py` を実行し、取得カバレッジを再生成
 - カバレッジは完全未取得1件（トモダチコレクション Switch 2）、取得業者数1の商品24件で維持
 - モバイル一番の取得実績は52件から53件へ増加
+
+## 2026-06-01 商品名正規化
+
+- 買取一丁目APIからJAN別の商品名を取得し、既存JAN付き商品名205件を買取一丁目側の名称へ正規化
+- `scraper/products.py`、`docs/index.html`、`scraper/scrape_yahoo.py`、`scraper/scrape_msrp.py` の商品名キーを更新
+- `data/prices.csv` / `docs/prices.csv` / `data/msrp.csv` / `docs/msrp.csv` の `product_name` を一括置換し、作業前バックアップを `.bak_20260601_212413` として保存
+- `data/prices.csv` と `docs/prices.csv`、`data/msrp.csv` と `docs/msrp.csv` がバイト単位で一致することを確認
+- `python -m py_compile scraper\products.py scraper\scrape.py scraper\scrape_yahoo.py scraper\scrape_msrp.py scraper\generate_coverage_report.py` 成功
+- `python scraper\generate_coverage_report.py` 成功
+- ローカル `http://localhost:8010/` で旧名の `Switch 新型ネオン` / `PlayStation5 Pro` が消え、買取一丁目側名称で表示されることを確認

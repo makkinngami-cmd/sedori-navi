@@ -15,3 +15,4 @@
 - 2026-05-30はGitHub Actionsが先に当日マーカーを作り、ローカル `scrape.py` がスキップしたため raw が残らなかった。ローカル `run_scraper.ps1` に `SEDORI_FORCE_SCRAPE=1` を追加して対処済み
 - `run_scraper.ps1` はローカル固有の未追跡ファイル。次回、12:17の通常実行で `data/raw/YYYYMMDD_*.csv` が自動生成されるか確認する
 - 2026-05-31の通常実行では `data/raw/20260531_121703_*.csv` が生成済み。モバイル一番iPhone21商品、買取ホムラiPhone9商品もrawで確認済み
+- 2026-06-01の通常実行でも `data/raw/20260601_121703_*.csv` が生成済み。モバイル一番iPhone21商品、買取ホムラiPhone9商品もrawで確認済み

@@ -63,3 +63,16 @@
 - 買取一丁目名への正規化後、`Nintendo Switch` などのサブカテゴリが旧短縮名の `startsWith` 判定に依存していたため修正
 - ゲーム、カメラ、ポケカ、ワンピのサブカテゴリ判定を新名称に合わせて更新
 - ローカル `http://localhost:8010/` で `Nintendo Switch` 33件、`ゲームソフト` 15件、カメラ/ポケカ主要タグが空にならないことを確認
+
+## 2026-06-02 日次スクレイピング確認
+
+- `data/last_scrape.txt` / `docs/last_scrape.txt` / `data/last_yahoo_scrape.txt` / `docs/last_yahoo_scrape.txt` はすべて `2026-06-02`
+- `data/prices.csv` と `docs/prices.csv` は同期済み。`data/msrp.csv` と `docs/msrp.csv` も同期済み
+- `data/prices.csv` は全3233行、最新日付 `2026-06-02`、当日分281行
+- 当日分の追加5業者は180行、JAN欠け0件
+- `data/raw/20260602_121704_*.csv` は追加5業者分あり
+- raw確認: モバイル一番 iPhone 17 Pro系21商品、買取ホムラ iPhone 17 Pro系9商品、どちらもJAN欠け0件
+- `logs/scraper.log` の2026-06-02分にERROR/Traceback/失敗/failed/Exceptionは0件
+- 公開CSV `https://makkinngami-cmd.github.io/sedori-navi/prices.csv` は全3233行、最新日付 `2026-06-02`
+- `python scraper\generate_coverage_report.py` を実行し、カバレッジ表を再生成
+- カバレッジ: 完全未取得1件（`トモダチコレクション Switch 2`）、取得業者数1の商品24件、前回比で悪化0件、改善8件

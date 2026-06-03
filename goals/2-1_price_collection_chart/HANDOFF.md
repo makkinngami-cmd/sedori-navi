@@ -1,5 +1,33 @@
 # 2-1. 買取価格収集・チャート表示 HANDOFF
 
+## 最新引き継ぎ 2026-06-03
+
+### 現在地
+
+- 2026-06-03の日次スクレイピングは完了。`data/prices.csv` / `docs/prices.csv` は同期済み、当日行は208件。
+- 追加5業者の当日行は133件、JAN欠けは0件。
+- rawは `data/raw/20260603_121704_*.csv` に保存済み。モバイル一番 iPhone 21商品、買取ホムラ iPhone 9商品はいずれもJAN欠け0件。
+- `logs/scraper.log` の2026-06-03分に ERROR / Traceback / failed / Exception は0件。
+- ヤフオクの完了マーカー不一致を修正済み。`scraper/scrape_yahoo.py` は `data/last_yahoo_scrape.txt` を書く。
+- `reports/coverage_matrix.md` / `reports/coverage_matrix.csv` は2026-06-03版に更新済み。
+
+### 次にやること
+
+- 次回日次確認で `last_yahoo_scrape.txt` が自動で当日更新されるか確認する。
+- 取得業者数0の商品 `トモダチコレクション Switch 2` を優先調査する。
+- 取得業者数1の商品24件は、`reports/coverage_matrix.csv` を見て対象業者・対象サイトの差異を順に調査する。
+
+### 未解決
+
+- `data/last_scrape_yahoo.txt` が過去の誤マーカーとして残っている。削除は未実施。
+- `run_scraper.ps1` は未追跡ファイル。ローカル運用に必要なため扱いは要確認。
+
+### 触ってはいけないもの
+
+- `data/raw/` は削除しない。
+- `.bak_...` ファイルは削除しない。
+- データ未取得時にCSVを手で埋めて完了扱いにしない。必ず仕組み側を確認する。
+
 ## 現在地
 
 - 買取店・ヤフオク価格の日次収集、JAN統合、GitHub Pages反映は稼働中。

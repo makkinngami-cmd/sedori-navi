@@ -1,5 +1,17 @@
 # 2-1. 買取価格収集・チャート表示 WORKLOG
 
+## 2026-06-03 日次スクレイピング確認
+
+- `data/prices.csv` / `docs/prices.csv` は同期済み。最新日付は `2026-06-03`、当日行は208件。
+- 当日行の内訳は、買取一丁目61件、森森買取54件、買取ルデヤ29件、買取ホムラ27件、モバイル一番15件、買取商店8件、ヤフオク中央値7件、ヤフオク最高5件、ヤフオク最安2件。
+- 追加5業者の当日行は133件、JAN欠けは0件。
+- `data/raw/20260603_121704_*.csv` に追加5業者のraw保存あり。モバイル一番 iPhone 21商品、買取ホムラ iPhone 9商品はいずれもJAN欠け0件。
+- `logs/scraper.log` の2026-06-03分に ERROR / Traceback / failed / Exception は0件。
+- ヤフオク実データは取得済みだが、スクリプトの完了マーカーが `data/last_scrape_yahoo.txt` を書いており、運用側の `data/last_yahoo_scrape.txt` と不一致だった。
+- `scraper/scrape_yahoo.py` の完了マーカーを `data/last_yahoo_scrape.txt` に統一し、`data/last_yahoo_scrape.txt` / `docs/last_yahoo_scrape.txt` を `2026-06-03` に整合。
+- `python scraper/generate_coverage_report.py` を実行し、`reports/coverage_matrix.md` / `reports/coverage_matrix.csv` を更新。
+- カバレッジは取得業者数0の商品1件（`トモダチコレクション Switch 2`）、取得業者数1の商品24件、前回比悪化0件。
+
 ## 2026-05-28
 
 - ゴール別セッション運用に向けて `SESSION.md`、`HANDOFF.md`、`WORKLOG.md` を作成

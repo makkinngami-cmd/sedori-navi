@@ -38,7 +38,7 @@ CUTOFF   = (datetime.now(JST) - timedelta(days=7)).strftime('%Y-%m-%d')
 
 BASE_DIR      = Path(__file__).parent.parent
 DATA_FILE     = BASE_DIR / 'data' / 'prices.csv'
-SCRAPE_MARKER = BASE_DIR / 'data' / 'last_scrape_yahoo.txt'
+SCRAPE_MARKER = BASE_DIR / 'data' / 'last_yahoo_scrape.txt'
 CSV_HEADERS   = ['date', 'product_name', 'store', 'price', 'jan', 'url']
 
 SKIP_CATEGORIES = {'ポケカ', 'ワンピ'}

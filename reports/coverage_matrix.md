@@ -1,6 +1,6 @@
 # 取得カバレッジ表
 
-更新日: 2026-06-03
+更新日: 2026-06-04
 
 凡例: `○` 取得実績あり / 空欄 取得実績なし
 
@@ -40,8 +40,8 @@
 | Nintendo Switch Lite イエロー | 5 | ○ |  | ○ | ○ | ○ | ○ | ○ | ○ | ○ |
 | PlayStation5 Pro CFI-7000B01 | 6 | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ |
 | PlayStation5 Slim Disc CFI-2000A01 | 6 | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ |
-| PlayStation5 Slim Digital エディション CFI-2000B01 | 5 | ○ |  | ○ | ○ | ○ | ○ | ○ | ○ | ○ |
-| PlayStation 5 デジタル ・ エディション 日本語 専用 CFI-2200B01 | 5 | ○ |  | ○ | ○ | ○ | ○ | ○ | ○ | ○ |
+| PlayStation5 Slim Digital エディション CFI-2000B01 | 6 | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ |
+| PlayStation 5 デジタル ・ エディション 日本語 専用 CFI-2200B01 | 6 | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ |
 | PlayStation 5 デジタルED ダブルパック 日本語専用 CFIJ-10032 | 4 | ○ |  | ○ | ○ |  | ○ | ○ | ○ | ○ |
 | PlayStation(R)5 ”Ghost of Yotei” ゴールド リミテッドエディション CFIJ-10029 | 4 | ○ |  | ○ | ○ | ○ |  | ○ | ○ | ○ |
 | PlayStation VR2 “Horizon Call of the Mountain” 同梱版 CFIJ-17001 | 3 | ○ |  |  | ○ | ○ |  |  |  |  |
@@ -188,7 +188,7 @@
 | RICOH GR IIIx Urban Edition | 3 | ○ |  | ○ | ○ |  |  |  |  |  |
 | RICOH GR III Diary Edition | 3 | ○ |  | ○ | ○ |  |  |  |  |  |
 | ◆RICOH GR IIIx | 4 | ○ |  | ○ | ○ | ○ |  |  |  |  |
-| ◆RICOH GR III | 4 | ○ |  | ○ | ○ | ○ |  |  |  |  |
+| ◆RICOH GR III | 4 | ○ |  | ○ | ○ | ○ |  | ○ | ○ | ○ |
 | Nikon Z50II ダブルズームキット | 1 | ○ |  |  |  |  |  |  |  |  |
 | Z50II 18-140 VR レンズキット | 1 | ○ |  |  |  |  |  |  |  |  |
 | Z50II 16-50 VR レンズキット | 1 | ○ |  |  |  |  |  |  |  |  |

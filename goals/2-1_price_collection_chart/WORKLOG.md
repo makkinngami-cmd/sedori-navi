@@ -1,5 +1,19 @@
 # 2-1. 買取価格収集・チャート表示 WORKLOG
 
+## 2026-06-04 日次スクレイピング確認
+
+- `data/prices.csv` / `docs/prices.csv` は同期済み。最新日付は `2026-06-04`、当日行は181件。
+- 当日行の内訳は、買取一丁目44件、買取ホムラ39件、森森買取36件、買取ルデヤ23件、モバイル一番14件、買取商店13件、ヤフオク最安5件、ヤフオク中央値4件、ヤフオク最高3件。
+- 追加5業者の当日行は125件、JAN欠けは0件。
+- `data/raw/20260604_121704_*.csv` に追加5業者のraw保存あり。モバイル一番 iPhone 21商品、買取ホムラ iPhone 9商品はいずれもJAN欠け0件。
+- `logs/scraper.log` の2026-06-04分に ERROR / Traceback / failed / Exception は0件。
+- `data/last_yahoo_scrape.txt` は `2026-06-04` だったが、`docs/last_yahoo_scrape.txt` が `2026-06-03` のままだった。
+- 原因は `run_scraper.ps1` が `data/last_yahoo_scrape.txt` を `docs/` にコピーせず、旧名 `data/last_scrape_yahoo.txt` を `git add` していたこと。
+- `run_scraper.ps1` を修正し、`data/last_yahoo_scrape.txt` / `docs/last_yahoo_scrape.txt` をコピー・git add対象にした。PowerShell構文チェックは成功。
+- `docs/last_yahoo_scrape.txt` を `2026-06-04` に同期。
+- `python scraper/generate_coverage_report.py` を実行し、`reports/coverage_matrix.md` / `reports/coverage_matrix.csv` を更新。
+- カバレッジは取得業者数0の商品1件（`トモダチコレクション Switch 2`）、取得業者数1の商品24件、前回比悪化0件、改善2件（PS5系2件）。
+
 ## 2026-06-03 日次スクレイピング確認
 
 - `data/prices.csv` / `docs/prices.csv` は同期済み。最新日付は `2026-06-03`、当日行は208件。

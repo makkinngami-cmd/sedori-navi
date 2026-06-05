@@ -1,20 +1,19 @@
 # 2-1. 買取価格収集・チャート表示 HANDOFF
 
-## 最新引き継ぎ 2026-06-04
+## 最新引き継ぎ 2026-06-05
 
 ### 現在地
 
-- 2026-06-04の日次スクレイピングは完了。`data/prices.csv` / `docs/prices.csv` は同期済み、当日行は181件。
-- 追加5業者の当日行は125件、JAN欠けは0件。
-- rawは `data/raw/20260604_121704_*.csv` に保存済み。モバイル一番 iPhone 21商品、買取ホムラ iPhone 9商品はいずれもJAN欠け0件。
-- `logs/scraper.log` の2026-06-04分に ERROR / Traceback / failed / Exception は0件。
-- ヤフオク完了マーカーは `data/last_yahoo_scrape.txt` / `docs/last_yahoo_scrape.txt` とも `2026-06-04` に同期済み。
+- 2026-06-05の日次スクレイピングは完了。`data/prices.csv` / `docs/prices.csv` は同期済み、当日行は134件。
+- 追加5業者の当日行は100件、JAN欠けは0件。
+- rawは `data/raw/20260605_121704_*.csv` に保存済み。モバイル一番 iPhone 21商品、買取ホムラ iPhone 9商品はいずれもJAN欠け0件。
+- `logs/scraper.log` の2026-06-05分に ERROR / Traceback / failed / Exception は0件。
+- ヤフオク完了マーカーは `data/last_yahoo_scrape.txt` / `docs/last_yahoo_scrape.txt` とも `2026-06-05` に同期済み。
 - `scraper/scrape_yahoo.py` は `data/last_yahoo_scrape.txt` を書く。`run_scraper.ps1` も同マーカーを `docs/` へコピーし、git addするよう修正済み。
-- `reports/coverage_matrix.md` / `reports/coverage_matrix.csv` は2026-06-04版に更新済み。
+- `reports/coverage_matrix.md` / `reports/coverage_matrix.csv` は2026-06-05版に更新済み。
 
 ### 次にやること
 
-- 次回日次確認で `docs/last_yahoo_scrape.txt` が自動で当日更新・pushされるか確認する。
 - 取得業者数0の商品 `トモダチコレクション Switch 2` を優先調査する。
 - 取得業者数1の商品24件は、`reports/coverage_matrix.csv` を見て対象業者・対象サイトの差異を順に調査する。
 

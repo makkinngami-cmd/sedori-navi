@@ -1,5 +1,16 @@
 # 2-1. 買取価格収集・チャート表示 WORKLOG
 
+## 2026-06-05 日次スクレイピング確認
+
+- `data/prices.csv` / `docs/prices.csv` は同期済み。最新日付は `2026-06-05`、当日行は134件。
+- `data/last_scrape.txt` / `docs/last_scrape.txt` / `data/last_yahoo_scrape.txt` / `docs/last_yahoo_scrape.txt` はすべて `2026-06-05`。
+- 当日行の内訳は、森森買取38件、買取ルデヤ29件、買取一丁目24件、買取ホムラ20件、買取商店8件、モバイル一番5件、ヤフオク最安5件、ヤフオク中央値3件、ヤフオク最高2件。
+- 追加5業者の当日行は100件、JAN欠けは0件。
+- `data/raw/20260605_121704_*.csv` に追加5業者のraw保存あり。モバイル一番 iPhone 21商品、買取ホムラ iPhone 9商品はいずれもJAN欠け0件。
+- `logs/scraper.log` の2026-06-05分に ERROR / Traceback / failed / Exception は0件。
+- `python scraper/generate_coverage_report.py` を実行し、`reports/coverage_matrix.md` / `reports/coverage_matrix.csv` を更新。
+- カバレッジは取得業者数0の商品1件（`トモダチコレクション Switch 2`）、取得業者数1の商品24件、前回比悪化0件、改善0件。
+
 ## 2026-06-04 日次スクレイピング確認
 
 - `data/prices.csv` / `docs/prices.csv` は同期済み。最新日付は `2026-06-04`、当日行は181件。

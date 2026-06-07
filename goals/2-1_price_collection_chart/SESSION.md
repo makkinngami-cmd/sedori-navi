@@ -20,6 +20,21 @@
 - 作業ログ: このフォルダの `WORKLOG.md`。古い経緯、完了済み作業、調査ログを書く。
 - 仕様と担当範囲: このフォルダの `SPEC.md`。何をやるか・やらないかを書く。
 
+## 日次スクレイプ＆カバレッジ確認（自動）
+
+`run_scraper.ps1`（Windowsタスクスケジューラ 毎日12:17）が以下を自動実行する：
+1. `scraper/scrape.py` — 買取店スクレイプ
+2. `scraper/scrape_yahoo.py` — ヤフオク落札価格
+3. `data/` → `docs/` コピー＆git push
+4. `scraper/generate_coverage_report.py` — `reports/coverage_matrix.md/csv` 更新
+
+**Codex automation（daily scrape and coverage check）は停止済み。通常の日次取得はWindowsタスクスケジューラで確認する。**
+
+問題確認が必要なときはログを見る：
+```powershell
+Get-Content "C:\Users\makki\sedori-navi\logs\scraper.log" -Tail 50
+```
+
 ## 注意事項
 
 - データが取れていないとき、手動でCSVを埋めて終わりにしない

@@ -7,3 +7,12 @@ venv/
 *.log
 .DS_Store
 Thumbs.db
+
+# Local agent/config
+.claude/
+
+# Generated/raw scrape artifacts
+data/raw/
+*.bak_*
+reports/ichome_name_mapping_preview.json
+reports/coverage_matrix_prev.csv

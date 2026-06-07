@@ -23,6 +23,17 @@
 - `python -m py_compile scraper\generate_ichome_product_candidates.py scraper\scrape.py scraper\generate_coverage_report.py` 成功。
 - 商品マスターやCSV本体への追加は未実施。次に候補表を見て初回追加範囲を決める。
 
+## 2026-06-07 ゲーム分野おすすめ候補
+
+- 分野別調査の第1弾として、ゲーム系だけを抽出する `scraper/generate_ichome_game_recommendations.py` を追加。
+- `reports/ichome_product_candidates.csv` の未登録候補から、カテゴリ `ゲーム` / `Steam Deck` の177件を対象にした。
+- `reports/ichome_game_recommendations.csv` に全件、`reports/ichome_game_recommendations.md` にS/A候補を出力。
+- 推薦分類は S 13件、A 26件、B 31件、保留107件。
+- Sは携帯PC/Steam Deck、PS5限定・同梱本体、PlayStation限定品、Switch2本体セットを中心にした。
+- AはXbox本体/上位周辺機器、Switch限定本体、PlayStation周辺機器、Switch2 Editionソフトを中心にした。
+- JANなし候補は保留に落とした。Switch2ソフトはSではなくA扱いに調整。
+- 実際の追加前に、ヤフオク落札実績、他業者取扱有無、取引予定の有無を確認する。
+
 ## 2026-06-06 日次スクレイピング確認
 
 - `data/prices.csv` / `docs/prices.csv` は同期済み。最新日付は `2026-06-06`、当日行は140件。

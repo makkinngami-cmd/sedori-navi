@@ -9,15 +9,18 @@
 - 直近確認では、2026-06-06の日次スクレイピング、追加5業者raw保存、JAN欠け0件、カバレッジ更新まで確認済み。
 - フェーズ1の候補表作成スクリプト `scraper/generate_ichome_product_candidates.py` を追加済み。
 - `reports/ichome_product_candidates.csv` / `reports/ichome_product_candidates.md` に買取一丁目の商品追加候補を生成済み。
-- 次は候補表を見て、どの商品群を初回追加対象にするか決める。
+- ゲーム分野は `scraper/generate_ichome_game_recommendations.py` で追加おすすめ候補を作成済み。
+- `reports/ichome_game_recommendations.csv` / `reports/ichome_game_recommendations.md` に、ゲーム系未登録177件をS/A/B/保留へ分類済み。
+- 次はゲーム分野のS/A候補を見て、初回追加対象にするか、ヤフオク・他業者確認を先に行うか決める。
 
 ### 次にやること
 
-1. フェーズ1: `reports/ichome_product_candidates.md` とCSVを見て、初回追加対象の商品群を決める。
-2. フェーズ1: 初回追加対象が決まったら、`scraper/products.py`、`docs/index.html`、必要に応じて `data/msrp.csv` / `docs/msrp.csv` へ反映する。
-3. フェーズ1: 反映後に既存スクレイパーでJAN統合と表示を確認する。
-4. フェーズ2: 買取一丁目だけを対象にした価格アラーム仕様を実装する。
-5. フェーズ2: アラーム条件は画面で変更できるようにし、「％かつ円」「％または円」「％のみ」「円のみ」を扱う。
+1. フェーズ1: `reports/ichome_game_recommendations.md` のS/A候補を確認する。
+2. フェーズ1: 必要ならS候補からヤフオク落札実績・他業者取扱有無を確認し、追加対象をさらに絞る。
+3. フェーズ1: 初回追加対象が決まったら、`scraper/products.py`、`docs/index.html`、必要に応じて `data/msrp.csv` / `docs/msrp.csv` へ反映する。
+4. フェーズ1: 反映後に既存スクレイパーでJAN統合と表示を確認する。
+5. フェーズ2: 買取一丁目だけを対象にした価格アラーム仕様を実装する。
+6. フェーズ2: アラーム条件は画面で変更できるようにし、「％かつ円」「％または円」「％のみ」「円のみ」を扱う。
 
 ### 未解決
 

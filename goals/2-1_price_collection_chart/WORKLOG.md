@@ -158,3 +158,21 @@
 - 公開CSV `https://makkinngami-cmd.github.io/sedori-navi/prices.csv` は全3233行、最新日付 `2026-06-02`
 - `python scraper\generate_coverage_report.py` を実行し、カバレッジ表を再生成
 - カバレッジ: 完全未取得1件（`トモダチコレクション Switch 2`）、取得業者数1の商品24件、前回比で悪化0件、改善8件
+
+## 2026-06-07 選定ゲーム商品追加
+
+- 事前に作成した候補一覧 `reports/ichome_product_candidates.*` と `reports/ichome_game_recommendations.*` は削除・再生成せず保持した
+- 既存の `Switch2 Proコン` を `Nintendo Switch 2 Proコントローラー` に名称変更し、JAN `4902370552843` を付与
+- `PlayStation Portal リモートプレーヤー ブラック CFIJ-18001` と、A/B候補の通常版ゲームソフト30件を商品マスターへ追加
+- 限定品は仕入れにくいという方針のため、30周年Portalや限定Proコントローラーは今回追加対象から外した
+- `scraper/products.py`、`docs/index.html`、`scraper/scrape_yahoo.py`、`scraper/scrape_msrp.py` を更新
+- `data/msrp.csv` / `docs/msrp.csv` にPortalブラックの参考価格 `39980` を追加。新規ソフトのMSRPは次回以降に確認する
+- `data/prices.csv` / `docs/prices.csv` / `data/msrp.csv` / `docs/msrp.csv` 内の旧名 `Switch2 Proコン` を新名へ置換
+- `SEDORI_FORCE_SCRAPE=1 python scraper/scrape.py` を実行し、2026-06-07分として131件の価格変化を仕組み側で追記
+- `data/raw/20260607_223902_*.csv` が保存されたことを確認
+- `data/prices.csv` と `docs/prices.csv`、`data/last_scrape.txt` と `docs/last_scrape.txt` を同期
+- `python scraper/generate_coverage_report.py` を実行し、`reports/coverage_matrix.md` / `reports/coverage_matrix.csv` を更新
+- `python -m py_compile scraper\products.py scraper\scrape.py scraper\scrape_yahoo.py scraper\scrape_msrp.py scraper\generate_coverage_report.py` 成功
+- 商品マスターは272件。重複商品名0件、重複JAN0件、旧名 `Switch2 Proコン` 0件を確認
+- 2026-06-07分の取得確認: `Nintendo Switch 2 Proコントローラー` は5業者、Portalブラックは4業者、NS2追加系18商品、PS5追加系12商品が取得対象に入った
+- 取得業者数が少ない新規PS5ソフトが残るため、次回以降にヤフオク/他業者の取扱・キーワード精度を確認する

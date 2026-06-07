@@ -303,13 +303,15 @@ async def scrape_amazon_msrp(page: Page, query: str, price_floor: int) -> tuple[
             return None
 
         href = await link.get_attribute('href') or ''
-        matched_title = ''
+        matched_title = (await link.inner_text()).strip()[:80]
         for title_sel in ['h2 span', 'span.a-text-normal', 'span']:
             title_el = await link.query_selector(title_sel)
             if title_el:
                 matched_title = (await title_el.inner_text()).strip()[:80]
                 if matched_title:
                     break
+        if not matched_title:
+            return None
 
         product_url = (
             'https://www.amazon.co.jp' + href if href.startswith('/') else href
@@ -366,8 +368,10 @@ async def scrape_product(page: Page, name: str, query: str) -> dict:
     result = {
         'product_name': name,
         'msrp': '',
+        'effective_date': '2000-01-01',
         'source_url': '',
         'matched_title': '',
+        'price_type': '',
     }
     price_floor = get_price_floor(name)
 
@@ -397,7 +401,7 @@ async def scrape_product(page: Page, name: str, query: str) -> dict:
 # CSV 読み書き
 # ════════════════════════════════════════════════════════════════════════
 
-MSRP_FIELDS = ['product_name', 'msrp', 'effective_date', 'source_url', 'matched_title']
+MSRP_FIELDS = ['product_name', 'msrp', 'effective_date', 'source_url', 'matched_title', 'price_type']
 
 
 def save_csv(rows: list[dict]) -> None:

@@ -12,6 +12,17 @@
 - Git整理として、`.claude/`、`data/raw/`、`.bak_*`、一時レポートを `.gitignore` 対象にした。削除ではなくGit追跡対象外への整理。
 - `run_scraper.ps1` は日次運用に必要なため追跡対象にする方針。文字化けで壊れていたカバレッジ確認・ログ確認ブロックをASCIIログへ整理し、PowerShell構文チェックを通した。
 
+## 2026-06-07 買取一丁目商品追加候補表
+
+- `scraper/generate_ichome_product_candidates.py` を追加。
+- 買取一丁目の通常商品APIとスマートフォンAPIを巡回し、既存商品をJAN・商品名で照合する候補表生成に対応。
+- `reports/ichome_product_candidates.csv` に全件、`reports/ichome_product_candidates.md` にサマリーと優先候補を出力。
+- 2026-06-07実行結果は、取得商品1596件、既存登録済み235件、未登録候補1361件。
+- 未登録候補の優先度は、A 518件、B 812件、C 31件。Aはゲーム、スマートフォン、カード系、既存で扱う系統に近いカメラ商品を初回候補として抽出。
+- 商品名にJANが含まれる場合は、候補表上では商品名とJAN列を分離するようにした。
+- `python -m py_compile scraper\generate_ichome_product_candidates.py scraper\scrape.py scraper\generate_coverage_report.py` 成功。
+- 商品マスターやCSV本体への追加は未実施。次に候補表を見て初回追加範囲を決める。
+
 ## 2026-06-06 日次スクレイピング確認
 
 - `data/prices.csv` / `docs/prices.csv` は同期済み。最新日付は `2026-06-06`、当日行は140件。

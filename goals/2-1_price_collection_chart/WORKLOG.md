@@ -217,3 +217,18 @@
 - 最低価格はおおむねMSRPの35%前後を目安にし、Minecraftなど低単価ソフトは個別に低めにした。
 - `python -m py_compile scraper\scrape_yahoo.py` 成功。
 - 2026-06-08の既存行に対するシミュレーションで、`仁王3` 600円、`SILENT HILL f` 660円、`プラグマタ` 700円、`アストロボット` 800円のヤフオク行が次回以降フィルタ対象になることを確認。
+
+## 2026-06-08 カメラ候補整理
+
+- 買取一丁目候補表 `reports/ichome_product_candidates.csv` からカメラ分野を確認。カメラ候補は980件、未登録候補は912件。
+- 既存登録済みカメラは70件程度あり、X100VI、GR IV Black/Monochrome、G7X、SX740、PowerShot V1、Z50II、TAMRON一部などはすでにせどりナビに入っていることを確認。
+- `scraper/generate_ichome_camera_recommendations.py` を追加し、カメラ候補をS/A/B/保留へ分類する仕組みを作成。
+- 生成物: `reports/ichome_camera_recommendations.csv`、`reports/ichome_camera_recommendations.md`、`reports/ichome_camera_shortlist.csv`。
+- 分類結果: カメラ未登録候補912件、S 14件、A 117件、B 157件、保留624件。
+- 初回確認用の短表は20件。最優先は、X100V、GR IV HDF、GR IIIx/GR III HDF、GR III Street Edition、RX100M7/M6/M5A。優先はPowerShot G5 X Mark IIとPowerShot V10色違い。次点はX-E5、X-M5、Z5II、Z6IIIのボディ。
+- `python -m py_compile scraper\generate_ichome_camera_recommendations.py` 成功。
+- ユーザー確認後、短表20件を `scraper/products.py` と `docs/index.html` にカメラ商品として追加。
+- 追加20件はJAN付き。`data/msrp.csv` / `docs/msrp.csv` には買取一丁目候補価格を初期の市場基準 `price_type=market` として追加。
+- `scraper/scrape_yahoo.py` に20件の短いヤフオク検索語と、アクセサリー混入を避ける最低価格フィルタを追加。
+- `python -m py_compile scraper\products.py scraper\scrape_yahoo.py scraper\generate_ichome_camera_recommendations.py` 成功。
+- 追加20件について、商品マスター・MSRP・公開カテゴリへの登録漏れ0件、商品名重複0件、`data/msrp.csv` と `docs/msrp.csv` の同期を確認。

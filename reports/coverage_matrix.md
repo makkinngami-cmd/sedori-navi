@@ -6,8 +6,8 @@
 
 `prices.csv` は価格変化があった時だけ追記するため、最新日の行がない商品でも取得失敗とは限らない。最新取得日は `reports/coverage_matrix.csv` に保存する。
 
-- 商品数: 272
-- 1業者以上で取得実績がある商品: 271
+- 商品数: 292
+- 1業者以上で取得実績がある商品: 291
 - 取得実績が一度もない商品: 1
 
 ## カテゴリ別サマリー
@@ -15,7 +15,7 @@
 | カテゴリ | 商品数 | 取得実績あり | 取得実績なし |
 | --- | --- | --- | --- |
 | ゲーム | 131 | 130 | 1 |
-| カメラ | 74 | 74 | 0 |
+| カメラ | 94 | 94 | 0 |
 | ポケカ | 32 | 32 | 0 |
 | ワンピ | 10 | 10 | 0 |
 | スマートフォン | 21 | 21 | 0 |
@@ -207,15 +207,29 @@
 | PowerShot G7 X Mark III　B | 5 | ○ | ○ | ○ | ○ | ○ |  |  |  |  |
 | Canon PowerShot G7 X MarkII | 3 | ○ |  | ○ | ○ |  |  | ○ | ○ | ○ |
 | デジタルカメラ PowerShot G1 X Mark III | 2 | ○ |  |  | ○ |  |  |  |  |  |
+| ◆デジタルカメラ PowerShot G5 X Mark II | 2 | ○ |  |  | ○ |  |  |  |  |  |
+| PowerShot V10 [ホワイト] | 3 | ○ |  | ○ | ○ |  |  |  |  |  |
+| Canon PowerShot V10 [シルバー] | 3 | ○ |  | ○ | ○ |  |  |  |  |  |
+| CANON PowerShot V10 [ブラック] | 3 | ○ |  | ○ | ○ |  |  |  |  |  |
 | FUJIFILM X100VI Silver 【新型2025】 E/J | 3 | ○ |  | ○ |  | ○ |  |  |  |  |
 | FUJIFILM X100VI Black 【新型2025】 E/J | 3 | ○ |  | ○ |  | ○ |  |  |  |  |
 | FUJIFILM X100VI [シルバー] | 3 | ○ |  | ○ |  | ○ |  |  |  |  |
 | FUJIFILM X100VI [ブラック] | 3 | ○ |  | ○ |  | ○ |  |  |  |  |
+| FUJIFILM X100V [シルバー] | 3 | ○ |  | ○ |  | ○ |  |  |  |  |
+| FUJIFILM X100V [ブラック] | 3 | ○ |  | ○ |  | ○ |  |  |  |  |
+| FUJIFILM X-E5 ボディ [ブラック] | 1 | ○ |  |  |  |  |  |  |  |  |
+| FUJIFILM X-E5 ボディ [シルバー] | 1 | ○ |  |  |  |  |  |  |  |  |
+| FUJIFILM X-M5 ボディ [シルバー] | 1 | ○ |  |  |  |  |  |  |  |  |
+| FUJIFILM X-M5 ボディ [ブラック] | 1 | ○ |  |  |  |  |  |  |  |  |
 | FUJIFILM X-T30 II XC15-45mmレンズキット | 1 | ○ |  |  |  |  |  |  |  |  |
 | Panasonic LUMIX DC-TZ99-K [ブラック] | 2 | ○ |  | ○ |  |  |  |  |  |  |
 | LUMIX DC-TZ99 ホワイト | 1 | ○ |  |  |  |  |  |  |  |  |
 | RICOH GR IV Monochrome | 4 | ○ |  | ○ | ○ | ○ |  |  |  |  |
 | RICOH GR IV Black | 4 | ○ |  | ○ | ○ | ○ |  | ○ | ○ | ○ |
+| RICOH GR IV HDF | 3 | ○ |  | ○ | ○ |  |  |  |  |  |
+| RICOH GR IIIx HDF 特別モデル | 3 | ○ |  | ○ |  | ○ |  |  |  |  |
+| RICOH GR III HDF 特別モデル | 3 | ○ |  | ○ |  | ○ |  |  |  |  |
+| RICOH GR III Street Edition | 1 | ○ |  |  |  |  |  |  |  |  |
 | RICOH GR IIIx Urban Edition | 3 | ○ |  | ○ | ○ |  |  |  |  |  |
 | RICOH GR III Diary Edition | 3 | ○ |  | ○ | ○ |  |  |  |  |  |
 | ◆RICOH GR IIIx | 4 | ○ |  | ○ | ○ | ○ |  |  |  |  |
@@ -224,6 +238,12 @@
 | Z50II 18-140 VR レンズキット | 1 | ○ |  |  |  |  |  |  |  |  |
 | Z50II 16-50 VR レンズキット | 1 | ○ |  |  |  |  |  |  |  |  |
 | Nikon Z50II ボディ | 1 | ○ |  |  |  |  |  |  |  |  |
+| Nikon Z5II ボディ | 1 | ○ |  |  |  |  |  |  |  |  |
+| Nikon Z6III ボディ | 1 | ○ |  |  |  |  |  |  |  |  |
+| デジタルカメラ サイバーショット DSC-RX100M7G シューティンググリップキット | 2 | ○ |  | ○ |  |  |  |  |  |  |
+| ◆DSC-RX100M7 | 2 | ○ |  | ○ |  |  |  | ○ | ○ | ○ |
+| SONY DSC-RX100M6 | 1 | ○ |  |  |  |  |  |  |  |  |
+| SONY サイバーショット DSC-RX100M5A | 2 | ○ |  | ○ |  |  |  |  |  |  |
 | TAMRON 18-300mm F/3.5-6.3 Di III-A VC VXD (B061) ニコンZ用 | 1 | ○ |  |  |  |  |  |  |  |  |
 | TAMRON 18-300mm F/3.5-6.3 Di III-A VC VXD (B061) [フジフイルム用] | 1 | ○ |  |  |  |  |  |  |  |  |
 | ◇TAMRON 18-300mm F/3.5-6.3 Di III-A VC VXD (B061) [ソニーE用] | 2 | ○ |  |  |  | ○ |  |  |  |  |

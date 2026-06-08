@@ -232,3 +232,9 @@
 - `scraper/scrape_yahoo.py` に20件の短いヤフオク検索語と、アクセサリー混入を避ける最低価格フィルタを追加。
 - `python -m py_compile scraper\products.py scraper\scrape_yahoo.py scraper\generate_ichome_camera_recommendations.py` 成功。
 - 追加20件について、商品マスター・MSRP・公開カテゴリへの登録漏れ0件、商品名重複0件、`data/msrp.csv` と `docs/msrp.csv` の同期を確認。
+- 追加20件を確認するため、`SEDORI_FORCE_SCRAPE=1 python scraper\scrape.py` を実行。`data/prices.csv` に99件追記。
+- ヤフオクは全件再取得ではなく、追加カメラ20件だけを対象に `scraper/scrape_yahoo.py` の関数を使って取得。`◆DSC-RX100M7` のヤフオク3指標を追記。
+- `data/prices.csv` / `docs/prices.csv` と `data/msrp.csv` / `docs/msrp.csv` を同期し、`python scraper\generate_coverage_report.py` を実行。
+- 2026-06-08当日分は359行、140商品。追加カメラ20件は全件価格取得あり。
+- 複数店取得あり: X100V、GR IV/GR III HDF、RX100M7/M5A、PowerShot G5 X Mark II、PowerShot V10色違い。
+- 買取一丁目のみ: `RICOH GR III Street Edition`、`FUJIFILM X-E5` 2色、`FUJIFILM X-M5` 2色、`Nikon Z5II ボディ`、`Nikon Z6III ボディ`。

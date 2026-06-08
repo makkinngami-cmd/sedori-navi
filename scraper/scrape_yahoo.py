@@ -12,6 +12,7 @@ import asyncio
 import csv
 import io
 import logging
+import os
 import random
 import re
 import sys
@@ -584,6 +585,9 @@ def save_to_csv(records: list[dict]) -> None:
 
 def _already_scraped_today() -> bool:
     """マーカーファイルで今日実行済みか判定"""
+    if os.environ.get('SEDORI_FORCE_SCRAPE') == '1':
+        logger.info('SEDORI_FORCE_SCRAPE=1 のため今日分も再取得します')
+        return False
     return SCRAPE_MARKER.exists() and SCRAPE_MARKER.read_text(encoding='utf-8').strip() == TODAY
 
 def _mark_scraped_today() -> None:

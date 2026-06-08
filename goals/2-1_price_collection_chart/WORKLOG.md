@@ -188,3 +188,22 @@
 - パッケージ版がある商品は、せどり用途に合わせてパッケージ版の希望小売価格を基準にした
 - ローカル画面で `【NS2】ドンキーコング バナンザ` の買取率が `74.6%`、定価が `¥8,980` と表示されることを確認
 - 残りの新規ソフトMSRPは、公式ページなど信頼できるソース確認後に追加する
+
+## 2026-06-08 日次スクレイピング・MSRP確認
+
+- `data/last_scrape.txt` / `docs/last_scrape.txt` はどちらも `2026-06-08`。
+- `data/prices.csv` / `docs/prices.csv` は最新日付 `2026-06-08`、当日分189行、82商品、9ストアを確認。
+- `logs/scraper.log` では `scrape_yahoo.py`、`copy to docs/`、`generate_coverage_report.py` まで完了。自動commit後、push前rebaseで `data/prices.csv` などが競合して失敗したログを確認。
+- 現在のGit状態は `main...origin/main [ahead 9, behind 2]`、作業ツリーclean。push前にユーザー確認が必要。
+- 2026-06-08表示対象のNS2/PS5ソフト18件を確認し、MSRP未登録10件を公式ソースで確認して `data/msrp.csv` / `docs/msrp.csv` に追加。
+- NS2追加: `【NS2】あつまれ どうぶつの森 Nintendo Switch 2 Edition` 7,128円、任天堂公式商品情報。パッケージ版基準。
+- NS2追加: `【NS2】ぽこ あ ポケモン` 8,980円、ポケモン公式商品情報。パッケージ版（キーカード）/ダウンロード版同額。
+- NS2追加: `【NS2】カービィのエアライダー` 8,980円、任天堂公式ページ。ダウンロード版7,980円、パッケージ版8,980円のため、せどり用途に合わせてパッケージ版基準。
+- NS2追加: `【NS2】ゼノブレイドクロス ディフィニティブエディション Nintendo Switch 2 Edition` 8,228円、任天堂公式ページ。ダウンロード版8,150円、パッケージ版8,228円のため、パッケージ版基準。
+- NS2追加: `【NS2】ゼルダ無双 封印戦記/Switch 2` 8,980円、GAMECITY公式通常版。
+- PS5追加: `【PS5】Ghost of Yotei` 8,980円、PlayStation公式/PS Store通常価格。
+- PS5追加: `【PS5】SILENT HILL f` 8,580円、PlayStation公式/PS Store通常価格。セール中表示は採用せず通常価格を採用。
+- PS5追加: `【PS5】アストロボット` 7,980円、PlayStation公式/PS Store通常価格。
+- PS5追加: `【PS5】プラグマタ` 7,990円、PlayStation公式/PS Store通常価格。
+- PS5追加: `【PS5】仁王3` 9,680円、PlayStation公式/PS Store通常価格。セール中表示は採用せず通常価格を採用。
+- 反映後、2026-06-08表示対象のNS2/PS5ゲームソフト18件はMSRP未登録0件になったことを確認。

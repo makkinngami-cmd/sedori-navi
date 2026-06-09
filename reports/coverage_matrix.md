@@ -1,6 +1,6 @@
 # 取得カバレッジ表
 
-更新日: 2026-06-08
+更新日: 2026-06-09
 
 凡例: `○` 取得実績あり / 空欄 取得実績なし
 
@@ -136,7 +136,7 @@
 | 【NS2】ドラゴンクエストVII Reimagined -Switch | 3 | ○ |  | ○ |  | ○ |  |  |  |  |
 | 【PS5】Ghost of Yotei | 4 | ○ | ○ | ○ | ○ |  |  | ○ | ○ | ○ |
 | 【PS5】アストロボット | 3 | ○ |  | ○ | ○ |  |  | ○ | ○ | ○ |
-| 【PS5】DEATH STRANDING 2: ON THE BEACH | 3 | ○ |  | ○ | ○ |  |  |  |  |  |
+| 【PS5】DEATH STRANDING 2: ON THE BEACH | 3 | ○ |  | ○ | ○ |  |  | ○ | ○ | ○ |
 | 【PS5】Stellar Blade | 3 | ○ |  | ○ | ○ |  |  |  |  |  |
 | 【NS2】REANIMAL | 2 | ○ |  | ○ |  |  |  |  |  |  |
 | 【PS5】Alan Wake 2 Deluxe | 1 | ○ |  |  |  |  |  |  |  |  |

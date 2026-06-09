@@ -48,7 +48,7 @@
 | PlayStation VR2 CFIJ-17000 | 3 | ○ |  |  | ○ | ○ |  |  |  |  |
 | PlayStation Portal リモートプレーヤー CFIJ-18000 | 4 | ○ |  | ○ | ○ | ○ |  | ○ | ○ | ○ |
 | PlayStation Portal リモートプレーヤー ブラック CFIJ-18001 | 4 | ○ |  | ○ | ○ | ○ |  | ○ | ○ | ○ |
-| Xbox Series X 1TB デジタル エディション ホワイト EP2-00708 | 3 | ○ |  | ○ |  | ○ |  |  |  |  |
+| Xbox Series X 1TB デジタル エディション ホワイト EP2-00708 | 4 | ○ |  | ○ |  | ○ | ○ |  |  |  |
 | Xbox Series S 1TB ホワイト EP2-00650 | 3 | ○ |  | ○ |  | ○ |  |  |  |  |
 | Xbox Series X RRT-00015 | 3 | ○ |  | ○ |  | ○ |  | ○ | ○ | ○ |
 | Xbox Series S 512 GB EP2-10065 | 2 | ○ |  | ○ |  |  |  | ○ | ○ | ○ |

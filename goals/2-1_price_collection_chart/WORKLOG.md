@@ -238,3 +238,14 @@
 - 2026-06-08当日分は359行、140商品。追加カメラ20件は全件価格取得あり。
 - 複数店取得あり: X100V、GR IV/GR III HDF、RX100M7/M5A、PowerShot G5 X Mark II、PowerShot V10色違い。
 - 買取一丁目のみ: `RICOH GR III Street Edition`、`FUJIFILM X-E5` 2色、`FUJIFILM X-M5` 2色、`Nikon Z5II ボディ`、`Nikon Z6III ボディ`。
+
+## 2026-06-09 日次観測保存ロジック修正
+
+- 2026-06-09の通常スクレイピング自体は実行済みだったが、`scraper/scrape.py` / `scraper/scrape_yahoo.py` の保存条件が「前回価格と違う場合だけ追記」だったため、同価格の商品は今日行が作られなかった。
+- そのため、追加カメラ20件は実行対象には入っていたが、価格が前日と同じ商品が `2026-06-09` 行として見えず、「今日取れていない」ように見える状態だった。
+- 保存条件を「同じ日・同じ商品・同じ店の重複だけ防ぐ」に変更。日付が変われば同価格でも日次観測値としてCSVへ追記される。
+- `python -m py_compile scraper\scrape.py scraper\scrape_yahoo.py` 成功。
+- 一時CSVで、前日と同価格でも翌日行が追記され、同日2回目は追記されないことを確認。
+- 修正後に `SEDORI_FORCE_SCRAPE=1 python scraper\scrape.py` を実行し、2026-06-09分の不足行502件を追記。
+- `data/prices.csv` / `docs/prices.csv` を同期し、`python scraper\generate_coverage_report.py` を実行。
+- 2026-06-09分は915行、282商品。追加カメラ20件は正しいJANベースで20/20件が今日分に入っている。

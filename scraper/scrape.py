@@ -895,25 +895,23 @@ def save_to_csv(records: list[dict]) -> None:
     DATA_FILE.parent.mkdir(parents=True, exist_ok=True)
     write_header = not DATA_FILE.exists() or DATA_FILE.stat().st_size == 0
 
-    # 同じ日・同じ商品・同じ店の重複だけ防ぎ、日付が変われば同価格でも追記する
-    # Keep one observed price per date/product/store. The dashboard is a
-    # daily collection view, so unchanged prices must still get today's row.
-    existing_keys: set[tuple[str, str, str]] = set()
+    # 価格変化があった商品のみ追記（同一価格の連続記録を防ぐ）
+    last_price: dict[tuple, str] = {}
     if DATA_FILE.exists():
         with open(DATA_FILE, newline='', encoding='utf-8') as f:
             for row in csv.DictReader(f):
-                existing_keys.add((row['date'], row['product_name'], row['store']))
+                last_price[(row['product_name'], row['store'])] = row['price']
 
     new_records = [
         r for r in records
-        if (r['date'], r['product_name'], r['store']) not in existing_keys
+        if last_price.get((r['product_name'], r['store'])) != str(r['price'])
     ]
     for r in new_records:
         r.setdefault('jan', '')
         r.setdefault('url', '')
 
     if not new_records:
-        logger.info('今日分は既に追記済み — 追記スキップ')
+        logger.info('価格変化なし — 追記スキップ')
         return
 
     with open(DATA_FILE, 'a', newline='', encoding='utf-8') as f:
@@ -922,7 +920,7 @@ def save_to_csv(records: list[dict]) -> None:
             writer.writeheader()
         writer.writerows(new_records)
 
-    logger.info(f'CSV に {len(new_records)} 件追記（日次観測）: {DATA_FILE}')
+    logger.info(f'CSV に {len(new_records)} 件追記（価格変化あり）: {DATA_FILE}')
 
 
 def save_raw_csv(store_name: str, records: list[dict]) -> None:

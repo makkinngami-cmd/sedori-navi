@@ -1,6 +1,6 @@
 # 2-1. 買取価格収集・チャート表示 HANDOFF
 
-## 最新引き継ぎ 2026-06-09
+## 最新引き継ぎ 2026-06-08
 
 ### 現在地
 
@@ -17,8 +17,6 @@
 - 2026-06-08表示対象のNS2/PS5ゲームソフト18件はMSRP未登録0件。今回追加したMSRPはNS2 5件、PS5 5件。
 - カメラ分野は、買取一丁目の未登録候補912件から `reports/ichome_camera_recommendations.*` と `reports/ichome_camera_shortlist.csv` を生成済み。短表20件は商品マスターへ追加済み。最優先は高級コンデジ中心。
 - カメラ追加20件は2026-06-08に強制スクレイピング済み。20件すべて当日価格取得あり。X100V/GR/RX100/PowerShot系は複数店取得あり、X-E5/X-M5/Z5II/Z6IIIボディは現時点で買取一丁目のみ。
-- 2026-06-09に保存ロジックを修正。従来は「前回価格と違う場合だけCSV追記」だったため、通常実行で同価格の商品は今日行が作られず、追加カメラが今日未取得に見える問題があった。現在は同じ日・同じ商品・同じ店の重複だけ防ぎ、日付が変われば同価格でも追記する。
-- 修正後に `SEDORI_FORCE_SCRAPE=1 python scraper\scrape.py` を実行し、`data/prices.csv` / `docs/prices.csv` を同期。2026-06-09分は915行、282商品。追加カメラ20件は正しいJANベースで20/20件が今日分に入っている。
 - `data/prices.csv` と `docs/prices.csv`、`data/msrp.csv` と `docs/msrp.csv` は同期済み。
 - Gitは `main...origin/main [ahead 9, behind 2]` で分岐中。作業ツリーは確認時点でcleanだったが、push前に差分とrebase方針をユーザー確認する。
 

@@ -265,3 +265,14 @@
 - 要確認は `【OP-07】500年後の未来`、`【OP-08】二つの伝説`。保留は低単価の `【MEGA】スタートデッキ100 バトルコレクション`。
 - カード系は定価/MSRPではなく、市場価格基準 `price_type=market` で扱う方針。商品マスターへの追加はまだ未実施。
 - `python -m py_compile scraper\generate_ichome_card_recommendations.py` 成功。
+
+## 2026-06-09 ポケカS/A候補追加
+
+- ユーザー依頼により、カード短表のS/Aだけを追加対象にした。今回はポケカ6件のみで、ワンピB候補は未追加。
+- 追加した商品: `ポケモンセンター スペシャルBOX ヒロシマ`、`ポケモンセンター スペシャルBOX フクオカ`、`【S＆V】ブラックボルト デラックス BOX`、`【S＆V】ホワイトフレア デラックス BOX`、`ポケモンセンター スペシャルBOX トウホク`、`【MEGA】 アビスアイ BOX`。
+- `scraper/products.py` と `docs/index.html` にポケカ商品として追加。`data/msrp.csv` / `docs/msrp.csv` には買取一丁目候補価格を市場価格基準 `price_type=market` として追加。
+- ポケカ/ワンピは既存仕様で `scraper/scrape_yahoo.py` と `scraper/scrape_msrp.py` の対象外カテゴリのため、ヤフオク検索語と公式MSRP取得は追加していない。
+- `python -m py_compile scraper\products.py scraper\scrape.py scraper\scrape_msrp.py scraper\scrape_yahoo.py` 成功。
+- `SEDORI_FORCE_SCRAPE=1 python scraper\scrape.py` を実行し、仕組み経由で `data/prices.csv` に2026-06-09分104件の価格変化を追記。`docs/prices.csv` へ同期し、`python scraper\generate_coverage_report.py` も実行。
+- 追加6件はすべて2026-06-09価格を取得済み。ヒロシマ/フクオカ/トウホクは買取一丁目＋モバイル一番、ブラックボルトDX/ホワイトフレアDXは買取一丁目＋森森買取、アビスアイは買取一丁目/モバイル一番/森森買取/買取ルデヤ/買取ホムラで取得。
+- `data/prices.csv` と `docs/prices.csv`、`data/msrp.csv` と `docs/msrp.csv` の同期を確認。

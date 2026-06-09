@@ -254,3 +254,14 @@
 - 2026-06-09のヤフオク実行ログでは、X-E5/X-M5/Z5II/Z6III/RX100M6は落札データなし。`RICOH GR III Street Edition` は候補1件中マッチなしで、価格CSVへは追加されていない。
 - `RICOH GR III Street Edition` のJANは `4549212302763`。`4549212304507` は別のGR系商品と混同しない。
 - 現時点では仕組みの修正や商品データ追加は不要。他店・ヤフオクに出てきたら次回以降のスクレイピング結果で拾う方針。
+
+## 2026-06-09 ポケカ/ワンピ候補整理
+
+- カメラの次分野として、買取一丁目候補表 `reports/ichome_product_candidates.csv` からポケカ/ワンピを確認。
+- `scraper/generate_ichome_card_recommendations.py` を追加し、カード系候補を追加候補/要確認/保留へ分類する仕組みを作成。
+- 生成物: `reports/ichome_card_recommendations.csv`、`reports/ichome_card_recommendations.md`、`reports/ichome_card_shortlist.csv`。
+- 分類結果: カード系未登録候補19件、ポケカ7件、ワンピ12件。追加候補16件、要確認2件、保留1件。
+- 追加候補は、ポケカのスペシャルBOX/デラックスBOX/単価ありBOX 6件と、ワンピの高単価BOX 10件。
+- 要確認は `【OP-07】500年後の未来`、`【OP-08】二つの伝説`。保留は低単価の `【MEGA】スタートデッキ100 バトルコレクション`。
+- カード系は定価/MSRPではなく、市場価格基準 `price_type=market` で扱う方針。商品マスターへの追加はまだ未実施。
+- `python -m py_compile scraper\generate_ichome_card_recommendations.py` 成功。

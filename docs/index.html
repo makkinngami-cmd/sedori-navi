@@ -219,6 +219,22 @@
     }
     #sidebar-barcode-btn:hover { border-color: var(--accent); color: var(--text); }
     #sidebar-barcode-btn.scanning { border-color: var(--green); color: var(--green); }
+    #alert-nav {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--text-muted);
+      flex-shrink: 0;
+      font-size: 0.78rem;
+      padding: 0.42rem 0.7rem;
+      text-decoration: none;
+      transition: all 0.15s;
+      white-space: nowrap;
+    }
+    #alert-nav:hover {
+      border-color: var(--accent);
+      color: var(--text);
+    }
 
     /* ── バーコードスキャナ モーダル ────────────────────── */
     #barcode-modal {
@@ -605,6 +621,7 @@
     @media (max-width: 720px) {
       .app { grid-template-columns: 1fr; height: auto; }
       header { padding: 0.6rem 0.75rem; gap: 0.5rem; }
+      #alert-nav { font-size: 0.72rem; padding: 0.38rem 0.55rem; }
       #sidebar { height: 50vh; }
       #main { height: auto; overflow-y: auto; padding: 1rem; }
       #chart-wrap { flex: none; height: 440px; max-height: 440px; min-height: 0; overflow: hidden; }
@@ -634,6 +651,7 @@
   </div>
   <span id="status-badge">読込中</span>
   <span id="last-updated"></span>
+  <a id="alert-nav" href="./alerts.html">価格アラーム</a>
 </header>
 
 <div class="app">
@@ -1895,6 +1913,19 @@ async function loadData() {
     updateFavBtn();
     renderSubcatTabs();
     renderProductList();
+
+    const productParam = new URLSearchParams(location.search).get('product');
+    if (productParam && PRODUCT_CATEGORIES[productParam]) {
+      const cat = PRODUCT_CATEGORIES[productParam] || 'その他';
+      document.querySelectorAll('.cat-tab').forEach(t =>
+        t.classList.toggle('active', t.dataset.cat === cat)
+      );
+      currentCat = cat;
+      currentSubcat = 'all';
+      renderSubcatTabs();
+      renderProductList();
+      selectProduct(productParam);
+    }
   } catch (e) {
     badge.textContent = '⚠ 読込失敗';
     badge.className = 'error';

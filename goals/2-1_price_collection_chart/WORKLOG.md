@@ -276,3 +276,35 @@
 - `SEDORI_FORCE_SCRAPE=1 python scraper\scrape.py` を実行し、仕組み経由で `data/prices.csv` に2026-06-09分104件の価格変化を追記。`docs/prices.csv` へ同期し、`python scraper\generate_coverage_report.py` も実行。
 - 追加6件はすべて2026-06-09価格を取得済み。ヒロシマ/フクオカ/トウホクは買取一丁目＋モバイル一番、ブラックボルトDX/ホワイトフレアDXは買取一丁目＋森森買取、アビスアイは買取一丁目/モバイル一番/森森買取/買取ルデヤ/買取ホムラで取得。
 - `data/prices.csv` と `docs/prices.csv`、`data/msrp.csv` と `docs/msrp.csv` の同期を確認。
+
+## 2026-06-10 スマホ候補整理
+
+- ユーザー判断でカードは完了扱いとし、次分野としてスマホを必要機種だけに絞る作業を開始。
+- 買取一丁目候補表 `reports/ichome_product_candidates.csv` のスマホ未登録候補242件を確認。
+- `scraper/generate_ichome_smartphone_recommendations.py` を追加し、スマホ候補を初回追加候補/次点候補/要確認/保留へ分類する仕組みを作成。
+- 生成物: `reports/ichome_smartphone_recommendations.csv`、`reports/ichome_smartphone_recommendations.md`、`reports/ichome_smartphone_shortlist.csv`。
+- 分類結果: 初回追加候補24件、次点候補28件、要確認44件、保留146件。
+- 初回追加候補は iPhone 16 Pro/Pro Max の256GB/512GB/1TB、各4色。既存登録済みのiPhone 17 Pro/Pro Maxは触らない。
+- 128GB、2TB、iPhone 15以前、iPhone Airは次点または要確認に落とした。商品マスターへの追加はまだ未実施。
+- `python -m py_compile scraper\generate_ichome_smartphone_recommendations.py` 成功。
+- ユーザー判断により、スマホ初回追加候補24件はいずれも追加しないことにした。
+
+## 2026-06-10 買取一丁目価格アラーム初期実装
+
+- 次項目として、買取一丁目価格アラームを実装。最初は `docs/index.html` 内に置いたが、画面が混み合うため `docs/alerts.html` へ別ページ化した。
+- 画面上で、上昇率、上昇額、条件（両方/どちらか/率のみ/円のみ）を変更できるようにした。設定は `localStorage` に保存。
+- 判定対象は買取一丁目のみ。商品ごとの直近価格と、その前の異なる価格を比較し、上昇額と上昇率を計算する。
+- `docs/index.html` には価格アラームへのリンクと、`?product=` パラメータで該当商品を開く処理だけを追加。
+- アラーム行をクリックすると `index.html?product=...` へ遷移し、該当商品のチャートを表示する。
+- ローカル `http://127.0.0.1:8010/alerts.html` で確認。初期条件（5%、1,000円、両方）では6件表示。先頭は `CANON PowerShot V1`、+880.0%、+88,000円。
+- Playwrightで `alerts.html` 表示、トップページ導線、アラーム行クリック後の該当商品選択を確認し、コンソールエラーなし。
+
+## 2026-06-10 価格アラームページ内チャート追加
+
+- ユーザー依頼により、価格アラームを別ページにしたまま、`docs/alerts.html` 内にも価格チャートを追加。
+- アラーム行は遷移リンクではなく選択ボタンに変更。商品を選ぶと同じページ内のチャートタイトル、期間、価格推移が切り替わる。
+- チャートは `docs/index.html` と同じ考え方で、買取店は前値補完、ヤフオクは実データ日のみ表示。ヤフオク最安〜最高の幅もエラーバーとして描画。
+- `チャートページで開く` リンクは残し、選択中の商品を `index.html?product=...` で開けるようにした。
+- Playwrightで `http://127.0.0.1:8010/alerts.html` を確認。初期条件で6件表示、初期選択は `CANON PowerShot V1`。2件目クリックで `CANON PowerShot G7 X Mark III PowerShot 30th Anniversary Edition` にチャートが切り替わることを確認。
+- デスクトップ幅とスマホ幅でチャート表示、選択状態、コンソールエラーなしを確認。確認画像は `reports/alerts_chart_preview.png` / `reports/alerts_chart_mobile_preview.png`。
+- ユーザー確認後、デスクトップ幅の配置を左アラーム一覧・右チャートへ変更。1900px幅では一覧430px、チャート約1160pxの2カラム表示を確認。1180px未満は上下配置へ戻すレスポンシブにした。

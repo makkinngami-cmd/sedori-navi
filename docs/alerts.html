@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>価格アラーム - せどりナビ</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #0f1117;
+      --surface: #1a1d27;
+      --surface2: #22263a;
+      --border: #2e3248;
+      --accent: #5c73f2;
+      --accent2: #f25c73;
+      --text: #e4e6f0;
+      --text-muted: #7a7f99;
+      --green: #4caf87;
+      --yellow: #f2c94c;
+      --radius: 10px;
+      --font: 'Segoe UI', 'Noto Sans JP', sans-serif;
+    }
+    html { font-size: 14px; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font);
+      min-height: 100vh;
+    }
+    header {
+      align-items: center;
+      background: linear-gradient(135deg, #1a1d27 0%, #22263a 100%);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      gap: 1rem;
+      padding: 1rem 1.5rem;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    h1 {
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      flex: 1;
+      font-size: 1.2rem;
+      font-weight: 700;
+      min-width: 0;
+      white-space: nowrap;
+    }
+    .nav-link {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--text-muted);
+      font-size: 0.8rem;
+      padding: 0.42rem 0.7rem;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+    .nav-link:hover { border-color: var(--accent); color: var(--text); }
+    main {
+      display: grid;
+      gap: 1rem;
+      margin: 0 auto;
+      max-width: 1640px;
+      padding: 1.25rem;
+    }
+    .alert-workspace {
+      display: grid;
+      gap: 1rem;
+      grid-template-columns: minmax(360px, 430px) minmax(0, 1fr);
+      align-items: stretch;
+    }
+    .panel {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1rem;
+    }
+    .toolbar {
+      align-items: center;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.55rem;
+    }
+    .toolbar label {
+      align-items: center;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--text-muted);
+      display: inline-flex;
+      font-size: 0.78rem;
+      gap: 0.35rem;
+      min-height: 32px;
+      padding: 0.28rem 0.5rem;
+    }
+    input, select {
+      background: rgba(15,17,23,0.85);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      color: var(--text);
+      font-size: 0.82rem;
+      height: 25px;
+      outline: none;
+      padding: 0 0.35rem;
+    }
+    input { width: 76px; }
+    select { min-width: 108px; }
+    input:focus, select:focus { border-color: var(--accent); }
+    #summary {
+      color: var(--text-muted);
+      font-size: 0.82rem;
+      margin-left: auto;
+      white-space: nowrap;
+    }
+    #alert-list {
+      display: grid;
+      gap: 0.45rem;
+    }
+    #list-panel {
+      max-height: calc(100vh - 190px);
+      overflow: auto;
+    }
+    .alert-row {
+      align-items: center;
+      background: rgba(34,38,58,0.72);
+      border: 1px solid var(--border);
+      border-radius: 7px;
+      color: var(--text);
+      display: grid;
+      gap: 0.65rem;
+      grid-template-columns: minmax(0,1fr) auto auto auto;
+      min-height: 48px;
+      padding: 0.6rem 0.7rem;
+      text-decoration: none;
+      text-align: left;
+      transition: background 0.15s, border-color 0.15s;
+      width: 100%;
+    }
+    .alert-row:hover,
+    .alert-row.selected {
+      background: rgba(92,115,242,0.13);
+      border-color: var(--accent);
+    }
+    .alert-row.selected { box-shadow: inset 3px 0 0 var(--accent); }
+    .name {
+      font-size: 0.86rem;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .meta {
+      color: var(--text-muted);
+      font-size: 0.72rem;
+      margin-top: 0.1rem;
+    }
+    .change {
+      color: var(--green);
+      font-size: 0.84rem;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+    .diff, .price {
+      color: var(--text-muted);
+      font-size: 0.78rem;
+      white-space: nowrap;
+    }
+    .empty {
+      color: var(--text-muted);
+      font-size: 0.86rem;
+      padding: 1.5rem 0.5rem;
+      text-align: center;
+    }
+    #chart-panel { min-height: 380px; }
+    .chart-head {
+      align-items: flex-start;
+      display: flex;
+      gap: 1rem;
+      justify-content: space-between;
+      margin-bottom: 0.9rem;
+    }
+    #chart-title {
+      font-size: 0.98rem;
+      font-weight: 700;
+      line-height: 1.35;
+    }
+    #chart-subtitle {
+      color: var(--text-muted);
+      font-size: 0.78rem;
+      margin-top: 0.25rem;
+    }
+    #chart-wrap {
+      height: calc(100vh - 285px);
+      min-height: 460px;
+      position: relative;
+    }
+    #chart-placeholder {
+      align-items: center;
+      color: var(--text-muted);
+      display: flex;
+      font-size: 0.9rem;
+      height: 100%;
+      justify-content: center;
+      text-align: center;
+    }
+    #alert-chart { display: none; }
+    #loading {
+      align-items: center;
+      color: var(--text-muted);
+      display: flex;
+      gap: 0.8rem;
+      justify-content: center;
+      min-height: 180px;
+    }
+    .spinner {
+      animation: spin 0.8s linear infinite;
+      border: 3px solid var(--border);
+      border-radius: 50%;
+      border-top-color: var(--accent);
+      height: 28px;
+      width: 28px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    @media (max-width: 720px) {
+      header { padding: 0.7rem 0.85rem; }
+      h1 { font-size: 1rem; }
+      main { padding: 0.85rem; }
+      .toolbar { align-items: stretch; }
+      .toolbar label { flex: 1 1 140px; justify-content: space-between; }
+      #summary { margin-left: 0; width: 100%; }
+      .alert-workspace { display: grid; grid-template-columns: 1fr; }
+      #list-panel { max-height: none; overflow: visible; }
+      .alert-row {
+        grid-template-columns: minmax(0,1fr) auto;
+        gap: 0.35rem 0.6rem;
+      }
+      .price { grid-column: 1 / -1; }
+      .chart-head { flex-direction: column; }
+      #chart-wrap { height: 270px; min-height: 270px; }
+      #chart-placeholder { height: 100%; }
+    }
+    @media (min-width: 721px) and (max-width: 1180px) {
+      .alert-workspace { grid-template-columns: 1fr; }
+      #list-panel { max-height: none; overflow: visible; }
+      #chart-wrap { height: 420px; min-height: 420px; }
+    }
+    @media (min-width: 1181px) {
+      .alert-row {
+        grid-template-columns: minmax(0,1fr) auto;
+        gap: 0.25rem 0.55rem;
+      }
+      .diff, .price { grid-column: 2; }
+      .diff { grid-row: 2; justify-self: end; }
+      .price {
+        grid-column: 1 / -1;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>買取一丁目 価格アラーム</h1>
+    <a class="nav-link" href="./index.html">チャートへ戻る</a>
+  </header>
+
+  <main>
+    <section class="panel">
+      <div class="toolbar">
+        <label>上昇率 <input id="alert-percent" type="number" min="0" step="1" value="5">%</label>
+        <label>上昇額 <input id="alert-yen" type="number" min="0" step="100" value="1000">円</label>
+        <label>条件
+          <select id="alert-mode">
+            <option value="and">両方</option>
+            <option value="or">どちらか</option>
+            <option value="percent">率のみ</option>
+            <option value="yen">円のみ</option>
+          </select>
+        </label>
+        <div id="summary">読込中</div>
+      </div>
+    </section>
+
+    <div class="alert-workspace">
+      <section class="panel" id="list-panel">
+        <div id="loading"><span class="spinner"></span><span>データを読み込んでいます</span></div>
+        <div id="alert-list"></div>
+      </section>
+
+      <section class="panel" id="chart-panel">
+        <div class="chart-head">
+          <div>
+            <div id="chart-title">商品を選択してください</div>
+            <div id="chart-subtitle">アラーム一覧の商品を選ぶと、同じページで価格推移を確認できます</div>
+          </div>
+          <a id="open-main-link" class="nav-link" href="./index.html">チャートページで開く</a>
+        </div>
+        <div id="chart-wrap">
+          <div id="chart-placeholder">アラーム商品を選択してください</div>
+          <canvas id="alert-chart"></canvas>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <script>
+const ALERT_SETTINGS_KEY = 'sedori_price_alert_settings';
+const STORE_COLORS = {
+  '買取一丁目':      { border: '#ff2f7d', bg: 'rgba(255,47,125,0.08)',   dash: [] },
+  'モバイル一番':    { border: '#2f80ed', bg: 'rgba(47,128,237,0.08)',   dash: [] },
+  '買取ルデヤ':      { border: '#00c2b8', bg: 'rgba(0,194,184,0.08)',    dash: [] },
+  '森森買取':        { border: '#b45cff', bg: 'rgba(180,92,255,0.08)',   dash: [] },
+  '買取ホムラ':      { border: '#ff8a00', bg: 'rgba(255,138,0,0.08)',    dash: [] },
+  '買取商店':        { border: '#f8fafc', bg: 'rgba(248,250,252,0.06)',  dash: [3, 3] },
+  'ヤフオク 最安':   { border: '#ffd400', bg: 'rgba(255,212,0,0.06)',    dash: [6, 3] },
+  'ヤフオク 中央値': { border: '#ffd400', bg: 'rgba(255,212,0,0.06)',    dash: [] },
+  'ヤフオク 最高':   { border: '#ffd400', bg: 'rgba(255,212,0,0.06)',    dash: [2, 2] },
+};
+const YAHOO_STORES = new Set(['ヤフオク 最安', 'ヤフオク 中央値', 'ヤフオク 最高']);
+let alertSettings = {
+  percent: 5,
+  yen: 1000,
+  mode: 'and',
+  ...JSON.parse(localStorage.getItem(ALERT_SETTINGS_KEY) || '{}'),
+};
+let allRows = [];
+let currentProduct = '';
+let alertChart = null;
+
+function parseCSV(text) {
+  const rows = [];
+  const lines = text.trim().split(/\r?\n/);
+  const headers = lines.shift().split(',');
+  for (const line of lines) {
+    const vals = [];
+    let cur = '';
+    let inQ = false;
+    for (let i = 0; i < line.length; i++) {
+      const ch = line[i];
+      if (ch === '"' && line[i + 1] === '"') { cur += '"'; i++; }
+      else if (ch === '"') inQ = !inQ;
+      else if (ch === ',' && !inQ) { vals.push(cur); cur = ''; }
+      else cur += ch;
+    }
+    vals.push(cur);
+    const obj = {};
+    headers.forEach((h, i) => { obj[h] = vals[i] || ''; });
+    obj.price = parseInt(obj.price, 10) || 0;
+    if (obj.date && obj.product_name && obj.store && obj.price > 0) rows.push(obj);
+  }
+  return rows;
+}
+
+function saveAlertSettings() {
+  localStorage.setItem(ALERT_SETTINGS_KEY, JSON.stringify(alertSettings));
+}
+
+function getIchomePriceSteps(productName) {
+  return allRows
+    .map((row, idx) => ({ row, idx }))
+    .filter(x => x.row.product_name === productName && x.row.store === '買取一丁目')
+    .sort((a, b) => a.row.date.localeCompare(b.row.date) || a.idx - b.idx);
+}
+
+function conditionPass(diff, pct) {
+  const percentLimit = Number(alertSettings.percent) || 0;
+  const yenLimit = Number(alertSettings.yen) || 0;
+  const percentPass = pct >= percentLimit;
+  const yenPass = diff >= yenLimit;
+  if (alertSettings.mode === 'percent') return percentPass;
+  if (alertSettings.mode === 'yen') return yenPass;
+  if (alertSettings.mode === 'or') return percentPass || yenPass;
+  return percentPass && yenPass;
+}
+
+function computeAlerts() {
+  const names = [...new Set(allRows.map(r => r.product_name))];
+  const alerts = [];
+  names.forEach(name => {
+    const steps = getIchomePriceSteps(name);
+    if (steps.length < 2) return;
+    const latest = steps[steps.length - 1].row;
+    const prev = [...steps].slice(0, -1).reverse().find(x => x.row.price !== latest.price);
+    if (!prev) return;
+    const diff = latest.price - prev.row.price;
+    if (diff <= 0 || prev.row.price <= 0) return;
+    const pct = (diff / prev.row.price) * 100;
+    if (!conditionPass(diff, pct)) return;
+    alerts.push({ name, latest, previous: prev.row, diff, pct });
+  });
+  alerts.sort((a, b) => b.diff - a.diff || b.pct - a.pct || a.name.localeCompare(b.name));
+  return alerts;
+}
+
+function formatYen(value) {
+  return `¥${Number(value || 0).toLocaleString()}`;
+}
+
+function buildChartDatasets(rows, dates) {
+  const storeData = store => {
+    const storeRows = rows.filter(x => x.store === store).sort((a, b) => a.date.localeCompare(b.date));
+    let last = null;
+    return dates.map(date => {
+      const row = storeRows.find(x => x.date === date);
+      if (row) last = row.price;
+      return last;
+    });
+  };
+  const storeDataExact = store => {
+    const storeRows = rows.filter(x => x.store === store);
+    return dates.map(date => {
+      const row = storeRows.find(x => x.date === date);
+      return row ? row.price : null;
+    });
+  };
+  const normalStores = [...new Set(rows.map(r => r.store))].filter(store => !YAHOO_STORES.has(store));
+  const datasets = normalStores.map(store => {
+    const color = STORE_COLORS[store] || { border: '#aaa', bg: 'rgba(170,170,170,0.1)', dash: [] };
+    return {
+      label: store,
+      data: storeData(store),
+      borderColor: color.border,
+      backgroundColor: color.bg,
+      borderWidth: store === '買取商店' ? 3 : 2,
+      borderDash: color.dash || [],
+      pointBorderColor: color.border,
+      pointBackgroundColor: '#1a1d27',
+      pointRadius: 3,
+      pointHoverRadius: 5,
+      fill: false,
+      tension: 0.3,
+      spanGaps: true,
+    };
+  });
+
+  if (rows.some(r => YAHOO_STORES.has(r.store))) {
+    ['ヤフオク 最高', 'ヤフオク 最安'].forEach(store => {
+      datasets.push({
+        label: store,
+        data: storeDataExact(store),
+        borderColor: 'transparent',
+        backgroundColor: 'transparent',
+        borderWidth: 0,
+        pointRadius: 0,
+        pointHoverRadius: 0,
+        fill: false,
+        spanGaps: true,
+      });
+    });
+    const yahooColor = STORE_COLORS['ヤフオク 中央値'];
+    datasets.push({
+      label: 'ヤフオク 中央値',
+      data: storeDataExact('ヤフオク 中央値'),
+      borderColor: yahooColor.border,
+      backgroundColor: 'transparent',
+      borderWidth: 2.5,
+      borderDash: yahooColor.dash,
+      pointBorderColor: yahooColor.border,
+      pointBackgroundColor: '#1a1d27',
+      pointRadius: 4,
+      pointHoverRadius: 6,
+      fill: false,
+      tension: 0.3,
+      spanGaps: true,
+    });
+  }
+  return datasets;
+}
+
+function renderChart(productName) {
+  const canvas = document.getElementById('alert-chart');
+  const placeholder = document.getElementById('chart-placeholder');
+  const title = document.getElementById('chart-title');
+  const subtitle = document.getElementById('chart-subtitle');
+  const openMain = document.getElementById('open-main-link');
+  if (!productName) {
+    currentProduct = '';
+    title.textContent = '商品を選択してください';
+    subtitle.textContent = 'アラーム一覧の商品を選ぶと、同じページで価格推移を確認できます';
+    openMain.href = './index.html';
+    document.querySelectorAll('.alert-row').forEach(row => row.classList.remove('selected'));
+    if (alertChart) {
+      alertChart.destroy();
+      alertChart = null;
+    }
+    canvas.style.display = 'none';
+    placeholder.style.display = 'flex';
+    placeholder.textContent = 'アラーム商品を選択してください';
+    return;
+  }
+  const rows = allRows.filter(row => row.product_name === productName);
+  const dates = [...new Set(rows.map(row => row.date))].sort();
+
+  currentProduct = productName;
+  title.textContent = productName;
+  subtitle.textContent = rows.length ? `${dates[0]} - ${dates[dates.length - 1]} / ${rows.length}件` : 'この商品の価格データはまだありません';
+  openMain.href = `./index.html?product=${encodeURIComponent(productName)}`;
+
+  document.querySelectorAll('.alert-row').forEach(row => {
+    row.classList.toggle('selected', row.dataset.product === productName);
+  });
+
+  if (alertChart) {
+    alertChart.destroy();
+    alertChart = null;
+  }
+  if (!rows.length || !dates.length) {
+    canvas.style.display = 'none';
+    placeholder.style.display = 'flex';
+    placeholder.textContent = 'この商品の価格データはまだありません';
+    return;
+  }
+
+  canvas.style.display = 'block';
+  placeholder.style.display = 'none';
+  const yahooErrorBarPlugin = {
+    id: 'yahooErrorBar',
+    afterDatasetsDraw(chart) {
+      const maxIdx = chart.data.datasets.findIndex(d => d.label === 'ヤフオク 最高');
+      const minIdx = chart.data.datasets.findIndex(d => d.label === 'ヤフオク 最安');
+      const midIdx = chart.data.datasets.findIndex(d => d.label === 'ヤフオク 中央値');
+      if (maxIdx < 0 || minIdx < 0 || midIdx < 0) return;
+      const meta = chart.getDatasetMeta(midIdx);
+      const hiArr = chart.data.datasets[maxIdx].data;
+      const loArr = chart.data.datasets[minIdx].data;
+      const ctx2d = chart.ctx;
+      ctx2d.save();
+      ctx2d.strokeStyle = STORE_COLORS['ヤフオク 中央値'].border;
+      ctx2d.lineWidth = 1.5;
+      meta.data.forEach((point, i) => {
+        const lo = loArr[i];
+        const hi = hiArr[i];
+        if (lo == null || hi == null) return;
+        const x = point.x;
+        const yLo = chart.scales.y.getPixelForValue(lo);
+        const yHi = chart.scales.y.getPixelForValue(hi);
+        ctx2d.beginPath(); ctx2d.moveTo(x, yLo); ctx2d.lineTo(x, yHi); ctx2d.stroke();
+        ctx2d.beginPath(); ctx2d.moveTo(x - 5, yLo); ctx2d.lineTo(x + 5, yLo); ctx2d.stroke();
+        ctx2d.beginPath(); ctx2d.moveTo(x - 5, yHi); ctx2d.lineTo(x + 5, yHi); ctx2d.stroke();
+      });
+      ctx2d.restore();
+    },
+  };
+
+  alertChart = new Chart(canvas, {
+    plugins: [yahooErrorBarPlugin],
+    type: 'line',
+    data: { labels: dates, datasets: buildChartDatasets(rows, dates) },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      interaction: { mode: 'index', intersect: false },
+      plugins: {
+        legend: {
+          labels: {
+            color: '#e4e6f0',
+            filter: item => item.text !== 'ヤフオク 最高' && item.text !== 'ヤフオク 最安',
+            usePointStyle: true,
+          },
+        },
+        tooltip: {
+          backgroundColor: '#1a1d27',
+          borderColor: '#2e3248',
+          borderWidth: 1,
+          titleColor: '#e4e6f0',
+          bodyColor: '#b0b3c8',
+          callbacks: {
+            label: ctx => {
+              if (ctx.dataset.label === 'ヤフオク 最高' || ctx.dataset.label === 'ヤフオク 最安') return null;
+              return ` ${ctx.dataset.label}: ${formatYen(ctx.parsed.y)}`;
+            },
+          },
+        },
+      },
+      scales: {
+        x: { grid: { color: '#2e3248' }, ticks: { color: '#7a7f99', maxTicksLimit: 10 } },
+        y: {
+          grid: { color: '#2e3248' },
+          ticks: { color: '#7a7f99', callback: value => formatYen(value) },
+          beginAtZero: false,
+        },
+      },
+    },
+  });
+}
+
+function render() {
+  const list = document.getElementById('alert-list');
+  const summary = document.getElementById('summary');
+  const loading = document.getElementById('loading');
+  const alerts = computeAlerts();
+  loading.style.display = 'none';
+  list.innerHTML = '';
+  summary.textContent = alerts.length ? `${alerts.length}件` : '該当なし';
+
+  if (!alerts.length) {
+    list.innerHTML = '<div class="empty">現在の条件に合う上昇はありません</div>';
+    renderChart('');
+    return;
+  }
+
+  alerts.forEach(alert => {
+    const row = document.createElement('button');
+    row.className = 'alert-row';
+    row.type = 'button';
+    row.dataset.product = alert.name;
+    row.innerHTML = `
+      <div>
+        <div class="name" title="${alert.name}">${alert.name}</div>
+        <div class="meta">${alert.previous.date} → ${alert.latest.date}</div>
+      </div>
+      <div class="change">+${alert.pct.toFixed(1)}%</div>
+      <div class="diff">+${formatYen(alert.diff)}</div>
+      <div class="price">${formatYen(alert.previous.price)} → ${formatYen(alert.latest.price)}</div>
+    `;
+    row.addEventListener('click', () => renderChart(alert.name));
+    list.appendChild(row);
+  });
+
+  const selected = alerts.find(alert => alert.name === currentProduct) || alerts[0];
+  renderChart(selected.name);
+}
+
+function bindControls() {
+  const percent = document.getElementById('alert-percent');
+  const yen = document.getElementById('alert-yen');
+  const mode = document.getElementById('alert-mode');
+  percent.value = alertSettings.percent;
+  yen.value = alertSettings.yen;
+  mode.value = alertSettings.mode;
+  const update = () => {
+    alertSettings = {
+      percent: Math.max(0, Number(percent.value) || 0),
+      yen: Math.max(0, Number(yen.value) || 0),
+      mode: mode.value,
+    };
+    saveAlertSettings();
+    render();
+  };
+  percent.addEventListener('input', update);
+  yen.addEventListener('input', update);
+  mode.addEventListener('change', update);
+}
+
+async function loadData() {
+  bindControls();
+  const cv = Date.now();
+  const candidates = ['./prices.csv', '../data/prices.csv', 'prices.csv'];
+  for (const path of candidates) {
+    try {
+      const resp = await fetch(`${path}?v=${cv}`);
+      if (resp.ok) {
+        allRows = parseCSV(await resp.text());
+        render();
+        return;
+      }
+    } catch (_) {}
+  }
+  document.getElementById('loading').innerHTML = 'prices.csv が見つかりません';
+}
+
+loadData();
+  </script>
+</body>
+</html>

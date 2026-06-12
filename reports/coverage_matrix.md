@@ -1,6 +1,6 @@
 # 取得カバレッジ表
 
-更新日: 2026-06-11
+更新日: 2026-06-12
 
 凡例: `○` 取得実績あり / 空欄 取得実績なし
 
@@ -46,7 +46,7 @@
 | PlayStation(R)5 ”Ghost of Yotei” ゴールド リミテッドエディション CFIJ-10029 | 4 | ○ |  | ○ | ○ | ○ |  | ○ | ○ | ○ |
 | PlayStation VR2 “Horizon Call of the Mountain” 同梱版 CFIJ-17001 | 3 | ○ |  |  | ○ | ○ |  |  |  |  |
 | PlayStation VR2 CFIJ-17000 | 3 | ○ |  |  | ○ | ○ |  |  |  |  |
-| PlayStation Portal リモートプレーヤー CFIJ-18000 | 4 | ○ |  | ○ | ○ | ○ |  | ○ | ○ | ○ |
+| PlayStation Portal リモートプレーヤー CFIJ-18000 | 5 | ○ | ○ | ○ | ○ | ○ |  | ○ | ○ | ○ |
 | PlayStation Portal リモートプレーヤー ブラック CFIJ-18001 | 4 | ○ |  | ○ | ○ | ○ |  | ○ | ○ | ○ |
 | Xbox Series X 1TB デジタル エディション ホワイト EP2-00708 | 4 | ○ |  | ○ |  | ○ | ○ |  |  |  |
 | Xbox Series S 1TB ホワイト EP2-00650 | 3 | ○ |  | ○ |  | ○ |  |  |  |  |

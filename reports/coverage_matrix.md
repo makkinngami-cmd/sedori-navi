@@ -1,6 +1,6 @@
 # 取得カバレッジ表
 
-更新日: 2026-06-12
+更新日: >>>>>>> Stashed changes
 
 凡例: `○` 取得実績あり / 空欄 取得実績なし
 
@@ -45,7 +45,7 @@
 | PlayStation 5 デジタルED ダブルパック 日本語専用 CFIJ-10032 | 4 | ○ |  | ○ | ○ |  | ○ | ○ | ○ | ○ |
 | PlayStation(R)5 ”Ghost of Yotei” ゴールド リミテッドエディション CFIJ-10029 | 4 | ○ |  | ○ | ○ | ○ |  | ○ | ○ | ○ |
 | PlayStation VR2 “Horizon Call of the Mountain” 同梱版 CFIJ-17001 | 3 | ○ |  |  | ○ | ○ |  |  |  |  |
-| PlayStation VR2 CFIJ-17000 | 3 | ○ |  |  | ○ | ○ |  |  |  |  |
+| PlayStation VR2 CFIJ-17000 | 3 | ○ |  |  | ○ | ○ |  | ○ | ○ | ○ |
 | PlayStation Portal リモートプレーヤー CFIJ-18000 | 5 | ○ | ○ | ○ | ○ | ○ |  | ○ | ○ | ○ |
 | PlayStation Portal リモートプレーヤー ブラック CFIJ-18001 | 4 | ○ |  | ○ | ○ | ○ |  | ○ | ○ | ○ |
 | Xbox Series X 1TB デジタル エディション ホワイト EP2-00708 | 4 | ○ |  | ○ |  | ○ | ○ |  |  |  |
@@ -118,7 +118,7 @@
 | 【NS2】スーパー マリオパーティ ジャンボリー Nintendo Switch 2 Edition ＋ ジャンボリーTV | 5 | ○ | ○ | ○ | ○ | ○ |  | ○ | ○ | ○ |
 | 【NS2】スーパーマリオブラザーズ ワンダー Nintendo Switch 2 Edition + みんなでリンリンパーク | 4 | ○ |  | ○ | ○ | ○ |  | ○ | ○ | ○ |
 | 【NS2】ゼルダの伝説 ブレス オブ ザ ワイルド Nintendo Switch 2 Edition | 5 | ○ |  | ○ | ○ | ○ | ○ | ○ | ○ | ○ |
-| 【NS2】ゼノブレイドクロス ディフィニティブエディション Nintendo Switch 2 Edition | 2 | ○ |  | ○ |  |  |  | ○ | ○ | ○ |
+| 【NS2】ゼノブレイドクロス ディフィニティブエディション Nintendo Switch 2 Edition | 3 | ○ |  | ○ | ○ |  |  | ○ | ○ | ○ |
 | 【NS2】星のカービィ ディスカバリー Nintendo Switch 2 Edition ＋ スターリーワールド | 4 | ○ |  | ○ | ○ | ○ |  |  |  |  |
 | 【NS2】桃太郎電鉄2 ～あなたの町も きっとある～ Nintendo Switch 2 Edition 東日本編＋西日本編/Switch 2 | 4 | ○ |  | ○ | ○ | ○ |  |  |  |  |
 | 【NS2】牧場物語 Lets！風のグランドバザール Nintendo Switch 2 Edition | 3 | ○ |  | ○ |  | ○ |  |  |  |  |

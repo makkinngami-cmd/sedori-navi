@@ -133,7 +133,7 @@
 | 【PS5】SILENT HILL f | 3 | ○ |  | ○ | ○ |  |  | ○ | ○ | ○ |
 | 【PS5】黒神話：悟空 | 3 | ○ |  | ○ | ○ |  |  |  |  |  |
 | 【PS5】プラグマタ | 3 | ○ |  | ○ | ○ |  |  | ○ | ○ | ○ |
-| 【NS2】ドラゴンクエストVII Reimagined -Switch | 3 | ○ |  | ○ |  | ○ |  |  |  |  |
+| 【NS2】ドラゴンクエストVII Reimagined -Switch | 3 | ○ |  | ○ |  | ○ |  | ○ | ○ | ○ |
 | 【PS5】Ghost of Yotei | 4 | ○ | ○ | ○ | ○ |  |  | ○ | ○ | ○ |
 | 【PS5】アストロボット | 3 | ○ |  | ○ | ○ |  |  | ○ | ○ | ○ |
 | 【PS5】DEATH STRANDING 2: ON THE BEACH | 3 | ○ |  | ○ | ○ |  |  | ○ | ○ | ○ |
@@ -227,12 +227,12 @@
 | RICOH GR IV Monochrome | 4 | ○ |  | ○ | ○ | ○ |  |  |  |  |
 | RICOH GR IV Black | 4 | ○ |  | ○ | ○ | ○ |  | ○ | ○ | ○ |
 | RICOH GR IV HDF | 3 | ○ |  | ○ | ○ |  |  |  |  |  |
-| RICOH GR IIIx HDF 特別モデル | 3 | ○ |  | ○ |  | ○ |  |  |  |  |
+| RICOH GR IIIx HDF 特別モデル | 3 | ○ |  | ○ |  | ○ |  | ○ | ○ | ○ |
 | RICOH GR III HDF 特別モデル | 3 | ○ |  | ○ |  | ○ |  |  |  |  |
 | RICOH GR III Street Edition | 1 | ○ |  |  |  |  |  |  |  |  |
 | RICOH GR IIIx Urban Edition | 3 | ○ |  | ○ | ○ |  |  |  |  |  |
 | RICOH GR III Diary Edition | 3 | ○ |  | ○ | ○ |  |  |  |  |  |
-| ◆RICOH GR IIIx | 4 | ○ |  | ○ | ○ | ○ |  |  |  |  |
+| ◆RICOH GR IIIx | 4 | ○ |  | ○ | ○ | ○ |  | ○ | ○ | ○ |
 | ◆RICOH GR III | 4 | ○ |  | ○ | ○ | ○ |  | ○ | ○ | ○ |
 | Nikon Z50II ダブルズームキット | 1 | ○ |  |  |  |  |  |  |  |  |
 | Z50II 18-140 VR レンズキット | 1 | ○ |  |  |  |  |  |  |  |  |

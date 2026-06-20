@@ -224,7 +224,7 @@
 | FUJIFILM X-T30 II XC15-45mmレンズキット | 1 | ○ |  |  |  |  |  |  |  |  |
 | Panasonic LUMIX DC-TZ99-K [ブラック] | 2 | ○ |  | ○ |  |  |  |  |  |  |
 | LUMIX DC-TZ99 ホワイト | 1 | ○ |  |  |  |  |  |  |  |  |
-| RICOH GR IV Monochrome | 4 | ○ |  | ○ | ○ | ○ |  |  |  |  |
+| RICOH GR IV Monochrome | 4 | ○ |  | ○ | ○ | ○ |  | ○ | ○ | ○ |
 | RICOH GR IV Black | 4 | ○ |  | ○ | ○ | ○ |  | ○ | ○ | ○ |
 | RICOH GR IV HDF | 3 | ○ |  | ○ | ○ |  |  |  |  |  |
 | RICOH GR IIIx HDF 特別モデル | 3 | ○ |  | ○ |  | ○ |  | ○ | ○ | ○ |

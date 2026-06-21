@@ -54,7 +54,7 @@
 | Xbox Series S 512 GB EP2-10065 | 2 | ○ |  | ○ |  |  |  | ○ | ○ | ○ |
 | Meta Quest 3 512GB | 3 | ○ | ○ |  |  | ○ |  |  |  |  |
 | Meta Quest 3 128GB | 2 | ○ |  |  |  | ○ |  |  |  |  |
-| Meta Quest 3S 128GB | 4 | ○ | ○ | ○ |  | ○ |  | ○ | ○ | ○ |
+| Meta Quest 3S 128GB | 5 | ○ | ○ | ○ |  | ○ | ○ | ○ | ○ | ○ |
 | Meta Quest 3S 256GB | 1 | ○ |  |  |  |  |  |  |  |  |
 | Pokemon GO Plus + | 3 | ○ | ○ | ○ |  |  |  | ○ | ○ | ○ |
 | Steam Deck 有機EL 1TB | 3 | ○ | ○ | ○ |  |  |  |  |  |  |

@@ -131,7 +131,7 @@
 | 【NS2】ヨッシーとフカシギの図鑑 | 4 | ○ |  | ○ | ○ | ○ |  | ○ | ○ | ○ |
 | 【NS2】カービィのエアライダー | 4 | ○ |  | ○ | ○ | ○ |  | ○ | ○ | ○ |
 | 【PS5】SILENT HILL f | 3 | ○ |  | ○ | ○ |  |  | ○ | ○ | ○ |
-| 【PS5】黒神話：悟空 | 3 | ○ |  | ○ | ○ |  |  |  |  |  |
+| 【PS5】黒神話：悟空 | 3 | ○ |  | ○ | ○ |  |  | ○ | ○ | ○ |
 | 【PS5】プラグマタ | 3 | ○ |  | ○ | ○ |  |  | ○ | ○ | ○ |
 | 【NS2】ドラゴンクエストVII Reimagined -Switch | 3 | ○ |  | ○ |  | ○ |  | ○ | ○ | ○ |
 | 【PS5】Ghost of Yotei | 4 | ○ | ○ | ○ | ○ |  |  | ○ | ○ | ○ |
@@ -204,7 +204,7 @@
 | CANON PowerShot V1 | 3 | ○ |  | ○ | ○ |  |  |  |  |  |
 | CANON PowerShot G7 X Mark III PowerShot 30th Anniversary Edition | 3 | ○ |  | ○ | ○ |  |  | ○ | ○ | ○ |
 | ◆PowerShot G7 X Mark III　SV | 4 | ○ |  | ○ | ○ | ○ |  |  |  |  |
-| PowerShot G7 X Mark III　B | 5 | ○ | ○ | ○ | ○ | ○ |  |  |  |  |
+| PowerShot G7 X Mark III　B | 5 | ○ | ○ | ○ | ○ | ○ |  | ○ | ○ | ○ |
 | Canon PowerShot G7 X MarkII | 3 | ○ |  | ○ | ○ |  |  | ○ | ○ | ○ |
 | デジタルカメラ PowerShot G1 X Mark III | 2 | ○ |  |  | ○ |  |  |  |  |  |
 | ◆デジタルカメラ PowerShot G5 X Mark II | 2 | ○ |  |  | ○ |  |  |  |  |  |
@@ -318,7 +318,7 @@
 
 | 商品 | 取得業者数 | 買取一丁目 | モバイル一番 | 買取ルデヤ | 森森買取 | 買取ホムラ | 買取商店 | ヤフオク 中央値 | ヤフオク 最安 | ヤフオク 最高 |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| iPhone 17 Pro Max 256GB シルバー | 5 | ○ | ○ | ○ | ○ |  | ○ |  |  |  |
+| iPhone 17 Pro Max 256GB シルバー | 5 | ○ | ○ | ○ | ○ |  | ○ | ○ | ○ | ○ |
 | iPhone 17 Pro Max 256GB ディープブルー | 5 | ○ | ○ | ○ | ○ |  | ○ | ○ | ○ | ○ |
 | iPhone 17 Pro Max 256GB コズミックオレンジ | 5 | ○ | ○ | ○ | ○ |  | ○ |  |  |  |
 | iPhone 17 Pro Max 512GB シルバー | 5 | ○ | ○ | ○ | ○ |  | ○ |  |  |  |

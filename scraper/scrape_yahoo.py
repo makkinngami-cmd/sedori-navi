@@ -521,6 +521,7 @@ async def scrape_product_yahoo(
         and not is_bundle(it['title'])
         and not is_bad_condition(it['title'])
         and not is_accessory(it['title'])
+        and (min_price == 0 or it['price'] >= min_price)
         and (max_price == 0 or it['price'] <= max_price)
     ]
     if not matched:

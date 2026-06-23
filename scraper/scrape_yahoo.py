@@ -221,6 +221,9 @@ PRICE_FLOORS: dict[str, int] = {
     'SONY DSC-RX100M6':               20000,
     'SONY サイバーショット DSC-RX100M5A': 20000,
     'OLYMPUS PEN E-P7 EZダブルズームキット [シルバー]':             15000,
+    # ゲームハード・VR
+    'PlayStation VR2 CFIJ-17000': 15000,
+    'PlayStation VR2 "Horizon Call of the Mountain" 同梱版 CFIJ-17001': 15000,
     # PS5ソフトは特典・DLC・関連グッズがソフト名で落札検索に混ざりやすい
     '【PS5】仁王3': 3400,
     '【PS5】SILENT HILL f': 3000,

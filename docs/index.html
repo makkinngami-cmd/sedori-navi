@@ -113,17 +113,17 @@
     /* 期間切り替えタブ */
     #period-tabs {
       display: flex;
-      gap: 6px;
-      margin-bottom: 0.6rem;
+      gap: 4px;
+      margin-left: auto;
     }
     .period-tab {
       background: var(--surface2);
       border: 1px solid var(--border);
-      border-radius: 6px;
+      border-radius: 5px;
       color: var(--text-muted);
       cursor: pointer;
-      font-size: 0.75rem;
-      padding: 0.3rem 0.7rem;
+      font-size: 0.7rem;
+      padding: 0.2rem 0.5rem;
       transition: all 0.15s;
       white-space: nowrap;
     }
@@ -474,7 +474,6 @@
       padding: 0.2rem 0.6rem;
       text-decoration: none;
       transition: border-color 0.15s, background 0.15s;
-      margin-left: auto;
     }
     #pt-link:hover { background: rgba(92,115,242,0.15); border-color: var(--accent); }
     #pt-link.hidden { display: none; }
@@ -735,14 +734,14 @@
       <span id="pt-name">—</span>
       <span id="pt-cat">—</span>
 
-      <a id="pt-link" href="#" target="_blank" rel="noopener" class="hidden">🔗 買取一丁目</a>
-    </div>
+      <div id="period-tabs">
+        <button class="period-tab" data-days="30">1ヶ月</button>
+        <button class="period-tab" data-days="90">3ヶ月</button>
+        <button class="period-tab" data-days="180">6ヶ月</button>
+        <button class="period-tab active" data-days="0">全期間</button>
+      </div>
 
-    <div id="period-tabs" style="display:none">
-      <button class="period-tab" data-days="30">1ヶ月</button>
-      <button class="period-tab" data-days="90">3ヶ月</button>
-      <button class="period-tab" data-days="180">6ヶ月</button>
-      <button class="period-tab active" data-days="0">全期間</button>
+      <a id="pt-link" href="#" target="_blank" rel="noopener" class="hidden">🔗 買取一丁目</a>
     </div>
 
     <div id="chart-wrap">

@@ -110,6 +110,30 @@
       color: #fff;
     }
 
+    /* 期間切り替えタブ */
+    #period-tabs {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 0.6rem;
+    }
+    .period-tab {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 0.75rem;
+      padding: 0.3rem 0.7rem;
+      transition: all 0.15s;
+      white-space: nowrap;
+    }
+    .period-tab:hover { border-color: var(--accent); color: var(--text); }
+    .period-tab.active {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
+    }
+
     /* サブカテゴリタブ */
     #subcat-tabs {
       display: flex;
@@ -714,6 +738,13 @@
       <a id="pt-link" href="#" target="_blank" rel="noopener" class="hidden">🔗 買取一丁目</a>
     </div>
 
+    <div id="period-tabs" style="display:none">
+      <button class="period-tab" data-days="30">1ヶ月</button>
+      <button class="period-tab" data-days="90">3ヶ月</button>
+      <button class="period-tab" data-days="180">6ヶ月</button>
+      <button class="period-tab active" data-days="0">全期間</button>
+    </div>
+
     <div id="chart-wrap">
       <div id="placeholder">
         <div class="icon">📈</div>
@@ -1130,6 +1161,7 @@ let urlMap = {};         // product_name → 買取一丁目 URL
 let favorites = new Set(JSON.parse(localStorage.getItem('sedori_favorites') || '[]'));
 let filterFavorites = false;
 let sortByRate = false;
+let currentPeriod = Number(localStorage.getItem('sedori_chart_period')) || 0; // 0=全期間, 30/90/180=日数
 const PLOT_FILTER_KEY = 'sedori_hidden_plots';
 const HIDDEN_LEGEND_STORES = new Set(['ヤフオク 最高', 'ヤフオク 最安']);
 let hiddenPlots = new Set(JSON.parse(localStorage.getItem(PLOT_FILTER_KEY) || '[]'));
@@ -1304,8 +1336,14 @@ function buildChartDates(productName) {
   const productDates = getUniqueDates(productName);
   if (!productDates.length) return [];
   const globalLatest = allRows.reduce((max, r) => r.date > max ? r.date : max, '');
-  const start = new Date(productDates[0]);
+  let start = new Date(productDates[0]);
   const end   = new Date(globalLatest);
+  // 期間フィルタ: currentPeriod 日数ぶんだけ遡る（0 = 全期間）
+  if (currentPeriod > 0) {
+    const cutoff = new Date(end);
+    cutoff.setDate(cutoff.getDate() - (currentPeriod - 1));
+    if (cutoff > start) start = cutoff;
+  }
   const dates = [];
   for (const d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
     dates.push(d.toISOString().split('T')[0]);
@@ -1585,6 +1623,7 @@ function renderChart(productName) {
     placeholder.innerHTML = '<div class="icon">📭</div><div>このデータはまだ収集されていません</div>';
     canvas.style.display = 'none';
     document.getElementById('chart-store-filter').style.display = 'none';
+    document.getElementById('period-tabs').style.display = 'none';
     tableWrap.style.display = 'none';
     return;
   }
@@ -1592,12 +1631,23 @@ function renderChart(productName) {
   placeholder.style.display = 'none';
   canvas.style.display = 'block';
 
+  // 期間切り替えタブを表示し、現在の選択を反映
+  const periodTabs = document.getElementById('period-tabs');
+  periodTabs.style.display = 'flex';
+  periodTabs.querySelectorAll('.period-tab').forEach(t =>
+    t.classList.toggle('active', Number(t.dataset.days) === currentPeriod));
+
   // Chart.js データセット構築
   const YAHOO_STORES = new Set(['ヤフオク 最安', 'ヤフオク 中央値', 'ヤフオク 最高']);
   // 買取一丁目など日次ストア: 日付がない場合は直前の価格を引き継ぐ（前値補完）
   const storeData = s => {
     const storeRows = rows.filter(x => x.store === s).sort((a, b) => a.date.localeCompare(b.date));
+    // 期間の開始日より前の最新価格で初期化（前値補完が窓の先頭から効くように）
+    const windowStart = dates[0];
     let last = null;
+    for (const x of storeRows) {
+      if (x.date < windowStart) last = x.price; else break;
+    }
     return dates.map(d => {
       const r = storeRows.find(x => x.date === d);
       if (r) last = r.price;
@@ -1948,6 +1998,15 @@ document.querySelectorAll('.cat-tab').forEach(tab => {
     currentSubcat = 'all';
     renderSubcatTabs();
     renderProductList();
+  });
+});
+
+// 期間切り替えタブ
+document.querySelectorAll('.period-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    currentPeriod = Number(tab.dataset.days) || 0;
+    localStorage.setItem('sedori_chart_period', String(currentPeriod));
+    if (currentProduct) renderChart(currentProduct);
   });
 });
 

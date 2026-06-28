@@ -44,6 +44,7 @@ MD_REPORT = REPORT_DIR / 'ichome_boost_candidates.md'
 BOOST_API = ICHOME_BASE + '/api/index/getImpoProduct'
 
 CSV_HEADERS = [
+    'priority',
     'status',
     'category',
     'ichome_title',
@@ -65,6 +66,7 @@ class BoostItem:
     status: str = ''
     matched_product_name: str = ''
     matched_by: str = ''
+    priority: str = ''
 
 
 def keitai_base_price(item: dict) -> int:
@@ -83,20 +85,63 @@ def normal_price(item: dict) -> int:
     return keitai_base_price(item)
 
 
+CAMERA_TERMS = [
+    'powershot', 'ixy', 'ricoh gr', 'x100', 'x-t', 'x-e', 'x-m', 'x-s', 'x-h',
+    'rx100', 'eos r', 'eos kiss', 'zv-e', 'zv-1', 'vlogcam', 'fx3', 'fx30',
+    'lumix', 'nikon z', 'z 30', 'z 50', 'coolpix', 'fdr-ax', 'hc-vx',
+    'alpha', 'α6', 'α7', 'ilce', 'ilme', 'om-d', 'om system', 'om-5',
+    'pentax', 'instax', 'チェキ', '写ルンです', 'tamron', 'sigma', 'olympus',
+    'fujifilm', 'dsc-', 'osmo pocket', 'レンズ', 'ef-eosr',
+]
+PHONE_TERMS = ['iphone', 'galaxy', 'pixel', 'xperia', 'aquos']
+GAME_TERMS = ['switch', 'playstation', 'ps5', 'xbox', 'steam deck', 'steam controller',
+              'meta quest', 'joy-con', 'rog ally', 'rog xbox']
+
+
 def guess_category(title: str) -> str:
     t = normalize_text(title)
-    if any(k in t for k in ['iphone', 'galaxy', 'pixel', 'xperia', 'aquos']):
+    if any(k in t for k in PHONE_TERMS) and 'pixel watch' not in t:
         return 'スマートフォン'
-    if any(k in t for k in ['switch', 'playstation', 'ps5', 'xbox', 'steam deck', 'meta quest']):
+    if any(k in t for k in GAME_TERMS):
         return 'ゲーム'
-    if any(k in t for k in ['powershot', 'ixy', 'ricoh gr', 'x100', 'instax', 'チェキ',
-                            'lumix', 'nikon', 'tamron', 'sigma', 'olympus', 'rx100', 'fujifilm']):
+    if any(k in t for k in CAMERA_TERMS):
         return 'カメラ'
     if 'box' in t or 'ポケモン' in t or 's＆v' in t.lower():
         return 'ポケカ'
     if 'op-' in t or 'one piece' in t:
         return 'ワンピ'
     return 'その他'
+
+
+# せどり優先度: 流動性(売れやすさ) × 既存インフラ × 価格(絶対利幅)
+def assign_priority(it: 'BoostItem') -> str:
+    t = normalize_text(it.title)
+    p = it.price
+
+    # 高流動かつ既存カテゴリで即扱える注目モデル
+    s_terms = [
+        'iphone 16 pro', 'iphone 17', 'iphone 16 plus', 'iphone 16 ',
+        'ricoh gr', 'x100v', 'x100vi', 'x-t50', 'x-e4', 'rx100',
+        'powershot g7 x', 'powershot v1',
+    ]
+    if any(k in t for k in s_terms):
+        return 'S'
+
+    # 人気の現行スマホ/ミラーレス/主要ゲーム機/タブレット上位
+    a_phone = any(k in t for k in ['iphone', 'pixel 10', 'pixel 9'])
+    a_cam = it.category == 'カメラ' and p >= 60000
+    a_game = any(k in t for k in ['rog xbox ally', 'rog ally', 'switch 2', 'ps5', 'xbox series'])
+    a_tab = ('ipad pro' in t or 'ipad air' in t) and p >= 70000
+    if a_phone or a_cam or a_game or a_tab:
+        return 'A'
+
+    # 流動性そこそこ: ウォッチ/イヤホン/その他カメラ/タブレット/人気家電
+    b_terms = ['apple watch', 'pixel watch', 'airpods', 'bose', 'wf-1000', 'wh-1000',
+               'technics', 'ipad', 'kindle', '山崎', '白州', '響', 'マッカラン']
+    if it.category == 'カメラ' or any(k in t for k in b_terms):
+        return 'B'
+
+    return 'C'
 
 
 def fetch_boost_items() -> list[BoostItem]:
@@ -170,11 +215,13 @@ def annotate(items: list[BoostItem]) -> None:
             it.matched_by = 'name'
             continue
         it.status = 'new_candidate'
+        it.priority = assign_priority(it)
 
 
 def sort_key(it: BoostItem):
     status_rank = {'new_candidate': 0, 'registered': 1}
-    return (status_rank.get(it.status, 9), -it.price, it.title)
+    priority_rank = {'S': 0, 'A': 1, 'B': 2, 'C': 3, '': 9}
+    return (status_rank.get(it.status, 9), priority_rank.get(it.priority, 9), -it.price, it.title)
 
 
 def write_csv(items: list[BoostItem]) -> None:
@@ -184,6 +231,7 @@ def write_csv(items: list[BoostItem]) -> None:
         writer.writeheader()
         for it in sorted(items, key=sort_key):
             writer.writerow({
+                'priority': it.priority,
                 'status': it.status,
                 'category': it.category,
                 'ichome_title': it.title,
@@ -201,9 +249,9 @@ def md_escape(value: str) -> str:
 
 def write_md(items: list[BoostItem]) -> None:
     new_items = [it for it in items if it.status == 'new_candidate']
-    by_cat: dict[str, int] = {}
+    by_pri: dict[str, int] = {}
     for it in new_items:
-        by_cat[it.category] = by_cat.get(it.category, 0) + 1
+        by_pri[it.priority] = by_pri.get(it.priority, 0) + 1
 
     lines = [
         '# 買取一丁目 買取強化中 新規候補レポート',
@@ -213,30 +261,31 @@ def write_md(items: list[BoostItem]) -> None:
         '買取一丁目が「買取強化中」に出している商品のうち、せどりナビ未登録のものを抽出。',
         '買取強化中は値上げ・利ざやが出やすい注目商品。',
         '',
+        '## 優先度の意味（せどり観点: 流動性 × 既存カテゴリ × 価格）',
+        '',
+        '- **S**: 最優先。高流動・現行人気・既存カテゴリで即追加できる（iPhone現行Pro/16系/17、人気高級コンデジ・X-T50/X-E4 など）',
+        '- **A**: 次点。現行スマホ/人気ミラーレス/主要ゲーム機/iPad上位',
+        '- **B**: 中。ウォッチ・イヤホン・その他カメラ・人気家電・ウイスキー等',
+        '- **C**: 低。ニッチ・付属品・JANなし・回転が遅い高額機材など',
+        '',
         '## サマリー',
         '',
         f'- 強化中の取得件数: {len(items)}',
         f'- 既存登録済み: {sum(1 for it in items if it.status == "registered")}',
         f'- 未登録の新規候補: {len(new_items)}',
+        f'- 優先度別: S={by_pri.get("S",0)} / A={by_pri.get("A",0)} / B={by_pri.get("B",0)} / C={by_pri.get("C",0)}',
         '',
-        '## 新規候補カテゴリ別',
-        '',
-    ]
-    for cat, count in sorted(by_cat.items(), key=lambda x: (-x[1], x[0])):
-        lines.append(f'- {cat}: {count}')
-
-    lines.extend([
-        '',
-        '## 新規候補（強化中・未登録）',
+        '## 新規候補（強化中・未登録 / 優先度順）',
         '',
         'CSV全件: `reports/ichome_boost_candidates.csv`',
         '',
-        '| カテゴリ | 商品名 | JAN | 買取価格 |',
-        '|---|---|---|---:|',
-    ])
+        '| 優先度 | カテゴリ | 商品名 | JAN | 買取価格 |',
+        '|---|---|---|---|---:|',
+    ]
     for it in sorted(new_items, key=sort_key):
         lines.append(
             '| ' + ' | '.join([
+                md_escape(it.priority),
                 md_escape(it.category),
                 md_escape(it.title),
                 md_escape(it.jan),

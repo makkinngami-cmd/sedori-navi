@@ -66,6 +66,19 @@ if ($LASTEXITCODE -ne 0) {
     Write-Log "--- generate_coverage_report.py done ---"
 }
 
+Write-Log "--- boost candidate research (weekly: Mon) ---"
+if ((Get-Date).DayOfWeek -eq 'Monday') {
+    $r4 = & $PYTHON "$SCRAPER\generate_ichome_boost_candidates.py" 2>&1
+    $r4 | ForEach-Object { Write-Log "$_" }
+    if ($LASTEXITCODE -ne 0) {
+        Write-Log "WARNING: generate_ichome_boost_candidates.py failed (exit $LASTEXITCODE) - continuing"
+    } else {
+        Write-Log "--- boost candidate research done ---"
+    }
+} else {
+    Write-Log "boost research: skipped (runs Mondays)"
+}
+
 Write-Log "--- coverage summary check ---"
 $csvPath = "$REPO\reports\coverage_matrix.csv"
 if (Test-Path $csvPath) {
@@ -130,6 +143,9 @@ if (Test-Path "data\last_yahoo_scrape.txt") {
 }
 if (Test-Path "reports\coverage_matrix.md") {
     git add reports/coverage_matrix.md reports/coverage_matrix.csv 2>&1 | ForEach-Object { Write-Log "$_" }
+}
+if (Test-Path "reports\ichome_boost_candidates.md") {
+    git add reports/ichome_boost_candidates.md reports/ichome_boost_candidates.csv 2>&1 | ForEach-Object { Write-Log "$_" }
 }
 
 git diff --cached --quiet

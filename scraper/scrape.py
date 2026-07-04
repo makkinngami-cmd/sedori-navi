@@ -675,7 +675,14 @@ ICHOME_BASE = 'https://www.1-chome.com'
 ICHOME_API  = ICHOME_BASE + '/api/goods/listPage'
 KEITAI_API  = ICHOME_BASE + '/api/keitai/listPage'
 KEITAI_CATE = 'RGNg976kptBN7UjF'
-KEITAI_TARGETS = {'iPhone 17 Pro Max', 'iPhone 17 Pro'}
+# 携帯・タブレット系カテゴリ（買取一丁目 keitai API）
+# iPhoneはRGNg...、iPad Pro/Airは別カテゴリなので複数を巡回する
+KEITAI_CATES = [
+    'RGNg976kptBN7UjF',   # iPhone 等
+    'qPwbIzxLPrjhoFsg',   # iPad Pro (M5)
+    'm90g88jevgDkyzop',   # iPad Air (M4)
+]
+KEITAI_TARGETS = {'iPhone 17', 'iPad'}
 
 # (cateCode, 説明, isImpo)
 # isImpo=true: 主要商品のみ（ハードのみ47件）
@@ -777,51 +784,52 @@ def scrape_ichome_keitai() -> list[dict]:
         'Referer': f'{ICHOME_BASE}/mobile?category={KEITAI_CATE}',
     }
 
-    page = 1
     total_fetched = 0
-    while True:
-        params = {
-            'accCode': '', 'page': page, 'size': 50,
-            'keyword': '', 'isImpo': 'false',
-            'isCampaign': 'false', 'cateCode': KEITAI_CATE,
-            'kbNames': '', 'isImpoCate': 'false',
-        }
-        try:
-            resp = session.get(KEITAI_API, params=params, headers=headers, timeout=30)
-            if resp.status_code != 200:
-                logger.warning(f'keitai API HTTP {resp.status_code}')
+    for cate in KEITAI_CATES:
+        page = 1
+        while True:
+            params = {
+                'accCode': '', 'page': page, 'size': 50,
+                'keyword': '', 'isImpo': 'false',
+                'isCampaign': 'false', 'cateCode': cate,
+                'kbNames': '', 'isImpoCate': 'false',
+            }
+            try:
+                resp = session.get(KEITAI_API, params=params, headers=headers, timeout=30)
+                if resp.status_code != 200:
+                    logger.warning(f'keitai API HTTP {resp.status_code} (cate={cate})')
+                    break
+                data = resp.json().get('data', {})
+            except Exception as e:
+                logger.error(f'keitai API エラー (cate={cate}): {e}')
                 break
-            data = resp.json().get('data', {})
-        except Exception as e:
-            logger.error(f'keitai API エラー: {e}')
-            break
 
-        content = data.get('content', [])
-        if not content:
-            break
-        total_fetched += len(content)
+            content = data.get('content', [])
+            if not content:
+                break
+            total_fetched += len(content)
 
-        for item in content:
-            title = item.get('title', '').strip()
-            if not any(t in title for t in KEITAI_TARGETS):
-                continue
-            goods_id = item.get('goodsId', '')
-            url = (f'{ICHOME_BASE}/mobileDetail/{goods_id}/{goods_id}' if goods_id
-                   else f'{ICHOME_BASE}/mobile?category={KEITAI_CATE}')
-            for ci in _keitai_price_per_color(item):
-                pname = f'{title} {ci["color"]}'
-                results.append({
-                    'date': TODAY, 'product_name': pname,
-                    'store': store, 'price': ci['price'],
-                    'jan': ci['jan'], 'url': url,
-                })
-                logger.info(f'  ✓ {pname} → ¥{ci["price"]:,}')
+            for item in content:
+                title = item.get('title', '').strip()
+                if not any(t in title for t in KEITAI_TARGETS):
+                    continue
+                goods_id = item.get('goodsId', '')
+                url = (f'{ICHOME_BASE}/mobileDetail/{goods_id}/{goods_id}' if goods_id
+                       else f'{ICHOME_BASE}/mobile?category={cate}')
+                for ci in _keitai_price_per_color(item):
+                    pname = f'{title} {ci["color"]}'
+                    results.append({
+                        'date': TODAY, 'product_name': pname,
+                        'store': store, 'price': ci['price'],
+                        'jan': ci['jan'], 'url': url,
+                    })
+                    logger.info(f'  ✓ {pname} → ¥{ci["price"]:,}')
 
-        total_pages = data.get('totalPages', 1)
-        if page >= total_pages:
-            break
-        page += 1
-        time.sleep(0.5)
+            total_pages = data.get('totalPages', 1)
+            if page >= total_pages:
+                break
+            page += 1
+            time.sleep(0.5)
 
     logger.info(f'  keitai: {total_fetched} アイテム取得, {len(results)} 件マッチ')
     return results

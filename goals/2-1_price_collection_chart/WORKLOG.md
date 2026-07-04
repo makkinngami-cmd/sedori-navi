@@ -11,6 +11,17 @@
 - PSVR2のヤフオク中央値¥2,400混入を発見。`PRICE_FLOORS` に `PlayStation VR2` 2機種（¥15,000）を追加し、混入3行を削除。
 - チャート（index.html）に横軸の期間切り替えタブを追加（1ヶ月/3ヶ月/6ヶ月/全期間）。デフォルトは全期間、選択はlocalStorage保存。期間短縮時も前値補完が窓の先頭から効くよう `storeData` を修正。
 
+## 2026-06-29 強化中Aランク追加（iPhone以外）＋keitai複数カテゴリ対応
+
+- ユーザー方針「iPhone以外のAランク全部」。Aランク未登録96件のうちiPhone(Air/16e)を除く78件が対象。
+- うち13桁JANの41件（カメラ26・ゲーム5・iPad10）を追加。強制スクレイプで41件すべて当日買取取得を確認。
+  - カメラ: FX3, EOS R10/R50/Kiss M2, α6400, ZV-E10系/ZV-1M2G, Nikon Z30/Z50, COOLPIX P1000, FDR-AX45A, OM-D E-M10, PEN E-P7, X-M5レンズキット, PENTAX 17, DJI Osmo Pocket 3, HC-VX992（market）。
+  - ゲーム: ROG Xbox Ally X/Ally, Xbox Series S 1TB/512GB, Switch2 レジェンズZ-Aセット。
+  - iPad: iPad Pro M5 256GB×2, iPad Air M4 256/128GB×8（market）。
+- iPadは携帯API側かつiPhoneと別カテゴリのため、`scrape_ichome_keitai` を複数カテゴリ巡回に変更（`KEITAI_CATES` にiPad Pro/Air追加、`KEITAI_TARGETS` を iPhone 17 / iPad に拡張）。keitai単体テストでiPad12件取得を確認。
+- products.py / index.html・alerts.html PRODUCT_CATEGORIES / data・docs msrp.csv を更新。ALL_PRODUCTS 314→355。
+- Pixel 37件は保留。理由: (1)12桁UPCでJAN照合不可（現行は13桁のみ）、(2)Pixelはタイトルに色を含み `title+color` が重複、(3)3カテゴリに分散。Pixel専用の抽出処理が必要なため次回に切り出し。
+
 ## 2026-06-29 強化中Sランクから商品追加
 
 - 買取強化中レポートのSランクから、ユーザー方針で16商品を追加（iPhoneは17/17 Proのみ、16系・17eは除外）。

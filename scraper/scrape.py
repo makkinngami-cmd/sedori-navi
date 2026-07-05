@@ -681,8 +681,9 @@ KEITAI_CATES = [
     'RGNg976kptBN7UjF',   # iPhone 等
     'qPwbIzxLPrjhoFsg',   # iPad Pro (M5)
     'm90g88jevgDkyzop',   # iPad Air (M4)
+    'ThqjW9LGrBjz4ApX',   # Google Fitbit
 ]
-KEITAI_TARGETS = {'iPhone 17', 'iPad'}
+KEITAI_TARGETS = {'iPhone 17', 'iPad', 'Fitbit'}
 
 # (cateCode, 説明, isImpo)
 # isImpo=true: 主要商品のみ（ハードのみ47件）
@@ -746,11 +747,14 @@ def _ichome_price(item: dict) -> int | None:
     return None
 
 
+KEITAI_UNOPENED_LABELS = {'未開封', '新品'}
+
+
 def _keitai_price_per_color(item: dict) -> list[dict]:
-    """未開封 × 各色の (color, jan, price) リストを返す"""
+    """未開封（または新品）× 各色の (color, jan, price) リストを返す"""
     miko = next(
         (d for d in item.get('goodsKbDetails', [])
-         if d.get('kbDetailName') == '未開封' and d.get('kbDetailPrice')),
+         if d.get('kbDetailName') in KEITAI_UNOPENED_LABELS and d.get('kbDetailPrice')),
         None,
     )
     if not miko:

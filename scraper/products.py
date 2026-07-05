@@ -387,6 +387,11 @@ PRODUCTS = {
         {'name': '2026年 iPad Air (M4) 11インチ Wi-Fi 128GB スペースグレイ [MH304J/A]', 'jan': '4549995661996', 'keywords': ['MH304J/A', 'iPad Air M4 11 128GB スペースグレイ']},
         {'name': '2026年 iPad Air (M4) 11インチ Wi-Fi 128GB パープル [MH344J/A]', 'jan': '4549995662023', 'keywords': ['MH344J/A', 'iPad Air M4 11 128GB パープル']},
         {'name': '2026年 iPad Air (M4) 11インチ Wi-Fi 128GB ブルー [MH314J/A]', 'jan': '4549995662009', 'keywords': ['MH314J/A', 'iPad Air M4 11 128GB ブルー']},
+        # ユーザー指定追加（2026-06-29）話題性で採用
+        {'name': 'SpaceX スターリンクミニ Starlink Mini WiFiルーター内蔵', 'jan': '0850049670302', 'keywords': ['スターリンクミニ', 'Starlink Mini', '02535001']},
+        {'name': 'Google Fitbit Air Berry',    'jan': '0840353963986', 'keywords': ['Fitbit Air Berry']},
+        {'name': 'Google Fitbit Air Lavender', 'jan': '0840353943353', 'keywords': ['Fitbit Air Lavender']},
+        {'name': 'Google Fitbit Air Obsidian', 'jan': '0840353943339', 'keywords': ['Fitbit Air Obsidian']},
     ],
 }
 

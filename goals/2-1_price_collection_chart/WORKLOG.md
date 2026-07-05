@@ -11,6 +11,14 @@
 - PSVR2のヤフオク中央値¥2,400混入を発見。`PRICE_FLOORS` に `PlayStation VR2` 2機種（¥15,000）を追加し、混入3行を削除。
 - チャート（index.html）に横軸の期間切り替えタブを追加（1ヶ月/3ヶ月/6ヶ月/全期間）。デフォルトは全期間、選択はlocalStorage保存。期間短縮時も前値補完が窓の先頭から効くよう `storeData` を修正。
 
+## 2026-06-29 Google Fitbit Air / SpaceX Starlink Mini追加（ユーザー指定）
+
+- ユーザーから「話題性」を理由に指名追加の依頼。買取強化中候補（Cランク）に両方存在。
+- Starlink Miniは通常商品API（JAN一致）でそのまま追加可能。
+- Fitbit Airはkeitai系で専用カテゴリ（ThqjW9LGrBjz4ApX）。追加時に既存バグを発見: `_keitai_price_per_color` が `kbDetailName == '未開封'` 固定だったため、Fitbitの表記「新品」でマッチ0件になっていた。`KEITAI_UNOPENED_LABELS = {'未開封','新品'}` に拡張して解消。iPhone/iPad側の挙動には影響なし（マッチ対象が増えるだけ）。
+- 強制スクレイプで4件（Fitbit3色+Starlink）すべて取得確認。Starlinkは強化中で¥44,000。
+- products.py/index.html・alerts.html PRODUCT_CATEGORIES/msrp.csvを更新。ALL_PRODUCTS 355→359。
+
 ## 2026-06-29 強化中Aランク追加（iPhone以外）＋keitai複数カテゴリ対応
 
 - ユーザー方針「iPhone以外のAランク全部」。Aランク未登録96件のうちiPhone(Air/16e)を除く78件が対象。

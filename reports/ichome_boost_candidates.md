@@ -1,6 +1,6 @@
 # 買取一丁目 買取強化中 新規候補レポート
 
-更新日: 2026-09-07
+更新日: 2026-09-14
 
 買取一丁目が「買取強化中」に出している商品のうち、せどりナビ未登録のものを抽出。
 買取強化中は値上げ・利ざやが出やすい注目商品。
@@ -14,10 +14,10 @@
 
 ## サマリー
 
-- 強化中の取得件数: 529
-- 既存登録済み: 155
-- 未登録の新規候補: 374
-- 優先度別: S=64 / A=39 / B=172 / C=99
+- 強化中の取得件数: 524
+- 既存登録済み: 154
+- 未登録の新規候補: 370
+- 優先度別: S=64 / A=39 / B=168 / C=99
 
 ## 新規候補（強化中・未登録 / 優先度順）
 
@@ -25,78 +25,78 @@ CSV全件: `reports/ichome_boost_candidates.csv`
 
 | 優先度 | カテゴリ | 商品名 | JAN | 買取価格 |
 |---|---|---|---|---:|
-| S | スマートフォン | iPhone 16 Pro Max 1TB デザートチタニウム | 4549995536522 | 220000 |
-| S | スマートフォン | iPhone 16 Pro Max 1TB ナチュラルチタニウム | 4549995536539 | 220000 |
-| S | スマートフォン | iPhone 16 Pro Max 1TB ブラックチタニウム | 4549995536508 | 220000 |
-| S | スマートフォン | iPhone 16 Pro Max 1TB ホワイトチタニウム | 4549995536515 | 220000 |
-| S | スマートフォン | iPhone 16 Pro Max 512GB デザートチタニウム | 4549995536485 | 198500 |
-| S | スマートフォン | iPhone 16 Pro Max 512GB ナチュラルチタニウム | 4549995536492 | 198500 |
-| S | スマートフォン | iPhone 16 Pro Max 512GB ブラックチタニウム | 4549995536461 | 198500 |
-| S | スマートフォン | iPhone 16 Pro Max 512GB ホワイトチタニウム | 4549995536478 | 198500 |
-| S | スマートフォン | iPhone 16 Pro 1TB デザートチタニウム | 4549995533163 | 195000 |
-| S | スマートフォン | iPhone 16 Pro 1TB ナチュラルチタニウム | 4549995533217 | 195000 |
-| S | スマートフォン | iPhone 16 Pro 1TB ブラックチタニウム | 4549995533064 | 195000 |
-| S | スマートフォン | iPhone 16 Pro 1TB ホワイトチタニウム | 4549995533118 | 195000 |
-| S | スマートフォン | iPhone 16 Pro 512GB デザートチタニウム | 4549995532968 | 186500 |
-| S | スマートフォン | iPhone 16 Pro 512GB ナチュラルチタニウム | 4549995533019 | 186500 |
-| S | スマートフォン | iPhone 16 Pro 512GB ブラックチタニウム | 4549995532869 | 186500 |
-| S | スマートフォン | iPhone 16 Pro 512GB ホワイトチタニウム | 4549995532913 | 186500 |
-| S | スマートフォン | iPhone 16 Pro Max 256GB デザートチタニウム | 4549995536447 | 169500 |
-| S | スマートフォン | iPhone 16 Pro Max 256GB ナチュラルチタニウム | 4549995536454 | 169500 |
-| S | スマートフォン | iPhone 16 Pro Max 256GB ブラックチタニウム | 4549995536423 | 169500 |
-| S | スマートフォン | iPhone 16 Pro Max 256GB ホワイトチタニウム | 4549995536430 | 169500 |
-| S | スマートフォン | iPhone 16 Pro 256GB デザートチタニウム | 4549995532760 | 158500 |
-| S | スマートフォン | iPhone 16 Pro 256GB ナチュラルチタニウム | 4549995532814 | 158500 |
-| S | スマートフォン | iPhone 16 Pro 256GB ブラックチタニウム | 4549995532661 | 158500 |
-| S | スマートフォン | iPhone 16 Pro 256GB ホワイトチタニウム | 4549995532715 | 158500 |
-| S | スマートフォン | iPhone 16 Pro 128GB デザートチタニウム | 4549995532562 | 139500 |
-| S | スマートフォン | iPhone 16 Pro 128GB ナチュラルチタニウム | 4549995532616 | 139500 |
-| S | スマートフォン | iPhone 16 Pro 128GB ブラックチタニウム | 4549995532463 | 139500 |
-| S | スマートフォン | iPhone 16 Pro 128GB ホワイトチタニウム | 4549995532517 | 139500 |
-| S | スマートフォン | iPhone 16 Plus 512GB ウルトラマリン | 4549995526011 | 113000 |
-| S | スマートフォン | iPhone 16 Plus 512GB ティール | 4549995526066 | 113000 |
-| S | スマートフォン | iPhone 16 Plus 512GB ピンク | 4549995525960 | 113000 |
-| S | スマートフォン | iPhone 16 Plus 512GB ブラック | 4549995525861 | 113000 |
-| S | スマートフォン | iPhone 16 Plus 512GB ホワイト | 4549995525915 | 113000 |
-| S | スマートフォン | iPhone 16 512GB ウルトラマリン | 4549995539172 | 106000 |
-| S | スマートフォン | iPhone 16 512GB ティール | 4549995539189 | 106000 |
-| S | スマートフォン | iPhone 16 512GB ピンク | 4549995539165 | 106000 |
-| S | スマートフォン | iPhone 16 512GB ブラック | 4549995539141 | 106000 |
-| S | スマートフォン | iPhone 16 512GB ホワイト | 4549995539158 | 106000 |
-| S | スマートフォン | iPhone 16 Plus 256GB ウルトラマリン | 4549995525762 | 105000 |
-| S | スマートフォン | iPhone 16 Plus 256GB ティール | 4549995525816 | 105000 |
-| S | スマートフォン | iPhone 16 Plus 256GB ピンク | 4549995525717 | 105000 |
-| S | スマートフォン | iPhone 16 Plus 256GB ブラック | 4549995525618 | 105000 |
-| S | スマートフォン | iPhone 16 Plus 256GB ホワイト | 4549995525663 | 105000 |
+| S | スマートフォン | iPhone 16 Pro Max 1TB デザートチタニウム | 4549995536522 | 200000 |
+| S | スマートフォン | iPhone 16 Pro Max 1TB ナチュラルチタニウム | 4549995536539 | 200000 |
+| S | スマートフォン | iPhone 16 Pro Max 1TB ブラックチタニウム | 4549995536508 | 200000 |
+| S | スマートフォン | iPhone 16 Pro Max 1TB ホワイトチタニウム | 4549995536515 | 200000 |
+| S | スマートフォン | iPhone 16 Pro Max 512GB デザートチタニウム | 4549995536485 | 185000 |
+| S | スマートフォン | iPhone 16 Pro Max 512GB ナチュラルチタニウム | 4549995536492 | 185000 |
+| S | スマートフォン | iPhone 16 Pro Max 512GB ブラックチタニウム | 4549995536461 | 185000 |
+| S | スマートフォン | iPhone 16 Pro Max 512GB ホワイトチタニウム | 4549995536478 | 185000 |
+| S | スマートフォン | iPhone 16 Pro 1TB デザートチタニウム | 4549995533163 | 165000 |
+| S | スマートフォン | iPhone 16 Pro 1TB ナチュラルチタニウム | 4549995533217 | 165000 |
+| S | スマートフォン | iPhone 16 Pro 1TB ブラックチタニウム | 4549995533064 | 165000 |
+| S | スマートフォン | iPhone 16 Pro 1TB ホワイトチタニウム | 4549995533118 | 165000 |
+| S | スマートフォン | iPhone 16 Pro Max 256GB デザートチタニウム | 4549995536447 | 160000 |
+| S | スマートフォン | iPhone 16 Pro Max 256GB ナチュラルチタニウム | 4549995536454 | 160000 |
+| S | スマートフォン | iPhone 16 Pro Max 256GB ブラックチタニウム | 4549995536423 | 160000 |
+| S | スマートフォン | iPhone 16 Pro Max 256GB ホワイトチタニウム | 4549995536430 | 160000 |
+| S | スマートフォン | iPhone 16 Pro 512GB デザートチタニウム | 4549995532968 | 150000 |
+| S | スマートフォン | iPhone 16 Pro 512GB ナチュラルチタニウム | 4549995533019 | 150000 |
+| S | スマートフォン | iPhone 16 Pro 512GB ブラックチタニウム | 4549995532869 | 150000 |
+| S | スマートフォン | iPhone 16 Pro 512GB ホワイトチタニウム | 4549995532913 | 150000 |
+| S | スマートフォン | iPhone 16 Pro 256GB デザートチタニウム | 4549995532760 | 147000 |
+| S | スマートフォン | iPhone 16 Pro 256GB ナチュラルチタニウム | 4549995532814 | 147000 |
+| S | スマートフォン | iPhone 16 Pro 256GB ブラックチタニウム | 4549995532661 | 147000 |
+| S | スマートフォン | iPhone 16 Pro 256GB ホワイトチタニウム | 4549995532715 | 147000 |
+| S | スマートフォン | iPhone 16 Pro 128GB デザートチタニウム | 4549995532562 | 129000 |
+| S | スマートフォン | iPhone 16 Pro 128GB ナチュラルチタニウム | 4549995532616 | 129000 |
+| S | スマートフォン | iPhone 16 Pro 128GB ブラックチタニウム | 4549995532463 | 129000 |
+| S | スマートフォン | iPhone 16 Pro 128GB ホワイトチタニウム | 4549995532517 | 129000 |
+| S | スマートフォン | iPhone 16 Plus 512GB ウルトラマリン | 4549995526011 | 108000 |
+| S | スマートフォン | iPhone 16 Plus 512GB ティール | 4549995526066 | 108000 |
+| S | スマートフォン | iPhone 16 Plus 512GB ピンク | 4549995525960 | 108000 |
+| S | スマートフォン | iPhone 16 Plus 512GB ブラック | 4549995525861 | 108000 |
+| S | スマートフォン | iPhone 16 Plus 512GB ホワイト | 4549995525915 | 108000 |
+| S | スマートフォン | iPhone 16 512GB ウルトラマリン | 4549995539172 | 104000 |
+| S | スマートフォン | iPhone 16 512GB ティール | 4549995539189 | 104000 |
+| S | スマートフォン | iPhone 16 512GB ピンク | 4549995539165 | 104000 |
+| S | スマートフォン | iPhone 16 512GB ブラック | 4549995539141 | 104000 |
+| S | スマートフォン | iPhone 16 512GB ホワイト | 4549995539158 | 104000 |
+| S | スマートフォン | iPhone 16 Plus 256GB ウルトラマリン | 4549995525762 | 101000 |
+| S | スマートフォン | iPhone 16 Plus 256GB ティール | 4549995525816 | 101000 |
+| S | スマートフォン | iPhone 16 Plus 256GB ピンク | 4549995525717 | 101000 |
+| S | スマートフォン | iPhone 16 Plus 256GB ブラック | 4549995525618 | 101000 |
+| S | スマートフォン | iPhone 16 Plus 256GB ホワイト | 4549995525663 | 101000 |
+| S | スマートフォン | iPhone 17e 512GB ソフトピンク | 4549995677737 | 100000 |
+| S | スマートフォン | iPhone 17e 512GB ブラック | 4549995677638 | 100000 |
+| S | スマートフォン | iPhone 17e 512GB ホワイト | 4549995677683 | 100000 |
 | S | スマートフォン | iPhone 16 256GB ウルトラマリン | 4549995539127 | 99000 |
 | S | スマートフォン | iPhone 16 256GB ティール | 4549995539134 | 99000 |
 | S | スマートフォン | iPhone 16 256GB ピンク | 4549995539110 | 99000 |
 | S | スマートフォン | iPhone 16 256GB ブラック | 4549995539097 | 99000 |
 | S | スマートフォン | iPhone 16 256GB ホワイト | 4549995539103 | 99000 |
-| S | スマートフォン | iPhone 17e 512GB ソフトピンク | 4549995677737 | 98000 |
-| S | スマートフォン | iPhone 17e 512GB ブラック | 4549995677638 | 98000 |
-| S | スマートフォン | iPhone 17e 512GB ホワイト | 4549995677683 | 98000 |
-| S | スマートフォン | iPhone 16 128GB ウルトラマリン | 4549995539073 | 95000 |
-| S | スマートフォン | iPhone 16 128GB ティール | 4549995539080 | 95000 |
-| S | スマートフォン | iPhone 16 128GB ピンク | 4549995539066 | 95000 |
-| S | スマートフォン | iPhone 16 128GB ブラック | 4549995539042 | 95000 |
-| S | スマートフォン | iPhone 16 128GB ホワイト | 4549995539059 | 95000 |
-| S | スマートフォン | iPhone 16 Plus 128GB ウルトラマリン | 4549995525519 | 94000 |
-| S | スマートフォン | iPhone 16 Plus 128GB ティール | 4549995525564 | 94000 |
-| S | スマートフォン | iPhone 16 Plus 128GB ピンク | 4549995525465 | 94000 |
-| S | スマートフォン | iPhone 16 Plus 128GB ブラック | 4549995525366 | 94000 |
-| S | スマートフォン | iPhone 16 Plus 128GB ホワイト | 4549995525410 | 94000 |
-| S | スマートフォン | iPhone 17e 256GB ソフトピンク | 4549995677584 | 80000 |
-| S | スマートフォン | iPhone 17e 256GB ブラック | 4549995677485 | 80000 |
-| S | スマートフォン | iPhone 17e 256GB ホワイト | 4549995677539 | 80000 |
+| S | スマートフォン | iPhone 16 Plus 128GB ウルトラマリン | 4549995525519 | 91000 |
+| S | スマートフォン | iPhone 16 Plus 128GB ティール | 4549995525564 | 91000 |
+| S | スマートフォン | iPhone 16 Plus 128GB ピンク | 4549995525465 | 91000 |
+| S | スマートフォン | iPhone 16 Plus 128GB ブラック | 4549995525366 | 91000 |
+| S | スマートフォン | iPhone 16 Plus 128GB ホワイト | 4549995525410 | 91000 |
+| S | スマートフォン | iPhone 16 128GB ウルトラマリン | 4549995539073 | 86500 |
+| S | スマートフォン | iPhone 16 128GB ティール | 4549995539080 | 86500 |
+| S | スマートフォン | iPhone 16 128GB ピンク | 4549995539066 | 86500 |
+| S | スマートフォン | iPhone 16 128GB ブラック | 4549995539042 | 86500 |
+| S | スマートフォン | iPhone 16 128GB ホワイト | 4549995539059 | 86500 |
+| S | スマートフォン | iPhone 17e 256GB ソフトピンク | 4549995677584 | 81000 |
+| S | スマートフォン | iPhone 17e 256GB ブラック | 4549995677485 | 81000 |
+| S | スマートフォン | iPhone 17e 256GB ホワイト | 4549995677539 | 81000 |
 | A | スマートフォン | iPhone Air 1TB クラウドホワイト | 4549995647594 | 142000 |
 | A | スマートフォン | iPhone Air 1TB スカイブルー | 4549995647617 | 142000 |
 | A | スマートフォン | iPhone Air 1TB スペースブラック | 4549995647587 | 142000 |
 | A | スマートフォン | iPhone Air 1TB ライトゴールド | 4549995647600 | 142000 |
-| A | スマートフォン | iPhone Air 512GB クラウドホワイト | 4549995647556 | 132000 |
-| A | スマートフォン | iPhone Air 512GB スカイブルー | 4549995647570 | 132000 |
-| A | スマートフォン | iPhone Air 512GB スペースブラック | 4549995647549 | 132000 |
-| A | スマートフォン | iPhone Air 512GB ライトゴールド | 4549995647563 | 132000 |
+| A | スマートフォン | iPhone Air 512GB クラウドホワイト | 4549995647556 | 129000 |
+| A | スマートフォン | iPhone Air 512GB スカイブルー | 4549995647570 | 129000 |
+| A | スマートフォン | iPhone Air 512GB スペースブラック | 4549995647549 | 129000 |
+| A | スマートフォン | iPhone Air 512GB ライトゴールド | 4549995647563 | 129000 |
 | A | スマートフォン | iPhone Air 256GB クラウドホワイト | 4549995647518 | 115000 |
 | A | スマートフォン | iPhone Air 256GB スカイブルー | 4549995647532 | 115000 |
 | A | スマートフォン | iPhone Air 256GB スペースブラック | 4549995647501 | 115000 |
@@ -128,24 +128,24 @@ CSV全件: `reports/ichome_boost_candidates.csv`
 | A | スマートフォン | Google Pixel 9a 128GB Obsidian |  | 58000 |
 | A | スマートフォン | Google Pixel 9a 128GB Peony |  | 58000 |
 | A | スマートフォン | Google Pixel 9a 128GB Porcelain |  | 58000 |
-| B | その他 | Apple Watch Ultra 3 GPS+Cellular 49mm ナチュラル チタニウムケース アルパインループ L 【MEWP4J/A】 | 4549995627220 | 100000 |
-| B | その他 | Apple Watch Ultra 3 GPS+Cellular 49mm ナチュラル チタニウムケース アルパインループ M 【MEWM4J/A】 | 4549995627213 | 100000 |
-| B | その他 | Apple Watch Ultra 3 GPS+Cellular 49mm ナチュラル チタニウムケース アルパインループ S 【MEWK4J/A】 | 4549995627206 | 100000 |
-| B | その他 | Apple Watch Ultra 3 GPS+Cellular 49mm ナチュラル チタニウムケース オーシャンバンド フリーサイズ 【MEWH4J/A】 | 4549995627190 | 100000 |
-| B | その他 | Apple Watch Ultra 3 GPS+Cellular 49mm ナチュラル チタニウムケース トレイルループ M/L 【MEWU4J/A】 | 4549995627244 | 100000 |
-| B | その他 | Apple Watch Ultra 3 GPS+Cellular 49mm ナチュラル チタニウムケース トレイルループ S/M 【MEWR4J/A】 | 4549995627237 | 100000 |
-| B | その他 | Apple Watch Ultra 3 GPS+Cellular 49mm ナチュラル チタニウムケース ミラネーゼループ L 【MF0E4J/A】 | 4549995627275 | 100000 |
-| B | その他 | Apple Watch Ultra 3 GPS+Cellular 49mm ナチュラル チタニウムケース ミラネーゼループ M 【MEWY4J/A】 | 4549995627268 | 100000 |
-| B | その他 | Apple Watch Ultra 3 GPS+Cellular 49mm ナチュラル チタニウムケース ミラネーゼループ S 【MEWW4J/A】 | 4549995627251 | 100000 |
-| B | その他 | Apple Watch Ultra 3 GPS+Cellular ブラック チタニウムケース アルパインループ L 【MF0X4J/A】 | 4549995627312 | 100000 |
-| B | その他 | Apple Watch Ultra 3 GPS+Cellular ブラック チタニウムケース アルパインループ M 【MF0V4J/A】 | 4549995627305 | 100000 |
-| B | その他 | Apple Watch Ultra 3 GPS+Cellular ブラック チタニウムケース アルパインループ S 【MF0Q4J/A】 | 4549995627299 | 100000 |
-| B | その他 | Apple Watch Ultra 3 GPS+Cellular ブラック チタニウムケース オーシャンバンド フリーサイズ 【MF0J4J/A】 | 4549995627282 | 100000 |
-| B | その他 | Apple Watch Ultra 3 GPS+Cellular ブラック チタニウムケース トレイルループ M/L 【MF1H4J/A】 | 4549995627336 | 100000 |
-| B | その他 | Apple Watch Ultra 3 GPS+Cellular ブラック チタニウムケース トレイルループ S/M 【MF1D4J/A】 | 4549995627329 | 100000 |
-| B | その他 | Apple Watch Ultra 3 GPS+Cellular ブラック チタニウムケース ミラネーゼループ L 【MF1T4J/A】 | 4549995627367 | 100000 |
-| B | その他 | Apple Watch Ultra 3 GPS+Cellular ブラック チタニウムケース ミラネーゼループ M 【MF1Q4J/A】 | 4549995627350 | 100000 |
-| B | その他 | Apple Watch Ultra 3 GPS+Cellular ブラック チタニウムケース ミラネーゼループ S 【MF1N4J/A】 | 4549995627343 | 100000 |
+| B | その他 | Apple Watch Ultra 3 GPS+Cellular 49mm ナチュラル チタニウムケース アルパインループ L 【MEWP4J/A】 | 4549995627220 | 90000 |
+| B | その他 | Apple Watch Ultra 3 GPS+Cellular 49mm ナチュラル チタニウムケース アルパインループ M 【MEWM4J/A】 | 4549995627213 | 90000 |
+| B | その他 | Apple Watch Ultra 3 GPS+Cellular 49mm ナチュラル チタニウムケース アルパインループ S 【MEWK4J/A】 | 4549995627206 | 90000 |
+| B | その他 | Apple Watch Ultra 3 GPS+Cellular 49mm ナチュラル チタニウムケース オーシャンバンド フリーサイズ 【MEWH4J/A】 | 4549995627190 | 90000 |
+| B | その他 | Apple Watch Ultra 3 GPS+Cellular 49mm ナチュラル チタニウムケース トレイルループ M/L 【MEWU4J/A】 | 4549995627244 | 90000 |
+| B | その他 | Apple Watch Ultra 3 GPS+Cellular 49mm ナチュラル チタニウムケース トレイルループ S/M 【MEWR4J/A】 | 4549995627237 | 90000 |
+| B | その他 | Apple Watch Ultra 3 GPS+Cellular 49mm ナチュラル チタニウムケース ミラネーゼループ L 【MF0E4J/A】 | 4549995627275 | 90000 |
+| B | その他 | Apple Watch Ultra 3 GPS+Cellular 49mm ナチュラル チタニウムケース ミラネーゼループ M 【MEWY4J/A】 | 4549995627268 | 90000 |
+| B | その他 | Apple Watch Ultra 3 GPS+Cellular 49mm ナチュラル チタニウムケース ミラネーゼループ S 【MEWW4J/A】 | 4549995627251 | 90000 |
+| B | その他 | Apple Watch Ultra 3 GPS+Cellular ブラック チタニウムケース アルパインループ L 【MF0X4J/A】 | 4549995627312 | 90000 |
+| B | その他 | Apple Watch Ultra 3 GPS+Cellular ブラック チタニウムケース アルパインループ M 【MF0V4J/A】 | 4549995627305 | 90000 |
+| B | その他 | Apple Watch Ultra 3 GPS+Cellular ブラック チタニウムケース アルパインループ S 【MF0Q4J/A】 | 4549995627299 | 90000 |
+| B | その他 | Apple Watch Ultra 3 GPS+Cellular ブラック チタニウムケース オーシャンバンド フリーサイズ 【MF0J4J/A】 | 4549995627282 | 90000 |
+| B | その他 | Apple Watch Ultra 3 GPS+Cellular ブラック チタニウムケース トレイルループ M/L 【MF1H4J/A】 | 4549995627336 | 90000 |
+| B | その他 | Apple Watch Ultra 3 GPS+Cellular ブラック チタニウムケース トレイルループ S/M 【MF1D4J/A】 | 4549995627329 | 90000 |
+| B | その他 | Apple Watch Ultra 3 GPS+Cellular ブラック チタニウムケース ミラネーゼループ L 【MF1T4J/A】 | 4549995627367 | 90000 |
+| B | その他 | Apple Watch Ultra 3 GPS+Cellular ブラック チタニウムケース ミラネーゼループ M 【MF1Q4J/A】 | 4549995627350 | 90000 |
+| B | その他 | Apple Watch Ultra 3 GPS+Cellular ブラック チタニウムケース ミラネーゼループ S 【MF1N4J/A】 | 4549995627343 | 90000 |
 | B | その他 | AirPods Max 2 オレンジ MHWN4ZA/A | 4549995687170 | 89800 |
 | B | その他 | AirPods Max 2 スターライト MHWL4ZA/A | 4549995687156 | 89800 |
 | B | その他 | AirPods Max 2 パープル MHWP4ZA/A | 4549995687187 | 89800 |
@@ -169,71 +169,71 @@ CSV全件: `reports/ichome_boost_candidates.csv`
 | B | その他 | 2025年 iPad 11インチ Wi-Fi 256GB ピンク【MD4P4J/A】 | 4549995560145 | 55000 |
 | B | その他 | 2025年 iPad 11インチ Wi-Fi 256GB ブルー【MD4H4J/A】 | 4549995560121 | 55000 |
 | B | その他 | サントリーウイスキー響21年 700ml | 4901777040427 | 55000 |
-| B | その他 | Apple Watch Series 11 GPS 46mm アルミニウムケース シルバー M/L 【MEVA4J/A】 | 4549995623147 | 54000 |
-| B | その他 | Apple Watch Series 11 GPS 46mm アルミニウムケース シルバー S/M 【MEV94J/A】 | 4549995623123 | 54000 |
-| B | その他 | Apple Watch Series 11 GPS 46mm アルミニウムケース ジェットブラック M/L 【MEUX4J/A】 | 4549995622966 | 54000 |
-| B | その他 | Apple Watch Series 11 GPS 46mm アルミニウムケース ジェットブラック S/M 【MEUW4J/A】 | 4549995622942 | 54000 |
-| B | その他 | Apple Watch Series 11 GPS 46mm アルミニウムケース スペースグレイ M/L 【MEV44J/A】 | 4549995623024 | 54000 |
-| B | その他 | Apple Watch Series 11 GPS 46mm アルミニウムケース スペースグレイ S/M 【MEV04J/A】 | 4549995623000 | 54000 |
-| B | その他 | Apple Watch Series 11 GPS 46mm アルミニウムケース ローズゴールド M/L 【MEV74J/A】 | 4549995623086 | 54000 |
-| B | その他 | Apple Watch Series 11 GPS 46mm アルミニウムケース ローズゴールド S/M 【MEV64J/A】 | 4549995623062 | 54000 |
-| B | その他 | Apple Watch Series 11 GPS+Cellular 46mm アルミニウムケース シルバー M/L 【MFCR4J/A】 | 4549995626834 | 54000 |
-| B | その他 | Apple Watch Series 11 GPS+Cellular 46mm アルミニウムケース シルバー S/M 【MFCP4J/A】 | 4549995626810 | 54000 |
-| B | その他 | Apple Watch Series 11 GPS+Cellular 46mm アルミニウムケース ジェットブラック M/L 【MFC44J/A】 | 4549995626636 | 54000 |
-| B | その他 | Apple Watch Series 11 GPS+Cellular 46mm アルミニウムケース ジェットブラック S/M 【MFC24J/A】 | 4549995626599 | 54000 |
-| B | その他 | Apple Watch Series 11 GPS+Cellular 46mm アルミニウムケース スペースグレイ M/L 【MFCA4J/A】 | 4549995626711 | 54000 |
-| B | その他 | Apple Watch Series 11 GPS+Cellular 46mm アルミニウムケース スペースグレイ S/M 【MFC94J/A】 | 4549995626698 | 54000 |
-| B | その他 | Apple Watch Series 11 GPS+Cellular 46mm アルミニウムケース ローズゴールド M/L 【MFCJ4J/A】 | 4549995626773 | 54000 |
-| B | その他 | Apple Watch Series 11 GPS+Cellular 46mm アルミニウムケース ローズゴールド S/M 【MFCG4J/A】 | 4549995626759 | 54000 |
-| B | その他 | Apple Watch Series 11 GPS+Cellular 46mm ゴールド チタニウムケース ゴールド ミラネーゼループ M/L 【MFD84J/A】 | 4549995627091 | 54000 |
-| B | その他 | Apple Watch Series 11 GPS+Cellular 46mm ゴールド チタニウムケース ゴールド ミラネーゼループ S/M 【MFD74J/A】 | 4549995627077 | 54000 |
-| B | その他 | Apple Watch Series 11 GPS+Cellular 46mm ゴールド チタニウムケース スターライト スポーツバンド M/L 【MFD64J/A】 | 4549995627053 | 54000 |
-| B | その他 | Apple Watch Series 11 GPS+Cellular 46mm ゴールド チタニウムケース スターライト スポーツバンド S/M 【MFD54J/A】 | 4549995627039 | 54000 |
-| B | その他 | Apple Watch Series 11 GPS+Cellular 46mm スレート チタニウムケース スレート ミラネーゼループ M/L 【MFD44J/A】 | 4549995627015 | 54000 |
-| B | その他 | Apple Watch Series 11 GPS+Cellular 46mm スレート チタニウムケース スレート ミラネーゼループ S/M 【MFD34J/A】 | 4549995626995 | 54000 |
-| B | その他 | Apple Watch Series 11 GPS+Cellular 46mm スレート チタニウムケース ブラック スポーツバンド M/L 【MFD24J/A】 | 4549995626971 | 54000 |
-| B | その他 | Apple Watch Series 11 GPS+Cellular 46mm スレート チタニウムケース ブラック スポーツバンド S/M 【MFD14J/A】 | 4549995626957 | 54000 |
-| B | その他 | Apple Watch Series 11 GPS+Cellular 46mm ナチュラル チタニウムケース ストーングレイ スポーツバンド M/L 【MFCX4J/A】 | 4549995626896 | 54000 |
-| B | その他 | Apple Watch Series 11 GPS+Cellular 46mm ナチュラル チタニウムケース ストーングレイ スポーツバンド S/M 【MFCW4J/A】 | 4549995626872 | 54000 |
-| B | その他 | Apple Watch Series 11 GPS+Cellular 46mm ナチュラル チタニウムケース ナチュラル ミラネーゼループ M/L 【MFD04J/A】 | 4549995626933 | 54000 |
-| B | その他 | Apple Watch Series 11 GPS+Cellular 46mm ナチュラル チタニウムケース ナチュラル ミラネーゼループ S/M 【MFCY4J/A】 | 4549995626919 | 54000 |
 | B | その他 | Google Pixel Watch 5 Wi-Fiモデル 41mm Champagne Gold / Canyon | 0840353962057 | 52000 |
 | B | その他 | Google Pixel Watch 5 Wi-Fiモデル 41mm Matte Black / Obsidian | 0840353962095 | 52000 |
 | B | その他 | Google Pixel Watch 5 Wi-Fiモデル 41mm Polished Silver / Fog | 0840353962132 | 52000 |
 | B | その他 | Google Pixel Watch 5 Wi-Fiモデル 41mm Satin Pyrite / Olive | 0840353961920 | 52000 |
-| B | カメラ | OM SYSTEM Tough TG-7 [ブラック] | 4545350055974 | 50200 |
-| B | その他 | Apple Watch Series 11 GPS 42mm アルミニウムケース シルバー M/L 【MEU74J/A】 | 4549995622904 | 50000 |
-| B | その他 | Apple Watch Series 11 GPS 42mm アルミニウムケース シルバー S/M 【MEU64J/A】 | 4549995622881 | 50000 |
-| B | その他 | Apple Watch Series 11 GPS 42mm アルミニウムケース ジェットブラック M/L 【MEQU4J/A】 | 4549995622720 | 50000 |
-| B | その他 | Apple Watch Series 11 GPS 42mm アルミニウムケース ジェットブラック S/M 【MEQT4J/A】 | 4549995623345 | 50000 |
-| B | その他 | Apple Watch Series 11 GPS 42mm アルミニウムケース スペースグレイ M/L 【MEQX4J/A】 | 4549995622782 | 50000 |
-| B | その他 | Apple Watch Series 11 GPS 42mm アルミニウムケース スペースグレイ S/M 【MEQW4J/A】 | 4549995622768 | 50000 |
-| B | その他 | Apple Watch Series 11 GPS 42mm アルミニウムケース ローズゴールド M/L 【MEU44J/A】 | 4549995622843 | 50000 |
-| B | その他 | Apple Watch Series 11 GPS 42mm アルミニウムケース ローズゴールド S/M 【MEU04J/A】 | 4549995622829 | 50000 |
-| B | その他 | Apple Watch Series 11 GPS+Cellular 42mm アルミニウムケース シルバー M/L 【MF8J4J/A】 | 4549995626032 | 50000 |
-| B | その他 | Apple Watch Series 11 GPS+Cellular 42mm アルミニウムケース シルバー S/M 【MF8H4J/A】 | 4549995626018 | 50000 |
-| B | その他 | Apple Watch Series 11 GPS+Cellular 42mm アルミニウムケース ジェットブラック M/L 【MF854J/A】 | 4549995625851 | 50000 |
-| B | その他 | Apple Watch Series 11 GPS+Cellular 42mm アルミニウムケース ジェットブラック S/M 【MF834J/A】 | 4549995625837 | 50000 |
-| B | その他 | Apple Watch Series 11 GPS+Cellular 42mm アルミニウムケース スペースグレイ M/L 【MF8C4J/A】 | 4549995625912 | 50000 |
-| B | その他 | Apple Watch Series 11 GPS+Cellular 42mm アルミニウムケース スペースグレイ S/M 【MF8A4J/A】 | 4549995625899 | 50000 |
-| B | その他 | Apple Watch Series 11 GPS+Cellular 42mm アルミニウムケース ローズゴールド M/L 【MF8F4J/A】 | 4549995625974 | 50000 |
-| B | その他 | Apple Watch Series 11 GPS+Cellular 42mm アルミニウムケース ローズゴールド S/M 【MF8E4J/A】 | 4549995625950 | 50000 |
-| B | その他 | Apple Watch Series 11 GPS+Cellular 42mm ゴールド チタニウムケース ゴールド ミラネーゼループ S/M 【MF8Y4J/A】 | 4549995626278 | 50000 |
-| B | その他 | Apple Watch Series 11 GPS+Cellular 42mm ゴールド チタニウムケース スターライト スポーツバンド M/L 【MF8X4J/A】 | 4549995626254 | 50000 |
-| B | その他 | Apple Watch Series 11 GPS+Cellular 42mm ゴールド チタニウムケース スターライト スポーツバンド S/M 【MF8W4J/A】 | 4549995626230 | 50000 |
-| B | その他 | Apple Watch Series 11 GPS+Cellular 42mm スレート チタニウムケース スレート ミラネーゼループ S/M 【MF8U4J/A】 | 4549995626193 | 50000 |
-| B | その他 | Apple Watch Series 11 GPS+Cellular 42mm スレート チタニウムケース ブラック スポーツバンド M/L 【MF8T4J/A】 | 4549995626179 | 50000 |
-| B | その他 | Apple Watch Series 11 GPS+Cellular 42mm スレート チタニウムケース ブラック スポーツバンド S/M 【MF8R4J/A】 | 4549995626155 | 50000 |
-| B | その他 | Apple Watch Series 11 GPS+Cellular 42mm ナチュラル チタニウムケース ストーングレイ スポーツバンド M/L 【MF8N4J/A】 | 4549995626094 | 50000 |
-| B | その他 | Apple Watch Series 11 GPS+Cellular 42mm ナチュラル チタニウムケース ストーングレイ スポーツバンド S/M 【MF8M4J/A】 | 4549995626070 | 50000 |
-| B | その他 | Apple Watch Series 11 GPS+Cellular 42mm ナチュラル チタニウムケース ナチュラル ミラネーゼループ S/M 【MF8P4J/A】 | 4549995626117 | 50000 |
+| B | その他 | Apple Watch Series 11 GPS 46mm アルミニウムケース シルバー M/L 【MEVA4J/A】 | 4549995623147 | 50000 |
+| B | その他 | Apple Watch Series 11 GPS 46mm アルミニウムケース シルバー S/M 【MEV94J/A】 | 4549995623123 | 50000 |
+| B | その他 | Apple Watch Series 11 GPS 46mm アルミニウムケース ジェットブラック M/L 【MEUX4J/A】 | 4549995622966 | 50000 |
+| B | その他 | Apple Watch Series 11 GPS 46mm アルミニウムケース ジェットブラック S/M 【MEUW4J/A】 | 4549995622942 | 50000 |
+| B | その他 | Apple Watch Series 11 GPS 46mm アルミニウムケース スペースグレイ M/L 【MEV44J/A】 | 4549995623024 | 50000 |
+| B | その他 | Apple Watch Series 11 GPS 46mm アルミニウムケース スペースグレイ S/M 【MEV04J/A】 | 4549995623000 | 50000 |
+| B | その他 | Apple Watch Series 11 GPS 46mm アルミニウムケース ローズゴールド M/L 【MEV74J/A】 | 4549995623086 | 50000 |
+| B | その他 | Apple Watch Series 11 GPS 46mm アルミニウムケース ローズゴールド S/M 【MEV64J/A】 | 4549995623062 | 50000 |
+| B | その他 | Apple Watch Series 11 GPS+Cellular 46mm アルミニウムケース シルバー M/L 【MFCR4J/A】 | 4549995626834 | 50000 |
+| B | その他 | Apple Watch Series 11 GPS+Cellular 46mm アルミニウムケース シルバー S/M 【MFCP4J/A】 | 4549995626810 | 50000 |
+| B | その他 | Apple Watch Series 11 GPS+Cellular 46mm アルミニウムケース ジェットブラック M/L 【MFC44J/A】 | 4549995626636 | 50000 |
+| B | その他 | Apple Watch Series 11 GPS+Cellular 46mm アルミニウムケース ジェットブラック S/M 【MFC24J/A】 | 4549995626599 | 50000 |
+| B | その他 | Apple Watch Series 11 GPS+Cellular 46mm アルミニウムケース スペースグレイ M/L 【MFCA4J/A】 | 4549995626711 | 50000 |
+| B | その他 | Apple Watch Series 11 GPS+Cellular 46mm アルミニウムケース スペースグレイ S/M 【MFC94J/A】 | 4549995626698 | 50000 |
+| B | その他 | Apple Watch Series 11 GPS+Cellular 46mm アルミニウムケース ローズゴールド M/L 【MFCJ4J/A】 | 4549995626773 | 50000 |
+| B | その他 | Apple Watch Series 11 GPS+Cellular 46mm アルミニウムケース ローズゴールド S/M 【MFCG4J/A】 | 4549995626759 | 50000 |
+| B | その他 | Apple Watch Series 11 GPS+Cellular 46mm ゴールド チタニウムケース ゴールド ミラネーゼループ M/L 【MFD84J/A】 | 4549995627091 | 50000 |
+| B | その他 | Apple Watch Series 11 GPS+Cellular 46mm ゴールド チタニウムケース ゴールド ミラネーゼループ S/M 【MFD74J/A】 | 4549995627077 | 50000 |
+| B | その他 | Apple Watch Series 11 GPS+Cellular 46mm ゴールド チタニウムケース スターライト スポーツバンド M/L 【MFD64J/A】 | 4549995627053 | 50000 |
+| B | その他 | Apple Watch Series 11 GPS+Cellular 46mm ゴールド チタニウムケース スターライト スポーツバンド S/M 【MFD54J/A】 | 4549995627039 | 50000 |
+| B | その他 | Apple Watch Series 11 GPS+Cellular 46mm スレート チタニウムケース スレート ミラネーゼループ M/L 【MFD44J/A】 | 4549995627015 | 50000 |
+| B | その他 | Apple Watch Series 11 GPS+Cellular 46mm スレート チタニウムケース スレート ミラネーゼループ S/M 【MFD34J/A】 | 4549995626995 | 50000 |
+| B | その他 | Apple Watch Series 11 GPS+Cellular 46mm スレート チタニウムケース ブラック スポーツバンド M/L 【MFD24J/A】 | 4549995626971 | 50000 |
+| B | その他 | Apple Watch Series 11 GPS+Cellular 46mm スレート チタニウムケース ブラック スポーツバンド S/M 【MFD14J/A】 | 4549995626957 | 50000 |
+| B | その他 | Apple Watch Series 11 GPS+Cellular 46mm ナチュラル チタニウムケース ストーングレイ スポーツバンド M/L 【MFCX4J/A】 | 4549995626896 | 50000 |
+| B | その他 | Apple Watch Series 11 GPS+Cellular 46mm ナチュラル チタニウムケース ストーングレイ スポーツバンド S/M 【MFCW4J/A】 | 4549995626872 | 50000 |
+| B | その他 | Apple Watch Series 11 GPS+Cellular 46mm ナチュラル チタニウムケース ナチュラル ミラネーゼループ M/L 【MFD04J/A】 | 4549995626933 | 50000 |
+| B | その他 | Apple Watch Series 11 GPS+Cellular 46mm ナチュラル チタニウムケース ナチュラル ミラネーゼループ S/M 【MFCY4J/A】 | 4549995626919 | 50000 |
+| B | カメラ | OM SYSTEM Tough TG-7 [ブラック] | 4545350055974 | 50000 |
 | B | カメラ | OM SYSTEM Tough TG-7 [レッド] | 4545350055981 | 50000 |
 | B | その他 | 2025年 iPad 11インチ Wi-Fi 128GB イエロー【MD4D4J/A】 | 4549995560091 | 45000 |
 | B | その他 | 2025年 iPad 11インチ Wi-Fi 128GB シルバー【MD3Y4J/A】 | 4549995560077 | 45000 |
 | B | その他 | 2025年 iPad 11インチ Wi-Fi 128GB ピンク【MD4E4J/A】 | 4549995560107 | 45000 |
 | B | その他 | 2025年 iPad 11インチ Wi-Fi 128GB ブルー【MD4A4J/A】 | 4549995560084 | 45000 |
-| B | カメラ | PENTAX WG-90 [ブルー] | 4549212306488 | 39500 |
-| B | カメラ | PENTAX WG-90 [ブラック] | 4549212306396 | 38800 |
+| B | その他 | Apple Watch Series 11 GPS 42mm アルミニウムケース シルバー M/L 【MEU74J/A】 | 4549995622904 | 45000 |
+| B | その他 | Apple Watch Series 11 GPS 42mm アルミニウムケース シルバー S/M 【MEU64J/A】 | 4549995622881 | 45000 |
+| B | その他 | Apple Watch Series 11 GPS 42mm アルミニウムケース ジェットブラック M/L 【MEQU4J/A】 | 4549995622720 | 45000 |
+| B | その他 | Apple Watch Series 11 GPS 42mm アルミニウムケース ジェットブラック S/M 【MEQT4J/A】 | 4549995623345 | 45000 |
+| B | その他 | Apple Watch Series 11 GPS 42mm アルミニウムケース スペースグレイ M/L 【MEQX4J/A】 | 4549995622782 | 45000 |
+| B | その他 | Apple Watch Series 11 GPS 42mm アルミニウムケース スペースグレイ S/M 【MEQW4J/A】 | 4549995622768 | 45000 |
+| B | その他 | Apple Watch Series 11 GPS 42mm アルミニウムケース ローズゴールド M/L 【MEU44J/A】 | 4549995622843 | 45000 |
+| B | その他 | Apple Watch Series 11 GPS 42mm アルミニウムケース ローズゴールド S/M 【MEU04J/A】 | 4549995622829 | 45000 |
+| B | その他 | Apple Watch Series 11 GPS+Cellular 42mm アルミニウムケース シルバー M/L 【MF8J4J/A】 | 4549995626032 | 45000 |
+| B | その他 | Apple Watch Series 11 GPS+Cellular 42mm アルミニウムケース シルバー S/M 【MF8H4J/A】 | 4549995626018 | 45000 |
+| B | その他 | Apple Watch Series 11 GPS+Cellular 42mm アルミニウムケース ジェットブラック M/L 【MF854J/A】 | 4549995625851 | 45000 |
+| B | その他 | Apple Watch Series 11 GPS+Cellular 42mm アルミニウムケース ジェットブラック S/M 【MF834J/A】 | 4549995625837 | 45000 |
+| B | その他 | Apple Watch Series 11 GPS+Cellular 42mm アルミニウムケース スペースグレイ M/L 【MF8C4J/A】 | 4549995625912 | 45000 |
+| B | その他 | Apple Watch Series 11 GPS+Cellular 42mm アルミニウムケース スペースグレイ S/M 【MF8A4J/A】 | 4549995625899 | 45000 |
+| B | その他 | Apple Watch Series 11 GPS+Cellular 42mm アルミニウムケース ローズゴールド M/L 【MF8F4J/A】 | 4549995625974 | 45000 |
+| B | その他 | Apple Watch Series 11 GPS+Cellular 42mm アルミニウムケース ローズゴールド S/M 【MF8E4J/A】 | 4549995625950 | 45000 |
+| B | その他 | Apple Watch Series 11 GPS+Cellular 42mm ゴールド チタニウムケース ゴールド ミラネーゼループ S/M 【MF8Y4J/A】 | 4549995626278 | 45000 |
+| B | その他 | Apple Watch Series 11 GPS+Cellular 42mm ゴールド チタニウムケース スターライト スポーツバンド M/L 【MF8X4J/A】 | 4549995626254 | 45000 |
+| B | その他 | Apple Watch Series 11 GPS+Cellular 42mm ゴールド チタニウムケース スターライト スポーツバンド S/M 【MF8W4J/A】 | 4549995626230 | 45000 |
+| B | その他 | Apple Watch Series 11 GPS+Cellular 42mm スレート チタニウムケース スレート ミラネーゼループ S/M 【MF8U4J/A】 | 4549995626193 | 45000 |
+| B | その他 | Apple Watch Series 11 GPS+Cellular 42mm スレート チタニウムケース ブラック スポーツバンド M/L 【MF8T4J/A】 | 4549995626179 | 45000 |
+| B | その他 | Apple Watch Series 11 GPS+Cellular 42mm スレート チタニウムケース ブラック スポーツバンド S/M 【MF8R4J/A】 | 4549995626155 | 45000 |
+| B | その他 | Apple Watch Series 11 GPS+Cellular 42mm ナチュラル チタニウムケース ストーングレイ スポーツバンド M/L 【MF8N4J/A】 | 4549995626094 | 45000 |
+| B | その他 | Apple Watch Series 11 GPS+Cellular 42mm ナチュラル チタニウムケース ストーングレイ スポーツバンド S/M 【MF8M4J/A】 | 4549995626070 | 45000 |
+| B | その他 | Apple Watch Series 11 GPS+Cellular 42mm ナチュラル チタニウムケース ナチュラル ミラネーゼループ S/M 【MF8P4J/A】 | 4549995626117 | 45000 |
+| B | カメラ | PENTAX WG-90 [ブラック] | 4549212306396 | 38100 |
+| B | カメラ | PENTAX WG-90 [ブルー] | 4549212306488 | 38100 |
 | B | その他 | New Amazon Kindle Colorsoft シグニチャーエディション 32GB | 0840414661905 | 36000 |
 | B | その他 | Apple Watch SE 3 GPS 44mm アルミニウムケース スターライト M/L 【MEHJ4J/A】 | 4549995615456 | 35000 |
 | B | その他 | Apple Watch SE 3 GPS 44mm アルミニウムケース スターライト S/M 【MEHG4J/A】 | 4549995615449 | 35000 |
@@ -243,20 +243,20 @@ CSV全件: `reports/ichome_boost_candidates.csv`
 | B | その他 | Apple Watch SE 3 GPS+Cellular 44mm アルミニウムケース スターライト S/M 【MEPE4J/A】 | 4549995619003 | 35000 |
 | B | その他 | Apple Watch SE 3 GPS+Cellular 44mm アルミニウムケース ミッドナイト M/L 【MEPJ4J/A】 | 4549995619164 | 35000 |
 | B | その他 | Apple Watch SE 3 GPS+Cellular 44mm アルミニウムケース ミッドナイト S/M 【MEPH4J/A】 | 4549995619126 | 35000 |
-| B | その他 | SONY WF-1000XM6 シルバー | 4548736171817 | 34500 |
 | B | その他 | SONY WF-1000XM6 ブラック | 4548736171763 | 34500 |
-| B | その他 | Apple Watch SE 3 GPS 40mm アルミニウムケース スターライト M/L 【MEH54J/A】 | 4549995615395 | 34000 |
-| B | その他 | Apple Watch SE 3 GPS 40mm アルミニウムケース スターライト S/M 【MEH34J/A】 | 4549995615388 | 34000 |
-| B | その他 | Apple Watch SE 3 GPS 40mm アルミニウムケース ミッドナイト M/L 【MEHC4J/A】 | 4549995615425 | 34000 |
-| B | その他 | Apple Watch SE 3 GPS 40mm アルミニウムケース ミッドナイト S/M 【MEH94J/A】 | 4549995615418 | 34000 |
 | B | その他 | Apple Watch SE 3 GPS+Cellular 40mm アルミニウムケース スターライト M/L 【MEP74J/A】 | 4549995618808 | 34000 |
 | B | その他 | Apple Watch SE 3 GPS+Cellular 40mm アルミニウムケース スターライト S/M 【MEP64J/A】 | 4549995618761 | 34000 |
 | B | その他 | Apple Watch SE 3 GPS+Cellular 40mm アルミニウムケース ミッドナイト M/L 【MEPC4J/A】 | 4549995618921 | 34000 |
 | B | その他 | Apple Watch SE 3 GPS+Cellular 40mm アルミニウムケース ミッドナイト S/M 【MEP94J/A】 | 4549995618884 | 34000 |
+| B | その他 | SONY WF-1000XM6 シルバー | 4548736171817 | 34000 |
+| B | その他 | Apple Watch SE 3 GPS 40mm アルミニウムケース スターライト M/L 【MEH54J/A】 | 4549995615395 | 33000 |
+| B | その他 | Apple Watch SE 3 GPS 40mm アルミニウムケース スターライト S/M 【MEH34J/A】 | 4549995615388 | 33000 |
+| B | その他 | Apple Watch SE 3 GPS 40mm アルミニウムケース ミッドナイト M/L 【MEHC4J/A】 | 4549995615425 | 33000 |
+| B | その他 | Apple Watch SE 3 GPS 40mm アルミニウムケース ミッドナイト S/M 【MEH94J/A】 | 4549995615418 | 33000 |
 | B | その他 | AirPods 4 MXP93J/A 【アクティブノイズキャンセリング搭載】 | 4549995519921 | 29800 |
 | B | その他 | Technics EAH-AZ100-K | 4549980797280 | 29500 |
 | B | その他 | New Kindle Paperwhite シグニチャーエディション 32GB メタリックジェード(2024年) | 0840268918132 | 29400 |
-| B | その他 | Technics EAH-AZ100-S | 4549980797297 | 29300 |
+| B | その他 | Technics EAH-AZ100-S | 4549980797297 | 29200 |
 | B | その他 | AirPods Pro 第3世代 MFHP4J/A | 4549995635232 | 29000 |
 | B | その他 | New Kindle Paperwhite シグニチャーエディション 32GB メタリックブラック(2024年) | 0840268929282 | 29000 |
 | B | その他 | Technics EAH-AZ100-N | 4549980975312 | 29000 |
@@ -272,28 +272,24 @@ CSV全件: `reports/ichome_boost_candidates.csv`
 | B | その他 | SONY WF-1000XM5 ブラック | 4548736143470 | 22800 |
 | B | その他 | AirPods 4 MXP63J/A | 4549995519860 | 21800 |
 | B | その他 | SONY WF-1000XM5 プラチナシルバー | 4548736143531 | 20000 |
-| B | カメラ | instax SQUARE SQ40 チェキスクエア [ブラック] | 4547410511178 | 20000 |
-| B | その他 | Bose Ultra Open Earbuds BLK ULTRAOPENEBBLK | 4969929259240 | 18000 |
+| B | カメラ | instax SQUARE SQ40 チェキスクエア [ブラック] | 4547410511178 | 19000 |
+| B | その他 | Bose Ultra Open Earbuds BLK ULTRAOPENEBBLK | 4969929259240 | 18200 |
+| B | その他 | Bose Ultra Open Earbuds WHT ULTRAOPENEBWHT | 4969929259257 | 18200 |
 | B | その他 | New Kindle 16GB マッチャ(2024年) | 0840414673731 | 17700 |
 | B | その他 | Bose Ultra Open Earbuds Moonstone Blue | 4969929260321 | 17000 |
-| B | その他 | Bose Ultra Open Earbuds WHT ULTRAOPENEBWHT | 4969929259257 | 17000 |
 | B | その他 | New Kindle 16GB ブラック(2024年) | 0840414617858 | 17000 |
 | B | その他 | サントリーシングルモルトウイスキー 山崎12年 700ml | 4901777188914 | 16500 |
 | B | その他 | サントリーシングルモルトウイスキー 白州12年 700ml | 4901777360440 | 16500 |
 | B | その他 | Technics EAH-AZ80-S シルバー | 4549980651896 | 16000 |
+| B | その他 | Technics EAH-AZ80-K ブラック | 4549980651889 | 15000 |
 | B | その他 | Bose QuietComfort Ultra Earbuds Black QCULTRAEARBUDSBLK | 4969929259165 | 14000 |
 | B | その他 | ザ・マッカラン12年 700ml | 5010314017408 | 13750 |
 | B | その他 | Bose QuietComfort Ultra Earbuds Moon Stone Blue QCULTRAEARBUDSMSN | 4969929259530 | 13000 |
 | B | その他 | Bose QuietComfort Ultra Earbuds White Smoke QCULTRAEARBUDSWHT | 4969929259172 | 13000 |
-| B | その他 | Technics EAH-AZ80-K ブラック | 4549980651889 | 13000 |
 | B | カメラ | CANON EF-EOSR | 4549292115703 | 12500 |
-| B | カメラ | instax mini 41 チェキ | 4547410545173 | 12300 |
+| B | カメラ | instax mini 41 チェキ | 4547410545173 | 12200 |
 | B | その他 | Bose QuietComfort Ultra Earbuds LUNAR BLUE | 4969929260208 | 12000 |
 | B | その他 | サントリーウイスキー 響 BLENDER’S CHOICE 700ml | 4901777321632 | 12000 |
-| B | カメラ | instax mini 12 チェキ [グリーン] | 4547410489132 | 11000 |
-| B | カメラ | instax mini 12 チェキ [パープル] | 4547410489156 | 11000 |
-| B | カメラ | instax mini 12 チェキ [ブルー] | 4547410489118 | 11000 |
-| B | カメラ | instax mini 12 チェキ [ホワイト] | 4547410489149 | 11000 |
 | B | その他 | サントリーシングルモルトウイスキー 山崎 700ml | 4901777233812 | 7700 |
 | B | その他 | サントリーシングルモルトウイスキー 白州 700ml | 4901777233911 | 7700 |
 | B | その他 | サントリーウイスキー 響 JAPANESE HARMONY 700ml | 4901777270688 | 7500 |
@@ -303,37 +299,37 @@ CSV全件: `reports/ichome_boost_candidates.csv`
 | C | ゲーム | Steam Machine 2TB + Steam Controller | 0814585023527 | 264980 |
 | C | その他 | Steam Machine 2TB | 0814585023503 | 249980 |
 | C | スマートフォン | Google Pixel 11 Pro Fold 512GB Obsidian |  | 238500 |
-| C | スマートフォン | Google Pixel 11 Pro Fold 256GB Obsidian |  | 216000 |
-| C | スマートフォン | Google Pixel 11 Pro Fold 256GB Olive |  | 216000 |
+| C | スマートフォン | Google Pixel 11 Pro Fold 256GB Obsidian |  | 213000 |
+| C | スマートフォン | Google Pixel 11 Pro Fold 256GB Olive |  | 213000 |
 | C | ゲーム | Steam Machine 512GB + Steam Controller | 0814585023497 | 204980 |
-| C | スマートフォン | Google Pixel 11 Pro XL 512GB Canyon |  | 171500 |
-| C | スマートフォン | Google Pixel 11 Pro XL 512GB Fog |  | 171500 |
-| C | スマートフォン | Google Pixel 11 Pro XL 512GB Obsidian（Matte） |  | 171500 |
-| C | スマートフォン | Google Pixel 11 Pro XL 512GB Olive |  | 171500 |
-| C | スマートフォン | Google Pixel 11 Pro 512GB Canyon |  | 158500 |
-| C | スマートフォン | Google Pixel 11 Pro 512GB Fog |  | 158500 |
-| C | スマートフォン | Google Pixel 11 Pro 512GB Obsidian（Matte） |  | 158500 |
-| C | スマートフォン | Google Pixel 11 Pro 512GB Olive |  | 158500 |
+| C | スマートフォン | Google Pixel 11 Pro XL 512GB Canyon |  | 172000 |
+| C | スマートフォン | Google Pixel 11 Pro XL 512GB Fog |  | 172000 |
+| C | スマートフォン | Google Pixel 11 Pro XL 512GB Obsidian（Matte） |  | 172000 |
+| C | スマートフォン | Google Pixel 11 Pro XL 512GB Olive |  | 172000 |
+| C | スマートフォン | Google Pixel 11 Pro 512GB Canyon |  | 160000 |
+| C | スマートフォン | Google Pixel 11 Pro 512GB Fog |  | 160000 |
+| C | スマートフォン | Google Pixel 11 Pro 512GB Obsidian（Matte） |  | 160000 |
+| C | スマートフォン | Google Pixel 11 Pro 512GB Olive |  | 160000 |
 | C | スマートフォン | Google Pixel 11 Pro XL 256GB Canyon |  | 146000 |
 | C | スマートフォン | Google Pixel 11 Pro XL 256GB Fog |  | 146000 |
 | C | スマートフォン | Google Pixel 11 Pro XL 256GB Obsidian（Matte） |  | 146000 |
 | C | スマートフォン | Google Pixel 11 Pro XL 256GB Olive |  | 146000 |
-| C | スマートフォン | Google Pixel 11 Pro 256GB Canyon |  | 137500 |
-| C | スマートフォン | Google Pixel 11 Pro 256GB Fog |  | 137500 |
-| C | スマートフォン | Google Pixel 11 Pro 256GB Obsidian（Matte） |  | 137500 |
-| C | スマートフォン | Google Pixel 11 Pro 256GB Olive |  | 137500 |
-| C | スマートフォン | Google Pixel 11 512GB Frost |  | 113000 |
-| C | スマートフォン | Google Pixel 11 512GB Hibiscus |  | 113000 |
-| C | スマートフォン | Google Pixel 11 512GB Obsidian |  | 113000 |
-| C | スマートフォン | Google Pixel 11 512GB Pistachio |  | 113000 |
-| C | その他 | Panasonic パナソニック 光エステ スムースエピ パワー&クール ES-WG0B-H グレー | 4549980872321 | 96500 |
-| C | スマートフォン | Google Pixel 11 256GB Frost |  | 96000 |
-| C | スマートフォン | Google Pixel 11 256GB Hibiscus |  | 96000 |
-| C | スマートフォン | Google Pixel 11 256GB Obsidian |  | 96000 |
-| C | スマートフォン | Google Pixel 11 256GB Pistachio |  | 96000 |
-| C | その他 | Panasonic ナノケア アルティメイト EH-NC80-T [オーセンティックブラウン] | 4549980767948 | 66000 |
+| C | スマートフォン | Google Pixel 11 Pro 256GB Canyon |  | 139000 |
+| C | スマートフォン | Google Pixel 11 Pro 256GB Fog |  | 139000 |
+| C | スマートフォン | Google Pixel 11 Pro 256GB Obsidian（Matte） |  | 139000 |
+| C | スマートフォン | Google Pixel 11 Pro 256GB Olive |  | 139000 |
+| C | スマートフォン | Google Pixel 11 512GB Frost |  | 116000 |
+| C | スマートフォン | Google Pixel 11 512GB Hibiscus |  | 116000 |
+| C | スマートフォン | Google Pixel 11 512GB Obsidian |  | 116000 |
+| C | スマートフォン | Google Pixel 11 512GB Pistachio |  | 116000 |
+| C | スマートフォン | Google Pixel 11 256GB Frost |  | 97500 |
+| C | スマートフォン | Google Pixel 11 256GB Hibiscus |  | 97500 |
+| C | スマートフォン | Google Pixel 11 256GB Obsidian |  | 97500 |
+| C | スマートフォン | Google Pixel 11 256GB Pistachio |  | 97500 |
+| C | その他 | Panasonic パナソニック 光エステ スムースエピ パワー&クール ES-WG0B-H グレー | 4549980872321 | 97000 |
+| C | その他 | Panasonic ナノケア アルティメイト EH-NC80-T [オーセンティックブラウン] | 4549980767948 | 65000 |
 | C | その他 | Starlink V4 2534013 | 0850049670180 | 55000 |
-| C | その他 | Panasonic ラムダッシュPRO ES-L690U-K [クラフトブラック] | 4549980852361 | 54700 |
+| C | その他 | Panasonic ラムダッシュPRO ES-L690U-K [クラフトブラック] | 4549980852361 | 54500 |
 | C | その他 | Apple HomePod 第2世代（本体）ホワイト MDEY4J/A | 4549995566178 | 42000 |
 | C | その他 | Apple HomePod 第2世代（本体）ミッドナイト MDEW4J/A | 4549995566161 | 42000 |
 | C | その他 | Panasonic ナノケア EH-NA0K-H [ミストグレー] | 4549980975046 | 38610 |
@@ -341,13 +337,13 @@ CSV全件: `reports/ichome_boost_candidates.csv`
 | C | その他 | Panasonic ナノケア EH-NA0K-P [さくらピンク] | 4549980975039 | 38610 |
 | C | その他 | デジタルカメラ RICOH WG-80 [オレンジ] | 4549212304415 | 35000 |
 | C | その他 | デジタルカメラ RICOH WG-80 [ブラック] | 4549212304378 | 34900 |
-| C | その他 | Microsoft Office Home & Business 2024(最新 永続版)\|カード版\| パッケージ版 EP2-06791 | 4549576249797 | 33300 |
+| C | その他 | Microsoft Office Home & Business 2024(最新 永続版)\|カード版\| パッケージ版 EP2-06791 | 4549576249797 | 33500 |
 | C | その他 | 掃除機Dyson V12 Detect Slim Fluffy SV46 FF | 5025155106518 | 32000 |
-| C | その他 | Microsoft Office Home 2024(最新 永続版)\|カード版 EP2-08632 | 4549576250618 | 31000 |
+| C | その他 | Microsoft Office Home 2024(最新 永続版)\|カード版 EP2-08632 | 4549576250618 | 31200 |
 | C | その他 | PHILIPS 電気シェーバー S9000プレステージ SP9886/36 アドリアブルー | 8720689025188 | 30000 |
 | C | その他 | Panasonic 美顔器 バイタリフト かっさ EH-SP86-K [ブラック] | 4549980878866 | 29000 |
-| C | その他 | Panasonic ES-PV6A-K [マーブルブラック] | 4549980711989 | 28300 |
-| C | その他 | Panasonic ES-PV6A-W [マーブルホワイト] | 4549980711972 | 28200 |
+| C | その他 | Panasonic ES-PV6A-K [マーブルブラック] | 4549980711989 | 28400 |
+| C | その他 | Panasonic ES-PV6A-W [マーブルホワイト] | 4549980711972 | 28400 |
 | C | その他 | ◆ゴルフ用レーザー距離計 COOLSHOT LITE STABILIZED | 4580130921230 | 24800 |
 | C | その他 | Panasonic ES-PV3A-K マットブラック | 4549980711996 | 24500 |
 | C | その他 | Panasonic ファインバブルシャワーヘッド EH-SH50-S シルバー | 4550719001509 | 24500 |
@@ -368,8 +364,8 @@ CSV全件: `reports/ichome_boost_candidates.csv`
 | C | その他 | Panasonic パナソニック 全自動コーヒーメーカー NC-A58-W ホワイト | 4550719164655 | 16000 |
 | C | その他 | ZDR036 | 4952040150367 | 14500 |
 | C | その他 | ジェットウォッシャー ドルツ EW-DJ55 | 4549980652640 | 14000 |
-| C | その他 | Panasonic パナソニック ヘアードライヤー EH-NE8N-H モダングレー | 4549980973974 | 12200 |
-| C | その他 | Panasonic パナソニック ヘアードライヤー EH-NE8N-W モダンホワイト | 4549980973981 | 12200 |
+| C | その他 | Panasonic パナソニック ヘアードライヤー EH-NE8N-H モダングレー | 4549980973974 | 12500 |
+| C | その他 | Panasonic パナソニック ヘアードライヤー EH-NE8N-W モダンホワイト | 4549980973981 | 12500 |
 | C | その他 | AirTag (第2世代) (4パック) MFEA4ZP/A | 4549995682588 | 12000 |
 | C | その他 | Echo Spot（2024年発売）- オーシャンブルー | 0840268912925 | 11480 |
 | C | その他 | Echo Spot（2024年発売）- グレーシャーホワイト | 0840268981846 | 11480 |
